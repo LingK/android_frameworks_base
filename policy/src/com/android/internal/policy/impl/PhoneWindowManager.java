@@ -1453,6 +1453,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return handleQuickKeys(win, keyCode, down, keyguardOn);
         }
 
+        if ("motus".equals(Build.DEVICE)
+                && (keyCode == KeyEvent.KEYCODE_ENVELOPE || keyCode == KeyEvent.KEYCODE_EXPLORER)) {
+            return handleQuickKeys(win, keyCode, down, keyguardOn);
+        }
+
         // Shortcuts are invoked through Search+key, so intercept those here
         if (mSearchKeyPressed) {
             if (down && repeatCount == 0 && !keyguardOn) {
@@ -1475,7 +1480,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     /**
-     * Quick Keys for Vision (HTC - G2)
+     * Quick Keys
      */
     private boolean handleQuickKeys(WindowState win, int code, boolean down, boolean keyguardOn) {
 
@@ -1499,6 +1504,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             break;
                         case KeyEvent.KEYCODE_USER3:
                             property = Settings.System.USER_DEFINED_KEY3_APP;
+                            break;
+                        case KeyEvent.KEYCODE_ENVELOPE:
+                            property = Settings.System.USER_DEFINED_KEY_ENVELOPE;
+                            break;
+                        case KeyEvent.KEYCODE_EXPLORER:
+                            property = Settings.System.USER_DEFINED_KEY_EXPLORER;
                             break;
                         default:
                             return false;
