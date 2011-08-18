@@ -2633,7 +2633,7 @@ public class WifiStateTracker extends NetworkStateTracker {
                     mDhcpRenewalIntent);
         }
     }
-    
+
     private void checkUseStaticIp() {
         mUseStaticIp = false;
         final ContentResolver cr = mContext.getContentResolver();
