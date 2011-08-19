@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class ScrollView extends FrameLayout {
 
     private final Rect mTempRect = new Rect();
     private OverScroller mScroller;
-    private EdgeGlow mEdgeGlowTop;
-    private EdgeGlow mEdgeGlowBottom;
+    private OverscrollEdge mEdgeGlowTop;
+    private OverscrollEdge mEdgeGlowBottom;
 
     /**
      * Flag to indicate that we are moving focus ourselves. This is so the
@@ -1284,6 +1284,20 @@ public class ScrollView extends FrameLayout {
     }    
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mEdgeGlowTop.attach();
+        mEdgeGlowBottom.attach();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mEdgeGlowTop.detach();
+        mEdgeGlowBottom.detach();
+    }
+
+    @Override
     public boolean requestChildRectangleOnScreen(View child, Rect rectangle,
             boolean immediate) {
         // offset into coordinate space of this scroll view
@@ -1402,8 +1416,8 @@ public class ScrollView extends FrameLayout {
                 final Resources res = getContext().getResources();
                 final Drawable edge = res.getDrawable(R.drawable.overscroll_edge);
                 final Drawable glow = res.getDrawable(R.drawable.overscroll_glow);
-                mEdgeGlowTop = new EdgeGlow(edge, glow);
-                mEdgeGlowBottom = new EdgeGlow(edge, glow);
+                mEdgeGlowTop = new OverscrollEdge(edge, glow, mContext,this.getHandler());
+                mEdgeGlowBottom = new OverscrollEdge(edge, glow, mContext,this.getHandler());
             }
         } else {
             mEdgeGlowTop = null;

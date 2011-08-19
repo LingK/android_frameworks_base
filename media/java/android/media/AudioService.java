@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.VolumePanel;
+import android.view.WindowManager;
+import android.view.Display;
 import android.os.SystemProperties;
 
 import com.android.internal.telephony.ITelephony;
@@ -62,6 +64,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import static android.provider.Settings.System.SWAP_VOLUME_KEYS_ORIENTATION;
 
 /**
  * The implementation of the volume manager service.
@@ -184,6 +188,9 @@ public class AudioService extends IAudioService.Stub {
         AudioSystem.STREAM_MUSIC,  // STREAM_TTS
         AudioSystem.STREAM_MUSIC  // STREAM_FM
     };
+
+    static Display mDisplay = null;
+    static int mSwapOrientation = -1;
 
     private AudioSystem.ErrorCallback mAudioSystemCallback = new AudioSystem.ErrorCallback() {
         public void onError(int error) {
@@ -323,6 +330,11 @@ public class AudioService extends IAudioService.Stub {
         TelephonyManager tmgr = (TelephonyManager)
                 context.getSystemService(Context.TELEPHONY_SERVICE);
         tmgr.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+
+        mDisplay = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        mSwapOrientation = Settings.System.getInt(mContext.getContentResolver(),
+            SWAP_VOLUME_KEYS_ORIENTATION,
+            mContext.getResources().getInteger(com.android.internal.R.integer.swap_volume_keys_orientation));
     }
 
     private void createAudioSystemThread() {
@@ -432,6 +444,12 @@ public class AudioService extends IAudioService.Stub {
         ensureValidDirection(direction);
         ensureValidStreamType(streamType);
 
+        if (mDisplay != null) {
+            int currentOrientation = mDisplay.getRotation();
+            if (currentOrientation == mSwapOrientation) {
+                direction = -direction;
+            }
+        }
 
         VolumeStreamState streamState = mStreamStates[STREAM_VOLUME_ALIAS[streamType]];
         final int oldIndex = (streamState.muteCount() != 0) ? streamState.mLastAudibleIndex : streamState.mIndex;
@@ -913,6 +931,10 @@ public class AudioService extends IAudioService.Stub {
             }
         }
 
+        mSwapOrientation = Settings.System.getInt(mContext.getContentResolver(),
+            SWAP_VOLUME_KEYS_ORIENTATION,
+            mContext.getResources().getInteger(com.android.internal.R.integer.swap_volume_keys_orientation));
+
         // apply new ringer mode
         setRingerModeInt(getRingerMode(), false);
     }
@@ -1303,7 +1325,6 @@ public class AudioService extends IAudioService.Stub {
         Log.w(TAG, msg);
         return false;
     }
-
 
     ///////////////////////////////////////////////////////////////////////////
     // Inner classes
@@ -2202,7 +2223,6 @@ public class AudioService extends IAudioService.Stub {
         }
     }
 
-
     /** @see AudioManager#requestAudioFocus(IAudioFocusDispatcher, int, int) */
     public int requestAudioFocus(int mainStreamType, int focusChangeHint, IBinder cb,
             IAudioFocusDispatcher fd, String clientId) {
@@ -2323,7 +2343,6 @@ public class AudioService extends IAudioService.Stub {
 
         return AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
-
 
     public void unregisterAudioFocusClient(String clientId, IBinder cb) {
         synchronized(mAudioFocusLock) {
@@ -2455,7 +2474,6 @@ public class AudioService extends IAudioService.Stub {
         }
     }
 
-
     /** see AudioManager.registerMediaButtonEventReceiver(ComponentName eventReceiver) */
     public void registerMediaButtonEventReceiver(ComponentName eventReceiver) {
         Log.i(TAG, "  Remote Control   registerMediaButtonEventReceiver() for " + eventReceiver);
@@ -2474,13 +2492,10 @@ public class AudioService extends IAudioService.Stub {
         }
     }
 
-
     @Override
     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         // TODO probably a lot more to do here than just the audio focus and remote control stacks
         dumpFocusStack(pw);
         dumpRCStack(pw);
     }
-
-
 }

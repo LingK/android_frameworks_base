@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +57,7 @@ public class Clock extends TextView {
 
     private int mAmPmStyle;
     private boolean mShowClock;
+	private int mClockColor = 0xffffffff;
 
     Handler mHandler;
 
@@ -72,6 +72,8 @@ public class Clock extends TextView {
                     Settings.System.STATUS_BAR_AM_PM), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.COLOR_CLOCK), false, this);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -237,6 +239,8 @@ public class Clock extends TextView {
         mAmPmStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_AM_PM, 2));
 
+		updateColors();
+
         if (mAmPmStyle != AM_PM_STYLE) {
             AM_PM_STYLE = mAmPmStyle;
             mClockFormatString = "";
@@ -254,5 +258,13 @@ public class Clock extends TextView {
         else
             setVisibility(View.GONE);
     }
-}
 
+	private void updateColors() {
+		ContentResolver resolver = mContext.getContentResolver();
+
+        mClockColor = Settings.System
+				.getInt(resolver, Settings.System.COLOR_CLOCK, mClockColor);
+
+		setTextColor(mClockColor);
+    }
+}

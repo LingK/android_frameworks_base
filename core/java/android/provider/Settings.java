@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -207,6 +206,20 @@ public final class Settings {
     @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
     public static final String ACTION_WIFI_IP_SETTINGS =
             "android.settings.WIFI_IP_SETTINGS";
+
+    /**
+     * Activity Action: Show settings to allow configuration of Wimax.
+     * <p>
+     * In some cases, a matching Activity may not exist, so ensure you
+     * safeguard against this.
+     * <p>
+     * Input: Nothing.
+     * <p>
+     * Output: Nothing.
+     */
+    @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+    public static final String ACTION_WIMAX_SETTINGS =
+            "android.settings.WIMAX_SETTINGS";
 
     /**
      * Activity Action: Show settings to allow configuration of Bluetooth.
@@ -916,6 +929,25 @@ public final class Settings {
             }
         }
 
+        /** This function provides a patch to the api change in regards to QUICK_CONTACT.
+            In essence it just replaces the com.android.contacts.action.QUICK_CONTACT string
+            with android.intent.action.VIEW
+        */
+        public static String formatContacts(String str) {
+                String beingReplaced = "com.android.contacts.action.QUICK_CONTACT";
+                String replaceWith = "android.intent.action.VIEW";
+                int index = 0;
+                StringBuffer result = new StringBuffer();
+                if ((index = str.indexOf(beingReplaced))!=-1){
+                        result.append(str.substring(0,index));
+                        result.append(replaceWith);
+                        result.append(str.substring(index+beingReplaced.length()));
+                        return result.toString();
+                }else{
+                        return str;
+                }
+        }
+
         /**
          * Convenience function for updating a single settings value as a long
          * integer. This will either create a new entry in the table if the
@@ -1129,19 +1161,19 @@ public final class Settings {
          * These values can be OR-ed together.
          */
         public static final String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
-
-        /**
-          * Whether Data call is enabled.
-          */
+        
+       /**
+         * Whether Data call is enabled.
+         */
         public static final String SOCKET_DATA_CALL_ENABLE = "socket_data_call_enable";
 
-        /**
-          * Default file manager to show files on extrenal storage media
-          * when it is mounted
-          * @hide
-          */
+       /**
+         * Default file manager to show files on extrenal storage media
+         * when it is mounted
+         * @hide
+         */
         public static final String DEFAULT_FILE_MANAGER = "default_file_manager";
-
+        
         /**
          * What happens when the user presses the end call button if they're not
          * on a call.<br/>
@@ -1188,15 +1220,14 @@ public final class Settings {
         public static final String RADIO_WIFI = "wifi";
 
         /**
+         * Constant for use in AIRPLANE_MODE_RADIOS to specify Wimax radio.
+         */
+        public static final String RADIO_WIMAX = "wimax";
+
+        /**
          * Constant for use in AIRPLANE_MODE_RADIOS to specify Cellular radio.
          */
         public static final String RADIO_CELL = "cell";
-
-        /**
-         * Constant for use in AIRPLANE_MODE_RADIOS to specify WiMAX radio.
-         * @hide
-         */
-        public static final String RADIO_WIMAX = "wimax";
 
         /**
          * A comma separated list of radios that need to be disabled when airplane mode
@@ -1822,14 +1853,9 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION = "accelerometer_rotation";
 
          /**
-         * Control the type of rotation which can be performed using the accelerometer
-         * if ACCELEROMETER_ROTATION is enabled.
-         * Value is a bitwise combination of
-         * 1 = 90 degrees (left)
-         * 2 = 180 degrees (inverted)
-         * 4 = 270 degrees (right)
-         * Normal portrait (0 degrees) is always enabled
-         * Default is 5 (90 & 270 degrees), like stock Android
+         * Control weather 180 degree rotation should be included if
+         * ACCELEROMETER_ROTATION is enabled. If 0 no 180 degree rotation will be
+         * executed, if 1 the 180 degree rotation is executed when ACCELEROMETER_ROTATION is true.
          * @hide
          */
         public static final String ACCELEROMETER_ROTATION_MODE = "accelerometer_rotation_mode";
@@ -1871,18 +1897,6 @@ public final class Settings {
         public static final String USE_CUSTOM_SEARCH_APP_ACTIVITY = "use_custom_search_app_activity";
 
         /**
-         * Contains what to do upon long press menu
-         * @hide
-         */
-        public static final String USE_CUSTOM_LONG_MENU = "use_custom_long_press_menu";
-
-        /**
-         * Contains activity to start on long menu key press
-         * @hide
-         */
-        public static final String USE_CUSTOM_LONG_MENU_APP_ACTIVITY = "use_custom_long_menu_app_activity";
-
-        /**
          * Specifies whether or not to use a custom app on long search key press
          * @hide
          */
@@ -1919,45 +1933,32 @@ public final class Settings {
         public static final String POWER_DIALOG_PROMPT = "power_dialog_prompt";
 
         /**
-         * How many ms to delay before enabling the security screen lock when
-         * the screen goes off due to timeout
+         * How many ms to delay before enabling the screen lock when the screen
+         * goes off due to timeout
+         *
          * @hide
          */
-        public static final String SCREEN_LOCK_SECURITY_TIMEOUT_DELAY = "screen_lock_security_timeout_delay";
+        public static final String SCREEN_LOCK_TIMEOUT_DELAY = "screen_lock_timeout_delay";
 
         /**
-         * How many ms to delay before enabling the security screen lock when
-         * the screen is turned off by the user
+         * How many ms to delay before enabling the screen lock when the screen
+         * is turned off by the user
+         *
          * @hide
          */
-        public static final String SCREEN_LOCK_SECURITY_SCREENOFF_DELAY = "screen_lock_security_screenoff_delay";
-
-        /**
-         * Whether to use a separate delay for "slide to unlock" and security
-         * lock
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SLIDE_DELAY_TOGGLE = "screen_lock_slide_delay_toggle";
-
-        /**
-         * How many ms to delay before enabling the "slide to unlock" screen
-         * lock when the screen goes off due to timeout
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SLIDE_TIMEOUT_DELAY = "screen_lock_slide_timeout_delay";
-
-        /**
-         * How many ms to delay before enabling the "slide to unlock" screen
-         * lock when the screen is turned off by the user
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SLIDE_SCREENOFF_DELAY = "screen_lock_slide_screenoff_delay";
+        public static final String SCREEN_LOCK_SCREENOFF_DELAY = "screen_lock_screenoff_delay";
 
         /**
          * Whether the audible DTMF tones are played by the dialer when dialing. The value is
          * boolean (1 or 0).
          */
         public static final String DTMF_TONE_WHEN_DIALING = "dtmf_tone";
+        
+        /**
+         * Auto Answer timeout value. The supported timeout values are 5 sec,
+         * 10 sec, 15 sec and -1 (for disabling).
+         */
+        public static final String AUTO_ANSWER_TIMEOUT = "auto_answer";
 
         /**
          * CDMA only settings
@@ -2239,16 +2240,6 @@ public final class Settings {
         public static final String LOCK_MMS_IN_MEMORY = "lock_mms_in_memory";
 
         /**
-         * Display style of AM/PM next to clock in status bar
-         * 0: Normal display (Eclair stock)
-         * 1: Small display (Froyo stock)
-         * 2: No display (Gingerbread stock)
-         * default: 2
-         * @hide
-         */
-        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
-
-        /**
          * Whether to show the CM battery percentage implementation instead
          * of the stock battery icon
          * 0: don't show / show stock icon instead
@@ -2267,16 +2258,6 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_CLOCK = "status_bar_clock";
-
-        /**
-         * Whether to show the signal text or signal bars.
-         * default: 0
-         * 0: show signal bars
-         * 1: show signal text numbers
-         * 2: show signal text numbers w/small dBm appended
-         * @hide
-         */
-        public static final String STATUS_BAR_CM_SIGNAL_TEXT = "status_bar_cm_signal";
 
         /**
          * Whether to display the status bar on top or bottom
@@ -2433,9 +2414,58 @@ public final class Settings {
          */
         public static final String LONG_VOL_BOTH_ACTION = "long_vol_both_action";
 
+        /** 
+		 * Liquid Settings (Start)
+		 */
+
+        /**
+         * What text to show as carrier label
+         * 0: use system default
+         * 1: show spn
+         * 2: show plmn
+         * 3: show custom string
+         * default: 0
+         * @hide
+         */
+        public static final String CARRIER_LABEL_TYPE = "carrier_label_type";
+
+        /**
+         * The custom string to show as carrier label
+         * @hide
+         */
+        public static final String CARRIER_LABEL_CUSTOM_STRING = "carrier_label_custom_string";
+
+        /**
+         * Display style of AM/PM next to clock in status bar
+         * 0: Normal display (Eclair stock)
+         * 1: Small display (Froyo stock)
+         * 2: No display (Gingerbread stock)
+         * default: 2
+         * @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
+
+        /**
+         * Whether to show the signal text or signal bars.
+         * default: 0
+         * 0: show signal bars
+         * 1: show signal text numbers
+         * 2: show signal text numbers w/small dBm appended
+         * @hide
+         */
+        public static final String STATUS_BAR_CM_SIGNAL_TEXT = "status_bar_cm_signal";
+        
+        /**
+         * Whether to show the phone signal in status bar
+         * 0: don't show the phone signal
+         * 1: show the phone signal
+         * default: 1
+         * @hide
+         */
+        public static final String STATUS_BAR_PHONE_SIGNAL = "status_bar_phone_signal";
+
         /**
          * Whether to use compact carrier label layout
-         *
          * @hide
          */
         public static final String STATUS_BAR_COMPACT_CARRIER = "status_bar_compact_carrier";
@@ -2446,6 +2476,262 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
+
+ 		/**
+         * Specifies the color for status bar battery percent
+         * @hide
+         */
+		public static final String COLOR_BATTERY_PERCENT = "color_battery_percent";
+		
+ 		/**
+         * Specifies the color for status bar signaltext value
+         * @hide
+         */
+		public static final String COLOR_SIGNALTEXT_VALUE = "color_signaltext_value";
+        
+ 		/**
+         * Specifies the color for status bar clock
+         * @hide
+         */
+        public static final String COLOR_CLOCK = "color_clock";
+
+ 		/**
+         * Specifies the color for status bar date
+         * @hide
+         */
+        public static final String COLOR_DATE = "color_date";
+
+ 		/**
+         * Specifies the color for notification none title
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_NONE = "color_notification_none";
+
+ 		/**
+         * Specifies the color for notification latest title
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_LATEST = "color_notification_latest";
+
+ 		/**
+         * Specifies the color for notification ongoing title
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_ONGOING = "color_notification_ongoing";
+
+ 		/**
+         * Specifies the color for carrier status banner
+         * @hide
+         */
+        public static final String COLOR_LABEL_PLMN = "color_label_plmn";
+
+ 		/**
+         * Specifies the color for notification clear button
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_CLEAR_BUTTON = "color_clear_button";
+
+ 		/**
+         * Specifies the color for notifications ticker text
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_TICKER_TEXT = "color_ticker_text";
+
+ 		/**
+         * Specifies the color for notification item title
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_ITEM_TITLE = "color_notification_item_title";
+
+ 		/**
+         * Specifies the color for notification item text
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_ITEM_TEXT = "color_notification_item_text";
+
+ 		/**
+         * Specifies the color for notification item progress
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_ITEM_PROGRESS_TEXT =
+			"color_notification_item_progress_text";
+
+ 		/**
+         * Specifies the color for notification item time
+         * @hide
+         */
+        public static final String COLOR_NOTIFICATION_ITEM_TIME = "color_notification_item_time";
+
+        /**
+         * Whether to wake the screen with the volume keys
+         * @hide
+         */
+        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
+        
+        /**
+         * Whether the lockscreen should be disabled if security is on
+         * @hide
+         */
+        public static final String LOCKSCREEN_DISABLE_ON_SECURITY = "lockscreen_disable_on_security";
+        
+        /**
+         * How many ms to delay before enabling the security screen lock when
+         * the screen goes off due to timeout
+         * @hide
+         */
+        public static final String SCREEN_LOCK_SECURITY_TIMEOUT_DELAY = "screen_lock_security_timeout_delay";
+
+        /**
+         * How many ms to delay before enabling the security screen lock when
+         * the screen is turned off by the user
+         * @hide
+         */
+        public static final String SCREEN_LOCK_SECURITY_SCREENOFF_DELAY = "screen_lock_security_screenoff_delay";
+
+        /**
+         * Whether to use a separate delay for "slide to unlock" and security
+         * lock
+         * @hide
+         */
+        public static final String SCREEN_LOCK_SLIDE_DELAY_TOGGLE = "screen_lock_slide_delay_toggle";
+
+        /**
+         * How many ms to delay before enabling the "slide to unlock" screen
+         * lock when the screen goes off due to timeout
+         * @hide
+         */
+        public static final String SCREEN_LOCK_SLIDE_TIMEOUT_DELAY = "screen_lock_slide_timeout_delay";
+
+        /**
+         * How many ms to delay before enabling the "slide to unlock" screen
+         * lock when the screen is turned off by the user
+         * @hide
+         */
+        public static final String SCREEN_LOCK_SLIDE_SCREENOFF_DELAY = "screen_lock_slide_screenoff_delay";
+
+        /**
+         * When enabled carrier status on the lockscreen is hidden
+         * @hide
+         */
+        public static final String LOCKSCREEN_HIDE_CARRIER = "lockscreen_hide_carrier";
+
+        /**
+         * Whether or not volume button play or pause control should be enabled
+         * @hide
+         */
+        public static final String VOLPAUSE_CONTROL = "volpause_control";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM1_APP_TOGGLE = "lock_custom1_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM1_APP_ACTIVITY = "lock_custom1_app_activity";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM2_APP_TOGGLE = "lock_custom2_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM2_APP_ACTIVITY = "lock_custom2_app_activity";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM3_APP_TOGGLE = "lock_custom3_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM3_APP_ACTIVITY = "lock_custom3_app_activity";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM4_APP_TOGGLE = "lock_custom4_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM4_APP_ACTIVITY = "lock_custom4_app_activity";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM5_APP_TOGGLE = "lock_custom5_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM5_APP_ACTIVITY = "lock_custom5_app_activity";
+
+        /**
+         * Specifies whether or not to lock a custom app
+         * @hide
+         */
+        public static final String LOCK_CUSTOM6_APP_TOGGLE = "lock_custom6_app_toggle";
+
+        /**
+         * Contains activity of the app you want locked
+         * @hide
+         */
+        public static final String LOCK_CUSTOM6_APP_ACTIVITY = "lock_custom6_app_activity";
+
+        /**
+         * Allows swaping of volume key orientation
+         * @hide
+         */
+        public static final String SWAP_VOLUME_KEYS_ORIENTATION = "swap_volume_keys_orientation";
+
+        /**
+         * Specifies whether or not to use a custom app on long menu key press
+         * @hide
+         */
+        public static final String USE_CUSTOM_LONG_MENU = "use_custom_long_press_menu";
+
+        /**
+         * Contains activity to start on long menu key press
+         * @hide
+         */
+        public static final String USE_CUSTOM_LONG_MENU_APP_ACTIVITY = "use_custom_long_menu_app_activity";
+
+        /**
+         * Specifies whether or not to use a custom app on double tap home key press
+         * @hide
+         */
+        public static final String USE_CUSTOM_DOUBLE_TAP_KEY_TOGGLE = "use_custom_double_tap_home_app_toggle";
+
+        /**
+         * Contains activity to start on double tap home key press
+         * @hide
+         */
+        public static final String USE_CUSTOM_DOUBLE_TAP_ACTIVITY = "use_custom_double_tap_home_app_activity";
+
+        /**
+         * Sets the lockscreen background style
+         * @hide
+         */
+        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
+        
+		/** 
+		 * Liquid Settings (Finish)
+		 */
 
         /**
          * Whether to wake the screen with the trackball. The value is boolean (1 or 0).
@@ -2458,18 +2744,6 @@ public final class Settings {
          * @hide
          */
         public static final String TRACKBALL_UNLOCK_SCREEN = "trackball_unlock_screen";
-
-        /**
-         * Whether to wake the screen with the volume keys. The value is boolean (1 or 0).
-         * @hide
-         */
-        public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
-
-        /**
-         * Whether the lockscreen should be disabled if security is on
-         * @hide
-         */
-        public static final String LOCKSCREEN_DISABLE_ON_SECURITY = "lockscreen_disable_on_security";
 
         /**
          * Whether to use the custom quick unlock screen control
@@ -2517,12 +2791,6 @@ public final class Settings {
         public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
 
         /**
-         * Sets the lockscreen background style
-         * @hide
-         */
-        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
-
-        /**
          * Sets the incoming call accept/reject style
          * @hide
          */
@@ -2552,7 +2820,7 @@ public final class Settings {
           */
          public static final String TRACKBALL_NOTIFICATION_PULSE_ORDER = "trackball_pulse_in_order";
 
-	/**
+	     /**
           * Beldn Notification Colors.  The value is boolean (1 or 0).
           * @hide
           */
@@ -2699,20 +2967,19 @@ public final class Settings {
          * @hide
          */
         public static final String EXPANDED_HIDE_SCROLLBAR = "expanded_hide_scrollbar";
-
-        /**
-         * Hide indicator in status bar widget
-         *
-         * @hide
-         */
-        public static final String EXPANDED_HIDE_INDICATOR = "expanded_hide_indicator";
-
+        
         /**
          * Haptic feedback in power widget
          *
          * @hide
          */
         public static final String EXPANDED_HAPTIC_FEEDBACK = "expanded_haptic_feedback";
+
+	    /**
+         * Hide indicator in status bar widget
+         * @hide
+         */
+        public static final String EXPANDED_HIDE_INDICATOR = "expanded_hide_indicator";
 
         /**
          * Notification Indicator Color
@@ -2783,6 +3050,12 @@ public final class Settings {
         public static final String OVERSCROLL_WEIGHT = "overscroll_weight";
 
         /**
+         * Sets the overscroller color (edge bounce effect on lists)
+         * @hide
+         */
+        public static final String OVERSCROLL_COLOR = "overscroll_color";
+
+        /**
          * Whether or not volume button music controls should be enabled to seek media tracks
          * @hide
          */
@@ -2793,6 +3066,12 @@ public final class Settings {
          * @hide
          */
         public static final String CAMBTN_MUSIC_CONTROLS = "cambtn_music_controls";
+        
+        /**
+         * Stores the phones dBm level, used to show dBm text in the status bar.
+         * @hide
+         */
+        public static final String PHONE_DBM_LEVEL = "phone_cm_dbm_level";
 
         /**
          * Whether the phone goggles mode is enabled or not.
@@ -3438,7 +3717,7 @@ public final class Settings {
          * Whether ADB is enabled.
          */
         public static final String ADB_ENABLED = "adb_enabled";
-
+        
         /**
          * The TCP/IP port to run ADB on, or -1 for USB
          */
@@ -3892,6 +4171,22 @@ public final class Settings {
         public static final String WIMAX_ON = "wimax_on";
 
         /**
+         * Whether to auto connect to the last connected network.
+         * <p>
+         * If not connected and the scan results have the last connected network
+         * available then connect to the network.
+         * see {@link android.provider.Settings.Secure#WIMAX_LAST_CONNECTED_NETWORK}.
+         */
+        public static final String WIMAX_AUTO_CONNECT_ON =
+                "wimax_auto_connect_on";
+
+        /**
+         * The last connected wimax network name.
+         */
+        public static final String WIMAX_LAST_CONNECTED_NETWORK =
+                "wimax_last_connected_network";
+
+        /**
          * Whether background data usage is allowed by the user. See
          * ConnectivityManager for more info.
          */
@@ -3957,24 +4252,8 @@ public final class Settings {
          *                            1 = CDMA Cell Broadcast SMS enabled
          * @hide
          */
-        public static final String CDMA_CELL_BROADCAST_SMS = "cdma_cell_broadcast_sms";
-
-        /**
-         * Amber Alert Notification Configuration for CMAS Broadcast SMS
-         *                            0 = Amber Alerts enabled
-         *                            1 = Amber Alerts disabled
-         * {@hide}
-         */
-        public static final String AMBER_ALERT_CONFIG = "amber_alert_config";
-
-        /**
-         * Emergency Alert (Imminent threat) Notification configuration for CMAS Broadcast SMS
-         *                            0 = All emergency alerts on
-         *                            1 = Extreme alerts only
-         *                            2 = Presidential alerts only
-         *{@hide}
-         */
-        public static final String EMERGENCY_ALERT_CONFIG = "emergency_alert_config";
+        public static final String CDMA_CELL_BROADCAST_SMS =
+                "cdma_cell_broadcast_sms";
 
         /**
          * The cdma subscription 0 = Subscription from RUIM, when available
@@ -4712,6 +4991,18 @@ public final class Settings {
         public static final String ENABLE_PERMISSIONS_MANAGEMENT = "enable_permissions_management";
 
         /**
+         * Whether to ignore the unsupported Exchange security policies.
+         * @hide
+         */
+        public static final String EMAIL_EXCHANGE_POLICY_IGNORE = "email_exchange_policy_ignore";
+
+        /**
+         * PATTERN_LOCK_TIMEOUT 
+         * @hide
+         */
+        public static final String PATTERN_LOCK_TIMEOUT = "pattern_lock_timeout_msec";
+
+        /**
          * @hide
          */
         public static final String[] SETTINGS_TO_BACKUP = {
@@ -4979,7 +5270,6 @@ public final class Settings {
             } catch (URISyntaxException e) {
                 return "";
             }
-
             PackageManager packageManager = context.getPackageManager();
             ResolveInfo info = packageManager.resolveActivity(intent, 0);
             return info != null ? info.loadLabel(packageManager) : "";
@@ -4999,3 +5289,4 @@ public final class Settings {
         return "android-" + Long.toHexString(androidId);
     }
 }
+

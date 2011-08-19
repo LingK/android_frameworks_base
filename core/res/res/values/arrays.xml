@@ -2,7 +2,7 @@
 <!--
 /* //device/apps/common/assets/res/any/colors.xml
 **
-** Copyright 2006, The Android Open Source Project
+** Copyright 2011, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -113,7 +113,6 @@
     <array name="shutdown_reboot_options">
         <item>Reboot</item>
         <item>Recovery</item>
-        <item>Bootloader</item>
     </array>
 
     <!-- Do not translate. Defines the shutdown actions passed to the kernel.
@@ -121,7 +120,5 @@
     <string-array name="shutdown_reboot_actions" translatable="false">
         <item></item>
         <item>recovery</item>
-        <item>bootloader</item>
     </string-array>
-
 </resources>

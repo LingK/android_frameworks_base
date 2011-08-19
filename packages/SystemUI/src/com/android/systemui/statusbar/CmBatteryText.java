@@ -1,18 +1,18 @@
 /*
- * Created by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2011 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.systemui.statusbar;
 
@@ -36,7 +36,7 @@ public class CmBatteryText extends TextView {
 
     // weather to show this battery widget or not
     private boolean mShowCmBattery;
-
+    private int mPercentColor = 0xffffffff;
     Handler mHandler;
 
     // tracks changes to settings, so status bar is auto updated the moment the
@@ -48,8 +48,10 @@ public class CmBatteryText extends TextView {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUS_BAR_CM_BATTERY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.STATUS_BAR_CM_BATTERY), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.COLOR_BATTERY_PERCENT), false, this);
         }
 
         @Override
@@ -131,10 +133,22 @@ public class CmBatteryText extends TextView {
 
         mShowCmBattery = (Settings.System
                 .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
-
-        if (mShowCmBattery)
+                
+        updateColors();
+        
+        if (mShowCmBattery) {
             setVisibility(View.VISIBLE);
-        else
+        } else {
             setVisibility(View.GONE);
+        }
+    }
+
+    private void updateColors() {
+		ContentResolver resolver = mContext.getContentResolver();
+
+        mPercentColor = Settings.System
+				.getInt(resolver, Settings.System.COLOR_BATTERY_PERCENT, mPercentColor);
+
+       	setTextColor(mPercentColor);
     }
 }
