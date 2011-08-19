@@ -61,7 +61,7 @@ import java.io.PrintWriter;
  * <p>&quot;present&quot; - boolean, true if the battery is present<br />
  * <p>&quot;icon-small&quot; - int, suggested small icon to use for this state</p>
  * <p>&quot;plugged&quot; - int, 0 if the device is not plugged in; 1 if plugged
- * into an AC power adapter; 2 if plugged in via USB.</p>
+ * into an AC power adapter; 2 if plugged in via USB; 3 if wireless charger used</p>
  * <p>&quot;voltage&quot; - int, current battery voltage in millivolts</p>
  * <p>&quot;temperature&quot; - int, current battery temperature in tenths of
  * a degree Centigrade</p>
@@ -92,6 +92,7 @@ class BatteryService extends Binder {
 
     private boolean mAcOnline;
     private boolean mUsbOnline;
+    private boolean mWirelessOnline;
     private int mBatteryStatus;
     private int mBatteryHealth;
     private boolean mBatteryPresent;
@@ -137,7 +138,7 @@ class BatteryService extends Binder {
 
     final boolean isPowered() {
         // assume we are powered if battery state is unknown so the "stay on while plugged in" option will work.
-        return (mAcOnline || mUsbOnline || mBatteryStatus == BatteryManager.BATTERY_STATUS_UNKNOWN);
+        return (mAcOnline || mUsbOnline || mWirelessOnline || mBatteryStatus == BatteryManager.BATTERY_STATUS_UNKNOWN);
     }
 
     final boolean isPowered(int plugTypeSet) {
@@ -155,6 +156,9 @@ class BatteryService extends Binder {
         }
         if (mUsbOnline) {
             plugTypeBit |= BatteryManager.BATTERY_PLUGGED_USB;
+        }
+        if (mWirelessOnline) {
+            plugTypeBit |= BatteryManager.BATTERY_PLUGGED_WIRELESS;
         }
         return (plugTypeSet & plugTypeBit) != 0;
     }
@@ -216,6 +220,8 @@ class BatteryService extends Binder {
             mPlugType = BatteryManager.BATTERY_PLUGGED_AC;
         } else if (mUsbOnline) {
             mPlugType = BatteryManager.BATTERY_PLUGGED_USB;
+        } else if (mWirelessOnline) {
+            mPlugType = BatteryManager.BATTERY_PLUGGED_WIRELESS;
         } else {
             mPlugType = BATTERY_PLUGGED_NONE;
         }
@@ -365,6 +371,7 @@ class BatteryService extends Binder {
                     " temperature: " + mBatteryTemperature +
                     " technology: " + mBatteryTechnology +
                     " AC powered:" + mAcOnline + " USB powered:" + mUsbOnline +
+                    " WIRELESS powered:" + mWirelessOnline +
                     " icon:" + icon );
         }
 
@@ -464,6 +471,7 @@ class BatteryService extends Binder {
             pw.println("Current Battery Service state:");
             pw.println("  AC powered: " + mAcOnline);
             pw.println("  USB powered: " + mUsbOnline);
+            pw.println("  WIRELESS powered: " + mWirelessOnline);
             pw.println("  status: " + mBatteryStatus);
             pw.println("  health: " + mBatteryHealth);
             pw.println("  present: " + mBatteryPresent);

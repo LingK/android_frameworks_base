@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1128,6 +1129,18 @@ public final class Settings {
          * These values can be OR-ed together.
          */
         public static final String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
+
+        /**
+          * Whether Data call is enabled.
+          */
+        public static final String SOCKET_DATA_CALL_ENABLE = "socket_data_call_enable";
+
+        /**
+          * Default file manager to show files on extrenal storage media
+          * when it is mounted
+          * @hide
+          */
+        public static final String DEFAULT_FILE_MANAGER = "default_file_manager";
 
         /**
          * What happens when the user presses the end call button if they're not
@@ -3427,6 +3440,11 @@ public final class Settings {
         public static final String ADB_ENABLED = "adb_enabled";
 
         /**
+         * The TCP/IP port to run ADB on, or -1 for USB
+         */
+        public static final String ADB_PORT = "adb_port";
+
+        /**
          * Whether to show ADB notifications.
          * @hide
          */
@@ -3939,8 +3957,24 @@ public final class Settings {
          *                            1 = CDMA Cell Broadcast SMS enabled
          * @hide
          */
-        public static final String CDMA_CELL_BROADCAST_SMS =
-                "cdma_cell_broadcast_sms";
+        public static final String CDMA_CELL_BROADCAST_SMS = "cdma_cell_broadcast_sms";
+
+        /**
+         * Amber Alert Notification Configuration for CMAS Broadcast SMS
+         *                            0 = Amber Alerts enabled
+         *                            1 = Amber Alerts disabled
+         * {@hide}
+         */
+        public static final String AMBER_ALERT_CONFIG = "amber_alert_config";
+
+        /**
+         * Emergency Alert (Imminent threat) Notification configuration for CMAS Broadcast SMS
+         *                            0 = All emergency alerts on
+         *                            1 = Extreme alerts only
+         *                            2 = Presidential alerts only
+         *{@hide}
+         */
+        public static final String EMERGENCY_ALERT_CONFIG = "emergency_alert_config";
 
         /**
          * The cdma subscription 0 = Subscription from RUIM, when available

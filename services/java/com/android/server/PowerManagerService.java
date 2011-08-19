@@ -450,7 +450,7 @@ class PowerManagerService extends IPowerManager.Stub
      * when the device is connected to that source, causes the device to stay on.
      * See {@link android.os.BatteryManager} for the list of power sources that
      * can be specified. Current values include {@link android.os.BatteryManager#BATTERY_PLUGGED_AC}
-     * and {@link android.os.BatteryManager#BATTERY_PLUGGED_USB}
+     * {@link android.os.BatteryManager#BATTERY_PLUGGED_USB} and {@link android.os.BatteryManager#BATTERY_PLUGGED_WIRELESS}
      * @param val an {@code int} containing the bits that specify which power sources
      * should cause the device to stay on.
      */
@@ -492,8 +492,9 @@ class PowerManagerService extends IPowerManager.Stub
                         BatteryManager.BATTERY_PLUGGED_USB;
                 } else {
                     mStayOnConditions = getInt(STAY_ON_WHILE_PLUGGED_IN,
-                        BatteryManager.BATTERY_PLUGGED_AC);
+                        BatteryManager.BATTERY_PLUGGED_AC | BatteryManager.BATTERY_PLUGGED_WIRELESS);
                 }
+
                 updateWakeLockLocked();
 
                 // SCREEN_OFF_TIMEOUT, default to 15 seconds

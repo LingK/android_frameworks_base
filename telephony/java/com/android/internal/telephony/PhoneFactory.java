@@ -21,7 +21,6 @@ import android.net.LocalServerSocket;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-import android.os.SystemProperties;
 
 import com.android.internal.telephony.cdma.CDMAPhone;
 import com.android.internal.telephony.gsm.GSMPhone;
@@ -108,30 +107,19 @@ public class PhoneFactory {
                 Log.i(LOG_TAG, "Cdma Subscription set to " + Integer.toString(cdmaSubscription));
 
                 //reads the system properties and makes commandsinterface
-
-                String sRILClassname = SystemProperties.get("ro.telephony.ril_class");
-                Log.i(LOG_TAG, "RILClassname is " + sRILClassname);
-
-                if("samsung".equals(sRILClassname))
-                {
-                    Log.i(LOG_TAG, "Using Samsung RIL");
-                    sCommandsInterface = new SamsungRIL(context, networkMode, cdmaSubscription);
-                } else if("lgestar".equals(sRILClassname)) {
-                    Log.i(LOG_TAG, "Using LGE Star RIL");
-                    sCommandsInterface = new LGEStarRIL(context, networkMode, cdmaSubscription);
-                } else {
-                    sCommandsInterface = new RIL(context, networkMode, cdmaSubscription);
-                }
+                sCommandsInterface = new RIL(context, networkMode, cdmaSubscription);
 
                 int phoneType = getPhoneType(networkMode);
+                DataConnectionTracker dct = new MMDataConnectionTracker(context, sPhoneNotifier,
+                        sCommandsInterface);
                 if (phoneType == Phone.PHONE_TYPE_GSM) {
-                    Log.i(LOG_TAG, "Creating GSMPhone");
                     sProxyPhone = new PhoneProxy(new GSMPhone(context,
-                            sCommandsInterface, sPhoneNotifier));
+                            sCommandsInterface, sPhoneNotifier, dct));
+                    Log.i(LOG_TAG, "Creating GSMPhone");
                 } else if (phoneType == Phone.PHONE_TYPE_CDMA) {
-                    Log.i(LOG_TAG, "Creating CDMAPhone");
                     sProxyPhone = new PhoneProxy(new CDMAPhone(context,
-                            sCommandsInterface, sPhoneNotifier));
+                            sCommandsInterface, sPhoneNotifier, dct));
+                    Log.i(LOG_TAG, "Creating CDMAPhone");
                 }
 
                 sMadeDefaults = true;
@@ -151,15 +139,19 @@ public class PhoneFactory {
         case RILConstants.NETWORK_MODE_CDMA:
         case RILConstants.NETWORK_MODE_CDMA_NO_EVDO:
         case RILConstants.NETWORK_MODE_EVDO_NO_CDMA:
+        case RILConstants.NETWORK_MODE_CDMA_AND_LTE_EVDO:
             return Phone.PHONE_TYPE_CDMA;
 
         case RILConstants.NETWORK_MODE_WCDMA_PREF:
         case RILConstants.NETWORK_MODE_GSM_ONLY:
         case RILConstants.NETWORK_MODE_WCDMA_ONLY:
         case RILConstants.NETWORK_MODE_GSM_UMTS:
+        case RILConstants.NETWORK_MODE_GSM_WCDMA_LTE:
             return Phone.PHONE_TYPE_GSM;
 
         case RILConstants.NETWORK_MODE_GLOBAL:
+        case RILConstants.NETWORK_MODE_GLOBAL_LTE:
+        case RILConstants.NETWORK_MODE_LTE_ONLY:
             return Phone.PHONE_TYPE_CDMA;
         default:
             return Phone.PHONE_TYPE_GSM;
@@ -178,16 +170,16 @@ public class PhoneFactory {
        return sProxyPhone;
     }
 
-    public static Phone getCdmaPhone() {
+    public static Phone getCdmaPhone(DataConnectionTracker dct) {
         synchronized(PhoneProxy.lockForRadioTechnologyChange) {
-            Phone phone = new CDMAPhone(sContext, sCommandsInterface, sPhoneNotifier);
+            Phone phone = new CDMAPhone(sContext, sCommandsInterface, sPhoneNotifier, dct);
             return phone;
         }
     }
 
-    public static Phone getGsmPhone() {
+    public static Phone getGsmPhone(DataConnectionTracker dct) {
         synchronized(PhoneProxy.lockForRadioTechnologyChange) {
-            Phone phone = new GSMPhone(sContext, sCommandsInterface, sPhoneNotifier);
+            Phone phone = new GSMPhone(sContext, sCommandsInterface, sPhoneNotifier, dct);
             return phone;
         }
     }

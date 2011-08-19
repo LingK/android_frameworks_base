@@ -24,7 +24,6 @@ import android.os.Message;
 import android.os.ServiceManager;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * SimPhoneBookInterfaceManager to provide an inter-process communication to
@@ -64,14 +63,14 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
                                     " total " + recordSize[1] +
                                     " #record " + recordSize[2]);
                         }
-                        notifyPending(ar);
+                        mLock.notifyAll();
                     }
                     break;
                 case EVENT_UPDATE_DONE:
                     ar = (AsyncResult) msg.obj;
                     synchronized (mLock) {
                         success = (ar.exception == null);
-                        notifyPending(ar);
+                        mLock.notifyAll();
                     }
                     break;
                 case EVENT_LOAD_DONE:
@@ -85,19 +84,10 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
                                 records.clear();
                             }
                         }
-                        notifyPending(ar);
+                        mLock.notifyAll();
                     }
                     break;
             }
-        }
-
-        private void notifyPending(AsyncResult ar) {
-            if (ar.userObj == null) {
-                return;
-            }
-            AtomicBoolean status = (AtomicBoolean) ar.userObj;
-            status.set(true);
-            mLock.notifyAll();
         }
     };
 
@@ -160,12 +150,19 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
         synchronized(mLock) {
             checkThread();
             success = false;
-            AtomicBoolean status = new AtomicBoolean(false);
-            Message response = mBaseHandler.obtainMessage(EVENT_UPDATE_DONE, status);
+            Message response = mBaseHandler.obtainMessage(EVENT_UPDATE_DONE);
             AdnRecord oldAdn = new AdnRecord(oldTag, oldPhoneNumber);
             AdnRecord newAdn = new AdnRecord(newTag, newPhoneNumber);
-            adnCache.updateAdnBySearch(efid, oldAdn, newAdn, pin2, response);
-            waitForResult(status);
+            if (adnCache != null) {
+                adnCache.updateAdnBySearch(efid, oldAdn, newAdn, pin2, response);
+                try {
+                    mLock.wait();
+                } catch (InterruptedException e) {
+                    logd("interrupted while trying to update by search");
+                }
+            } else {
+                logd("Failure while trying to update by search due to uninitialised adncache");
+            }
         }
         return success;
     }
@@ -204,11 +201,18 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
         synchronized(mLock) {
             checkThread();
             success = false;
-            AtomicBoolean status = new AtomicBoolean(false);
-            Message response = mBaseHandler.obtainMessage(EVENT_UPDATE_DONE, status);
+            Message response = mBaseHandler.obtainMessage(EVENT_UPDATE_DONE);
             AdnRecord newAdn = new AdnRecord(newTag, newPhoneNumber);
-            adnCache.updateAdnByIndex(efid, newAdn, index, pin2, response);
-            waitForResult(status);
+            if (adnCache != null) {
+                adnCache.updateAdnByIndex(efid, newAdn, index, pin2, response);
+                try {
+                    mLock.wait();
+                } catch (InterruptedException e) {
+                    logd("interrupted while trying to update by index");
+                }
+            } else {
+                logd("Failure while trying to update by index due to uninitialised adncache");
+            }
         }
         return success;
     }
@@ -247,12 +251,19 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
 
         synchronized(mLock) {
             checkThread();
-            AtomicBoolean status = new AtomicBoolean(false);
-            Message response = mBaseHandler.obtainMessage(EVENT_LOAD_DONE, status);
-            adnCache.requestLoadAllAdnLike(efid, adnCache.extensionEfForEf(efid), response);
-            waitForResult(status);
+            Message response = mBaseHandler.obtainMessage(EVENT_LOAD_DONE);
+            if (adnCache != null) {
+                adnCache.requestLoadAllAdnLike(efid, adnCache.extensionEfForEf(efid), response);
+                try {
+                    mLock.wait();
+                } catch (InterruptedException e) {
+                    logd("interrupted while trying to load from the SIM");
+                }
+           } else {
+               logd("Failure while trying to load from SIM due to uninitialised adncache");
+           }
         }
-        return records;
+            return records;
     }
 
     protected void checkThread() {
@@ -266,20 +277,13 @@ public abstract class IccPhoneBookInterfaceManager extends IIccPhoneBook.Stub {
         }
     }
 
-    protected void waitForResult(AtomicBoolean status) {
-        while (!status.get()) {
-            try {
-                mLock.wait();
-            } catch (InterruptedException e) {
-                logd("interrupted while trying to update by search");
-            }
-        }
-    }
-
     private int updateEfForIccType(int efid) {
         // Check if we are trying to read ADN records
         if (efid == IccConstants.EF_ADN) {
-            if (phone.getIccCard().isApplicationOnIcc(IccCardApplication.AppType.APPTYPE_USIM)) {
+            //getUiccCard() can return null, if there is no icc present.
+            if (phone.getUiccCard() != null
+                    && phone.getUiccCard().isApplicationOnIcc(
+                            UiccConstants.AppType.APPTYPE_USIM)) {
                 return IccConstants.EF_PBR;
             }
         }

@@ -46,6 +46,7 @@ struct FieldIds {
     // members
     jfieldID mAcOnline;
     jfieldID mUsbOnline;
+    jfieldID mWirelessOnline;
     jfieldID mBatteryStatus;
     jfieldID mBatteryHealth;
     jfieldID mBatteryPresent;
@@ -74,6 +75,7 @@ static BatteryManagerConstants gConstants;
 struct PowerSupplyPaths {
     char* acOnlinePath;
     char* usbOnlinePath;
+    char* wirelessOnlinePath;
     char* batteryStatusPath;
     char* batteryHealthPath;
     char* batteryPresentPath;
@@ -219,6 +221,7 @@ static void android_server_BatteryService_update(JNIEnv* env, jobject obj)
 {
     setBooleanField(env, obj, gPaths.acOnlinePath, gFieldIds.mAcOnline);
     setBooleanField(env, obj, gPaths.usbOnlinePath, gFieldIds.mUsbOnline);
+    setBooleanField(env, obj, gPaths.wirelessOnlinePath, gFieldIds.mWirelessOnline);
     setBooleanField(env, obj, gPaths.batteryPresentPath, gFieldIds.mBatteryPresent);
     
     setPercentageField(env, obj, gPaths.batteryCapacityPath, gFieldIds.mBatteryLevel);
@@ -281,6 +284,11 @@ int register_android_server_BatteryService(JNIEnv* env)
                 snprintf(path, sizeof(path), "%s/%s/online", POWER_SUPPLY_PATH, name);
                 if (access(path, R_OK) == 0)
                     gPaths.usbOnlinePath = strdup(path);
+            }
+            else if (strcmp(buf, "Wireless") == 0) {
+                snprintf(path, sizeof(path), "%s/%s/online", POWER_SUPPLY_PATH, name);
+                if (access(path, R_OK) == 0)
+                    gPaths.wirelessOnlinePath = strdup(path);
             }
             else if (strcmp(buf, "Battery") == 0) {
                 snprintf(path, sizeof(path), "%s/%s/status", POWER_SUPPLY_PATH, name);
@@ -346,6 +354,8 @@ int register_android_server_BatteryService(JNIEnv* env)
         LOGE("acOnlinePath not found");
     if (!gPaths.usbOnlinePath)
         LOGE("usbOnlinePath not found");
+    if (!gPaths.wirelessOnlinePath)
+        LOGE("wirelessOnlinePath not found");
     if (!gPaths.batteryStatusPath)
         LOGE("batteryStatusPath not found");
     if (!gPaths.batteryHealthPath)
@@ -370,6 +380,7 @@ int register_android_server_BatteryService(JNIEnv* env)
     
     gFieldIds.mAcOnline = env->GetFieldID(clazz, "mAcOnline", "Z");
     gFieldIds.mUsbOnline = env->GetFieldID(clazz, "mUsbOnline", "Z");
+    gFieldIds.mWirelessOnline = env ->GetFieldID(clazz, "mWirelessOnline", "Z");
     gFieldIds.mBatteryStatus = env->GetFieldID(clazz, "mBatteryStatus", "I");
     gFieldIds.mBatteryHealth = env->GetFieldID(clazz, "mBatteryHealth", "I");
     gFieldIds.mBatteryPresent = env->GetFieldID(clazz, "mBatteryPresent", "Z");
@@ -380,6 +391,7 @@ int register_android_server_BatteryService(JNIEnv* env)
 
     LOG_FATAL_IF(gFieldIds.mAcOnline == NULL, "Unable to find BatteryService.AC_ONLINE_PATH");
     LOG_FATAL_IF(gFieldIds.mUsbOnline == NULL, "Unable to find BatteryService.USB_ONLINE_PATH");
+    LOG_FATAL_IF(gFieldIds.mWirelessOnline == NULL, "Unable to find BatteryService.WIRELESS_ONLINE_PATH");
     LOG_FATAL_IF(gFieldIds.mBatteryStatus == NULL, "Unable to find BatteryService.BATTERY_STATUS_PATH");
     LOG_FATAL_IF(gFieldIds.mBatteryHealth == NULL, "Unable to find BatteryService.BATTERY_HEALTH_PATH");
     LOG_FATAL_IF(gFieldIds.mBatteryPresent == NULL, "Unable to find BatteryService.BATTERY_PRESENT_PATH");
