@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -459,7 +458,7 @@ public class StatusBarPolicy {
     int mDataActivity = TelephonyManager.DATA_ACTIVITY_NONE;
     ServiceState mServiceState;
     SignalStrength mSignalStrength;
-
+    
     // flag for signal strength behavior
     private boolean mAlwaysUseCdmaRssi;
 
@@ -512,7 +511,7 @@ public class StatusBarPolicy {
     private int mWimaxSignal = 0;
     private int mWimaxState = 0;
     private int mWimaxExtraState = 0;
-
+    
     // state of inet connection - 0 not connected, 100 connected
     private int mInetCondition = 0;
 
@@ -562,8 +561,7 @@ public class StatusBarPolicy {
                 updateVolume();
             }
             else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                int state = intent.getIntExtra("state", 0);
-                mService.setIconVisibility("headset", (state == 1));
+                updateHeadset(intent);
             }
             else if (action.equals(TelephonyIntents.ACTION_SIM_STATE_CHANGED)) {
                 updateSimState(intent);
@@ -587,10 +585,12 @@ public class StatusBarPolicy {
         }
     };
 
-    private boolean mShowCmBattery;
-    private boolean mCmBatteryStatus;
-    // need another var that superceding mPhoneSignalHidden
     private boolean mShowCmSignal;
+    private boolean mShowCmBattery;
+    private boolean mCmSignalStatus;  
+    private boolean mCmBatteryStatus;
+    private boolean mShowPhoneSignal;
+    private boolean mPhoneSignalStatus;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -601,9 +601,10 @@ public class StatusBarPolicy {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CM_BATTERY), false, this);
-
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUS_BAR_CM_SIGNAL_TEXT), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_PHONE_SIGNAL), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_CM_SIGNAL_TEXT), false, this);                
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -637,6 +638,7 @@ public class StatusBarPolicy {
         mPhone = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         mPhoneSignalIconId = R.drawable.stat_sys_signal_null;
         mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
         mAlwaysUseCdmaRssi = mContext.getResources().getBoolean(
             com.android.internal.R.bool.config_alwaysUseCdmaRssi);
 
@@ -785,10 +787,11 @@ public class StatusBarPolicy {
     private final void updateBattery(Intent intent) {
         final int id = intent.getIntExtra("icon-small", 0);
         int level = intent.getIntExtra("level", 0);
-        if(!mShowCmBattery || mCmBatteryStatus != mShowCmBattery) {
-                mService.setIcon("battery", id, level);
-                mService.setIconVisibility("battery", !mShowCmBattery);
-                mCmBatteryStatus = mShowCmBattery;
+        
+        if (!mShowCmBattery || mCmBatteryStatus != mShowCmBattery) {
+            mService.setIcon("battery", id, level);
+            mService.setIconVisibility("battery", !mShowCmBattery);
+            mCmBatteryStatus = mShowCmBattery;
         }
 
         boolean plugged = intent.getIntExtra("plugged", 0) != 0;
@@ -1107,7 +1110,7 @@ public class StatusBarPolicy {
             mService.setIconVisibility("phone_signal", false);
             return;
         }
-
+        
         int iconLevel = -1;
         int[] iconList;
 
@@ -1127,10 +1130,9 @@ public class StatusBarPolicy {
             }
             return;
         }
-
+        
         if (!isCdma()) {
             int asu = mSignalStrength.getGsmSignalStrength();
-
             // ASU ranges from 0 to 31 - TS 27.007 Sec 8.5
             // asu = 0 (-113dB or less) is very weak
             // signal, its better to show 0 bars to the user in such cases.
@@ -1182,8 +1184,14 @@ public class StatusBarPolicy {
                 }
             }
         }
+        
         mPhoneSignalIconId = iconList[iconLevel];
-        mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        
+        if (!mShowPhoneSignal || mPhoneSignalStatus != mShowPhoneSignal) {
+            mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+            mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
+            mPhoneSignalStatus = mShowPhoneSignal;
+        }
     }
 
     private int getCdmaLevel() {
@@ -1204,7 +1212,7 @@ public class StatusBarPolicy {
         else if (cdmaEcio >= -130) levelEcio = 2;
         else if (cdmaEcio >= -150) levelEcio = 1;
         else levelEcio = 0;
-
+        
         return (levelDbm < levelEcio) ? levelDbm : levelEcio;
     }
 
@@ -1225,7 +1233,7 @@ public class StatusBarPolicy {
         else if (evdoSnr >= 3) levelEvdoSnr = 2;
         else if (evdoSnr >= 1) levelEvdoSnr = 1;
         else levelEvdoSnr = 0;
-
+        
         return (levelEvdoDbm < levelEvdoSnr) ? levelEvdoDbm : levelEvdoSnr;
     }
 
@@ -1246,7 +1254,7 @@ public class StatusBarPolicy {
         dbmIntent.putExtra("dbm", dBm);
         mContext.sendBroadcast(dbmIntent);
     }
-
+    
     private final void updateDataNetType(int net) {
         switch (net) {
         case TelephonyManager.NETWORK_TYPE_EDGE:
@@ -1366,6 +1374,19 @@ public class StatusBarPolicy {
             mService.setIconVisibility("volume", visible);
             mVolumeVisible = visible;
         }
+    }
+
+    private final void updateHeadset(Intent intent) {
+        final boolean isConnected = intent.getIntExtra("state", 0) == 1;
+
+        if (isConnected) {
+            final boolean hasMicrophone = intent.getIntExtra("microphone", 1) == 1;
+            final int iconId = hasMicrophone
+                    ? com.android.internal.R.drawable.stat_sys_headset
+                    : R.drawable.stat_sys_headset_no_mic;
+            mService.setIcon("headset", iconId, 0);
+        }
+        mService.setIconVisibility("headset", isConnected);
     }
 
     private final void updateBluetooth(Intent intent) {
@@ -1601,7 +1622,12 @@ public class StatusBarPolicy {
                 break;
 
         }
-        mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+        
+        if (!mShowPhoneSignal || mPhoneSignalStatus != mShowPhoneSignal) {
+            mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
+            mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
+            mPhoneSignalStatus = mShowPhoneSignal;
+        }
     }
 
     private class StatusBarHandler extends Handler {
@@ -1622,13 +1648,16 @@ public class StatusBarPolicy {
 
         mShowCmBattery = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
-        mCmBatteryStatus = !mShowCmBattery;
+        mCmBatteryStatus = !mShowCmBattery;     
         mService.setIconVisibility("battery", !mShowCmBattery);
 
-      //0 will hide the cmsignaltext and show the signal bars
-       mShowCmSignal = Settings.System.getInt(mContext.getContentResolver(),
-       Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, 0) != 0;
-       mService.setIconVisibility("phone_signal", !mShowCmSignal);
-
+		mShowPhoneSignal = (Settings.System.getInt(resolver,
+				Settings.System.STATUS_BAR_PHONE_SIGNAL, 0) == 1);
+	    mPhoneSignalStatus = !mShowPhoneSignal;
+		mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
+		
+		mShowCmSignal = Settings.System.getInt(mContext.getContentResolver(),
+		Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, 0) != 0;
+		mService.setIconVisibility("phone_signal", !mShowCmSignal);
     }
 }

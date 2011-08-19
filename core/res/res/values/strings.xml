@@ -2,7 +2,7 @@
 <!--
 /* //device/apps/common/assets/res/any/strings.xml
 **
-** Copyright 2006, The Android Open Source Project
+** Copyright 2011, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -334,6 +334,9 @@
     <!-- label for item that reboots the phone in phone options dialog -->
     <string name="global_action_reboot">Reboot</string>
 
+    <!-- label for item that reboots into recovery phone options dialog -->
+    <string name="global_action_recovery">Recovery</string>
+
     <!-- label for item that reboots the phone in phone options dialog -->
     <string name="global_action_choose_profile">Choose profile</string>
 
@@ -354,7 +357,7 @@
 
     <!-- status message in phone options dialog for when airplane mode is off -->
     <string name="global_actions_airplane_mode_off_status">Airplane mode is OFF</string>
-
+    
     <!-- label for item that screenshots in phone options dialog -->
     <string name="global_action_screenshot">Screenshot</string>
 
@@ -476,7 +479,7 @@
       and process emergency broadcast messages. This permission is only available
       to system applications.</string>
 
-     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
+    <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_sendSms">send SMS messages</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_sendSms">Allows application to send SMS
@@ -762,12 +765,12 @@
         system\'s various log files.  This allows it to discover general
         information about what you are doing with the phone, potentially
         including personal or private information.</string>
-
+    
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_preventpower">prevent power key</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permdesc_preventpower">Allows an application to override the power key</string>
-
+        
     <!-- Title of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_diagnostic">read/write to resources owned by diag</string>
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
@@ -1639,7 +1642,6 @@
     <string name="lockscreen_sound_on_label">Sound on</string>
     <!-- Displayed on lock screen's right tab - turn sound off -->
     <string name="lockscreen_sound_off_label">Sound off</string>
-
     <!-- Displayed on lock screen's extra left tab - phone -->
     <string name="lockscreen_phone_label">Phone</string>
 
@@ -2013,7 +2015,7 @@
     <!-- Text of the alert that is displayed when an application has crashed. -->
     <string name="aerr_process">The process <xliff:g id="process">%1$s</xliff:g> has
         stopped unexpectedly. Please try again.</string>
-    <!-- Title of the alert when an application is not responding. -->
+     <!-- Title of the alert when an application is not responding. -->
     <string name="aerr_revoked_application">The application <xliff:g id="application">%1$s</xliff:g>
         (process <xliff:g id="process">%2$s</xliff:g>) has stopped unexpectedly.\nWARNING!\nThis application has one or more of its permissions REVOKED which may cause it to malfunction. Please grant its permissions and try again.</string>
     <!-- Text of the alert that is displayed when an application has crashed. -->
@@ -2433,8 +2435,8 @@
     <!-- Text for message for an unknown external media state [CHAR LIMIT=NONE] -->
     <string name="media_unknown_state">External media in unknown state.</string>
 
-    <!--Application killed toast -->
-    <string name="app_killed_message">Application killed</string>
+    <!-- Text of the alert that is displayed when a user long-presses back to cancel a process. -->
+    <string name="long_press_back_kill">Kill the currently running process?</string>
 
     <!-- Phone goggles -->
     <string name="phone_goggles_problem_count">Problem #%1$d: </string>
@@ -2448,5 +2450,4 @@
     <string name="permlab_revokePermissions">Allows view and edit of revoked permissions. Not for use by normal applications.</string>
     <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->
     <string name="permdesc_revokePermissions">Allows read and write for revoked permissions. Not for use by normal applications.</string>
-
 </resources>

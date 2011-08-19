@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2006-2008 The Android Open Source Project
- * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +16,31 @@
 
 package com.android.server.am;
 
-import com.android.internal.R;
-import com.android.internal.os.BatteryStatsImpl;
-import com.android.server.AttributeCache;
-import com.android.server.IntentResolver;
-import com.android.server.ProcessMap;
-import com.android.server.ProcessStats;
-import com.android.server.SystemServer;
-import com.android.server.Watchdog;
-import com.android.server.WindowManagerService;
-import com.android.server.am.ActivityStack.ActivityState;
-
-import dalvik.system.Zygote;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -56,10 +68,10 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IIntentReceiver;
 import android.content.IIntentSender;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -69,11 +81,11 @@ import android.content.pm.IPackageManager;
 import android.content.pm.InstrumentationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PathPermission;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.CustomTheme;
 import android.graphics.Bitmap;
@@ -103,9 +115,9 @@ import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Config;
 import android.util.EventLog;
-import android.util.Slog;
 import android.util.Log;
 import android.util.PrintWriterPrinter;
+import android.util.Slog;
 import android.util.SparseArray;
 import android.util.TimeUtils;
 import android.view.Gravity;
@@ -114,35 +126,18 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManagerPolicy;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import com.android.internal.R;
+import com.android.internal.os.BatteryStatsImpl;
+import com.android.server.AttributeCache;
+import com.android.server.IntentResolver;
+import com.android.server.ProcessMap;
+import com.android.server.ProcessStats;
+import com.android.server.SystemServer;
+import com.android.server.Watchdog;
+import com.android.server.WindowManagerService;
+import com.android.server.am.ActivityStack.ActivityState;
 
 import dalvik.system.Zygote;
-
-import java.lang.IllegalStateException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 public final class ActivityManagerService extends ActivityManagerNative
         implements Watchdog.Monitor, BatteryStatsImpl.BatteryCallback {
@@ -4730,6 +4725,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             if (localLOGV) Slog.v(
                 TAG, "getTasks: max=" + maxNum + ", flags=" + flags
                 + ", receiver=" + receiver);
+
             if (checkCallingPermission(android.Manifest.permission.GET_TASKS)
                     != PackageManager.PERMISSION_GRANTED) {
                 if (receiver != null) {
@@ -11578,12 +11574,62 @@ public final class ActivityManagerService extends ActivityManagerNative
         app.keeping = false;
         app.empty = false;
         app.hidden = false;
+        
+        boolean mLockCustom1 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM1_APP_TOGGLE, 0) == 1);
+        boolean mLockCustom2 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM2_APP_TOGGLE, 0) == 1);
+        boolean mLockCustom3 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM3_APP_TOGGLE, 0) == 1);
+        boolean mLockCustom4 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM4_APP_TOGGLE, 0) == 1);
+        boolean mLockCustom5 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM5_APP_TOGGLE, 0) == 1);
+        boolean mLockCustom6 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM6_APP_TOGGLE, 0) == 1);
+
+        String mLockCustom1Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM1_APP_ACTIVITY));
+
+        if (mLockCustom1Act != null)
+            mLockCustom1Act = mLockCustom1Act.split("component=")[1].split("/")[0];
+
+        String mLockCustom2Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM2_APP_ACTIVITY));
+
+        if (mLockCustom2Act != null)
+            mLockCustom2Act = mLockCustom2Act.split("component=")[1].split("/")[0];
+
+        String mLockCustom3Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM3_APP_ACTIVITY));
+
+        if (mLockCustom3Act != null)
+            mLockCustom3Act = mLockCustom3Act.split("component=")[1].split("/")[0];
+
+        String mLockCustom4Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM4_APP_ACTIVITY));
+
+        if (mLockCustom4Act != null)
+            mLockCustom4Act = mLockCustom4Act.split("component=")[1].split("/")[0];
+
+        String mLockCustom5Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM5_APP_ACTIVITY));
+
+        if (mLockCustom5Act != null)
+            mLockCustom5Act = mLockCustom5Act.split("component=")[1].split("/")[0];
+
+        String mLockCustom6Act = (Settings.System.getString(mContext.getContentResolver(),
+                Settings.System.LOCK_CUSTOM6_APP_ACTIVITY));
+
+        if (mLockCustom6Act != null)
+            mLockCustom6Act = mLockCustom6Act.split("component=")[1].split("/")[0];
 
         // Determine the importance of the process, starting with most
         // important to least, and assign an appropriate OOM adjustment.
         int adj;
         int schedGroup;
         int N;
+
         if ("com.android.mms".equals(app.processName) &&
             Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCK_MMS_IN_MEMORY, 0) == 1 ) {
@@ -11592,6 +11638,48 @@ public final class ActivityManagerService extends ActivityManagerNative
             adj = FOREGROUND_APP_ADJ;
             schedGroup = Process.THREAD_GROUP_DEFAULT;
             app.adjType = "mms";
+        } else if ((mLockCustom1Act != null && mLockCustom1)
+            && mLockCustom1Act.equals(app.processName)) {
+            // Custom1 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom1";
+        } else if ((mLockCustom2Act != null && mLockCustom2)
+            && mLockCustom2Act.equals(app.processName)) {
+            // Custom2 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom2";
+        } else if ((mLockCustom3Act != null && mLockCustom3)
+            && mLockCustom3Act.equals(app.processName)) {
+            // Custom3 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom3";
+        } else if ((mLockCustom4Act != null && mLockCustom4)
+            && mLockCustom4Act.equals(app.processName)) {
+            // Custom4 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom4";
+        } else if ((mLockCustom5Act != null && mLockCustom5)
+            && mLockCustom5Act.equals(app.processName)) {
+            // Custom5 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom5";
+        } else if ((mLockCustom6Act != null && mLockCustom6)
+            && mLockCustom6Act.equals(app.processName)) {
+            // Custom6 can die in situations of heavy memory pressure.
+            // Always push it to the top.
+            adj = FOREGROUND_APP_ADJ;
+            schedGroup = Process.THREAD_GROUP_DEFAULT;
+            app.adjType = "custom6";
         } else if (app == TOP_APP) {
             // The last app on the list is the foreground app.
             adj = FOREGROUND_APP_ADJ;

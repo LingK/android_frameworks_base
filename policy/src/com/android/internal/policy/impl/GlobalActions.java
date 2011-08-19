@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
- * Copyright (C) 2010-2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -316,11 +315,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mItems = Lists.newArrayList(
                 // silent mode
-                mSilentModeToggle,
-                // next: airplane mode
+                // mSilentModeToggle,
+                // airplane mode
                 mAirplaneModeOn,
-                // next: choose profile
+                // choose profile
                 new ProfileChooseAction() {
+                
                     public void onPress() {
                         createProfileDialog();
                     }
@@ -333,25 +333,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         return false;
                     }
                 },
-                // next: screenshot
-                new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
+                // reboot
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_reboot,
+                        R.string.global_action_reboot) {
+                        
                     public void onPress() {
-                        Intent intent = new Intent("android.intent.action.SCREENSHOT");
-                        mContext.sendBroadcast(intent);
-                    }
-
-                    public boolean showDuringKeyguard() {
-                        return true;
-                    }
-
-                    public boolean showBeforeProvisioning() {
-                        return true;
-                    }
-                },
-                // next: reboot
-                new SinglePressAction(com.android.internal.R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
-                    public void onPress() {
-                        ShutdownThread.reboot(mContext, null, (Settings.System.getInt(mContext.getContentResolver(),
+                        ShutdownThread.reboot(mContext, null, (Settings.System
+                            .getInt(mContext.getContentResolver(),
                                 Settings.System.POWER_DIALOG_PROMPT, 1) == 1));
                     }
 
@@ -363,15 +352,33 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                         return true;
                     }
                 },
-                // last: power off
+                // power off
                 new SinglePressAction(
                         com.android.internal.R.drawable.ic_lock_power_off,
                         R.string.global_action_power_off) {
 
                     public void onPress() {
-                        // shutdown by making sure radio and power are handled accordingly.
-                        ShutdownThread.shutdown(mContext,(Settings.System.getInt(mContext.getContentResolver(),
+                        ShutdownThread.shutdown(mContext,(Settings.System
+                            .getInt(mContext.getContentResolver(),
                                 Settings.System.POWER_DIALOG_PROMPT, 1) == 1));
+                    }
+
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+                },
+                // screenshot
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_screenshot, 
+                        R.string.global_action_screenshot) {
+                        
+                    public void onPress() {
+                        Intent intent = new Intent("android.intent.action.SCREENSHOT");
+                        mContext.sendBroadcast(intent);
                     }
 
                     public boolean showDuringKeyguard() {
@@ -429,8 +436,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         int i=0;
         int checkedItem = 0;
-        for(Profile profile : profiles){
-            if(profile.getUuid().equals(activeProfile)){
+        for(Profile profile : profiles) {
+            if(profile.getUuid().equals(activeProfile)) {
                 checkedItem = i;
                 mChosenProfile = profile;
             }

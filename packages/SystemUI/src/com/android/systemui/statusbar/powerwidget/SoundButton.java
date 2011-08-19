@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.systemui.statusbar.powerwidget;
 
 import com.android.systemui.R;
@@ -24,6 +40,7 @@ public class SoundButton extends PowerButton {
     public static final int CM_MODE_SOUNDVIB_VIB_SILENT = 3;
     public static final int CM_MODE_SOUND_VIB_SILENT = 4;
     public static final int CM_MODE_SOUNDVIB_SOUND_VIB_SILENT = 5;
+    public static final int CM_MODE_VIB_SILENT = 6;
 
     public static final int VIBRATE_DURATION = 500; // 0.5s
 
@@ -159,14 +176,16 @@ public class SoundButton extends PowerButton {
             case RINGER_MODE_SILENT:
                 if (currentMode == CM_MODE_SOUND_SILENT || currentMode == CM_MODE_SOUNDVIB_VIB_SILENT
                         || currentMode == CM_MODE_SOUND_VIB_SILENT
-                        || currentMode == CM_MODE_SOUNDVIB_SOUND_VIB_SILENT)
+                        || currentMode == CM_MODE_SOUNDVIB_SOUND_VIB_SILENT
+                        || currentMode == CM_MODE_VIB_SILENT)
                     return true;
                 break;
             case RINGER_MODE_VIBRATE_ONLY:
                 if (currentMode == CM_MODE_SOUND_VIB || currentMode == CM_MODE_SOUNDVIB_VIB
                         || currentMode == CM_MODE_SOUNDVIB_VIB_SILENT
                         || currentMode == CM_MODE_SOUND_VIB_SILENT
-                        || currentMode == CM_MODE_SOUNDVIB_SOUND_VIB_SILENT)
+                        || currentMode == CM_MODE_SOUNDVIB_SOUND_VIB_SILENT
+                        || currentMode == CM_MODE_VIB_SILENT)
                     return true;
                 break;
             case RINGER_MODE_SOUND_ONLY:

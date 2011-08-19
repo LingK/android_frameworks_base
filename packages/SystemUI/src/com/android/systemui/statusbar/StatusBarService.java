@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +19,7 @@ package com.android.systemui.statusbar;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
+			
 import android.app.ActivityManagerNative;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -78,12 +77,13 @@ import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.systemui.R;
-import com.android.systemui.statusbar.powerwidget.PowerWidget;
+import com.android.systemui.statusbar.powerwidget.PowerWidget;	
 
 public class StatusBarService extends Service implements CommandQueue.Callbacks {
     private static final String DATA_TYPE_TMOBILE_STYLE = "vnd.tmobile.cursor.item/style";
     private static final String DATA_TYPE_TMOBILE_THEME = "vnd.tmobile.cursor.item/theme";
     private static final String ACTION_TMOBILE_THEME_CHANGED = "com.tmobile.intent.action.THEME_CHANGED";
+     
     static final String TAG = "StatusBarService";
     static final boolean SPEW_ICONS = false;
     static final boolean SPEW = false;
@@ -99,7 +99,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     private static final int MSG_ANIMATE_REVEAL = 1001;
 
     StatusBarPolicy mIconPolicy;
-
     CommandQueue mCommandQueue;
     IStatusBarService mBarService;
 
@@ -165,7 +164,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     // the power widget
     PowerWidget mPowerWidget;
 
-    //Carrier label stuff
+    // compact carrier	
     LinearLayout mCarrierLabelLayout;
     LinearLayout mCompactCarrierLayout;
     LinearLayout mPowerAndCarrier;
@@ -174,6 +173,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     private Ticker mTicker;
     private View mTickerView;
     private boolean mTicking;
+    private TickerView mTickerText;
 
     // Tracking finger for opening/closing.
     int mEdgeBorder; // corresponds to R.dimen.status_bar_edge_ignore
@@ -195,6 +195,21 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     // for disabling the status bar
     int mDisabled = 0;
+
+    // notification color default variables
+    int mBlackColor = 0xff000000;
+    int mWhiteColor = 0xffffffff;
+
+    // notfication color temp variables
+    int mItemText = mBlackColor;
+    int mItemTime = mBlackColor;
+    int mItemTitle = mBlackColor;
+    int mDateColor = mWhiteColor;
+    int mButtonText = mBlackColor;
+    int mNotifyNone = mWhiteColor;
+    int mNotifyTicker = mWhiteColor;
+    int mNotifyLatest = mWhiteColor;
+    int mNotifyOngoing = mWhiteColor;
 
     // weather or not to show status bar on bottom
     boolean mBottomBar;
@@ -222,6 +237,24 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     Settings.System.getUriFor(Settings.System.STATUS_BAR_COMPACT_CARRIER), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.EXPANDED_VIEW_WIDGET), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_DATE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_NONE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_LATEST), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_ONGOING), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_TICKER_TEXT), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_CLEAR_BUTTON), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_ITEM_TITLE), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_ITEM_TEXT), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.COLOR_NOTIFICATION_ITEM_TIME), false, this);            
             onChange(true);
         }
 
@@ -241,6 +274,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     Settings.System.STATUS_BAR_DEAD_ZONE, defValue) == 1);
             mCompactCarrier = (Settings.System.getInt(resolver,
                     Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1);
+            updateColors();
             updateLayout();
             updateCarrierLabel();
         }
@@ -287,16 +321,15 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mBroadcastReceiver, filter);
-
+        
         try {
             IntentFilter tMoFilter = new IntentFilter(ACTION_TMOBILE_THEME_CHANGED);
             tMoFilter.addDataType(DATA_TYPE_TMOBILE_THEME);
             tMoFilter.addDataType(DATA_TYPE_TMOBILE_STYLE);
             registerReceiver(mBroadcastReceiver, tMoFilter);
         } catch (MalformedMimeTypeException e) {
-            Slog.e(TAG, "Could not set T-Mo mime types", e);
+            Slog.e(TAG, "Could not set T-Mobile mime types", e);
         }
-
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
@@ -378,6 +411,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                                                 Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1;
         ExpandedView expanded = (ExpandedView)View.inflate(context,
                                                 R.layout.status_bar_expanded, null);
+
         expanded.mService = this;
 
         CmStatusBarView sb = (CmStatusBarView)View.inflate(context, R.layout.status_bar, null);
@@ -441,9 +475,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mCompactCarrierLayout = (LinearLayout)expanded.findViewById(R.id.compact_carrier_layout);
 
         mTicker = new MyTicker(context, sb);
-
-        TickerView tickerView = (TickerView)sb.findViewById(R.id.tickerText);
-        tickerView.mTicker = mTicker;
+        mTickerText = (TickerView)sb.findViewById(R.id.tickerText);
+        mTickerText.mTicker = mTicker;
 
         mTrackingView = (TrackingView)View.inflate(context, R.layout.status_bar_tracking, null);
         mTrackingView.mService = this;
@@ -451,6 +484,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mCloseView.mService = this;
 
         mContext=context;
+        updateColors();
         updateLayout();
         updateCarrierLabel();
 
@@ -461,11 +495,84 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mDateView.setVisibility(View.INVISIBLE);
     }
 
+    private void updateColors() {
+		ContentResolver resolver = mContext.getContentResolver();
+
+        mItemText = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_ITEM_TEXT, mItemText);
+        mItemTime = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_ITEM_TIME, mItemTime);
+        mItemTitle = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_ITEM_TITLE, mItemTitle);
+
+        mDateColor = Settings.System
+                .getInt(resolver, Settings.System.COLOR_DATE, mDateColor);
+        mDateView.setTextColor(mDateColor);
+
+        mButtonText = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_CLEAR_BUTTON, mButtonText);
+
+        if (!mCompactCarrier)
+            mClearButton.setTextColor(mButtonText);
+        else
+            mCompactClearButton.setTextColor(mButtonText);
+
+        mNotifyNone = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_NONE, mNotifyNone);
+        mNoNotificationsTitle.setTextColor(mNotifyNone);
+
+        mNotifyTicker = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_TICKER_TEXT, mNotifyTicker);
+        mTickerText.updateColors(mNotifyTicker);
+
+        mNotifyLatest = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_LATEST, mNotifyLatest);
+        mLatestTitle.setTextColor(mNotifyLatest);
+
+        mNotifyOngoing = Settings.System
+                .getInt(resolver, Settings.System.COLOR_NOTIFICATION_ONGOING, mNotifyOngoing);
+        mOngoingTitle.setTextColor(mNotifyOngoing);    
+    }
+
+    void resetTextViewColors(View vw) {
+        ViewGroup gv = (ViewGroup)vw;
+        int ct = gv.getChildCount();
+
+        if (ct > 0) {
+            for (int i = 0; i < ct; i++) {
+                try {
+                    setTextViewColors((TextView)gv.getChildAt(i));
+                } catch (Exception ex) { }
+                try {
+                    resetTextViewColors((View)gv.getChildAt(i));
+                } catch (Exception ex) { }
+            }
+        }
+    }
+
+    void setTextViewColors(TextView tc) {
+        try {        
+            int id = tc.getId();
+            switch (id) {
+                case com.android.internal.R.id.text:
+                    tc.setTextColor(mItemText);
+                    break;
+                case com.android.internal.R.id.time:
+                    tc.setTextColor(mItemTime);
+                    break;
+                case com.android.internal.R.id.title:
+                    tc.setTextColor(mItemTitle);
+                    break;
+                default:
+                    tc.setTextColor(mItemText);
+                    break;
+            }
+        } catch (Exception e) { }    
+    }
+
     private void updateCarrierLabel() {
         if (mCompactCarrier) {
             mCarrierLabelLayout.setVisibility(View.GONE);
-            // Disable compact carrier when bottom bar is enabled for now
-            // till we find a better solution (looks ugly alone at the top)
             if (mBottomBar)
                 mCompactCarrierLayout.setVisibility(View.VISIBLE);
             if (mLatest.hasClearableItems())
@@ -475,7 +582,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mCompactCarrierLayout.setVisibility(View.GONE);
             mCompactClearButton.setVisibility(View.GONE);
         }
-
     }
 
     private void updateLayout() {
@@ -754,6 +860,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             Slog.e(TAG, "couldn't inflate view for notification " + ident, exception);
             return null;
         } else {
+            resetTextViewColors(expanded);
             content.addView(expanded);
             row.setDrawingCacheEnabled(true);
         }
@@ -839,7 +946,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mNoNotificationsTitle.setVisibility(View.VISIBLE);
         }
     }
-
 
     /**
      * State is one or more of the DISABLE constants from StatusBarManager.
@@ -1213,7 +1319,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 int edgeRight = mButtonsLeft ? 0 : mStatusBarView.getSoftButtonsWidth();
 
                 final int w = mDisplay.getWidth();
-                final int deadLeft = w / 2 - w / 4;  // left side of the dead zone
+                final int deadLeft = w / 2 - w / 4; // left side of the dead zone
                 final int deadRight = w / 2 + w / 4; // right side of the dead zone
 
                 boolean expandedHit = (mExpanded && (x >= edgeBorder && x < w - edgeBorder));
@@ -1290,7 +1396,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                                 }
                 }catch (SettingNotFoundException e){
                 }
-                } else  {
+                } else {
                     mAnimatingReveal = false;
                     updateExpandedViewPos(y + (mBottomBar ? -mViewDelta : mViewDelta));
                 }
@@ -1315,7 +1421,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
                 performFling((int)event.getRawY(), vel, false);
             }
-
         }
         return false;
     }
@@ -1825,7 +1930,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         copyNotifications(notifications, mLatest);
         mOngoing.clear();
         mLatest.clear();
-
         makeStatusBarView(this);
 
         // recreate StatusBarIconViews.
@@ -1844,7 +1948,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         setAreThereNotifications();
         mStatusBarContainer.addView(mStatusBarView);
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
-
         mPowerWidget.setupWidget();
     }
 
@@ -1857,21 +1960,19 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
      */
     void updateResources() {
         Resources res = getResources();
-
+        
         mClearButton.setText(getText(R.string.status_bar_clear_all_button));
         mOngoingTitle.setText(getText(R.string.status_bar_ongoing_events_title));
         mLatestTitle.setText(getText(R.string.status_bar_latest_events_title));
         mNoNotificationsTitle.setText(getText(R.string.status_bar_no_notifications_title));
-
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
-
+        
         if (false) Slog.v(TAG, "updateResources");
     }
 
     //
     // tracing
     //
-
     void postStartTracing() {
         mHandler.postDelayed(mStartTracing, 3000);
     }

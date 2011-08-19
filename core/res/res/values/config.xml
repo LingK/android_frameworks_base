@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
-** Copyright 2009, The Android Open Source Project
-** Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+** Copyright 2011, The Android Open Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License"); 
 ** you may not use this file except in compliance with the License. 
@@ -426,7 +425,6 @@
          *    GLOBAL DEFAULT VALUES FOR CM SETTINGS     *
          *                                              *
          ************************************************
-
          if you wanna change a behavior for your device,
          just copy that value to your overlay file and
          set it as you like -->
@@ -588,15 +586,17 @@
     <string name="config_wimaxServiceClassname"></string>
     <!-- Name of the wimax state tracker clas -->
     <string name="config_wimaxStateTrackerClassname"></string>
-
     <!-- Set to true if the RSSI should always display CDMA signal strength
          even on EVDO -->
     <bool name="config_alwaysUseCdmaRssi">false</bool>
-
     <!-- If this value is true, duplicate Source/Destination port fields
          in WDP header of some carriers OMADM wap push are supported.
          ex: MSGTYPE-TotalSegments-CurrentSegment
              -SourcePortDestPort-SourcePortDestPort-OMADM PDU
          If false, not supported. -->
     <bool name="config_duplicate_port_omadm_wappush">false</bool>
+    <!-- Allow us to ignore the Exchange security policies this device doesn't support -->
+    <bool name="config_exchangePolicyIgnore">false</bool>
+    <!-- The orientation in which case volume keys should be swapped -->
+    <integer name="swap_volume_keys_orientation">-1</integer>
 </resources>

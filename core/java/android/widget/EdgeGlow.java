@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public class EdgeGlow {
 
     private static final float EPSILON = 0.001f;
 
-    private final Drawable mEdge;
-    private final Drawable mGlow;
+    protected Drawable mEdge;
+    protected Drawable mGlow;
     private int mWidth;
     private int mHeight;
 
