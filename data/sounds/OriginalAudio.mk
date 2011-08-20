@@ -124,13 +124,13 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ringtones/CurveBall.ogg:system/media/audio/ringtones/CurveBall.ogg \
     $(LOCAL_PATH)/ringtones/Cygnus.ogg:system/media/audio/ringtones/Cygnus.ogg \
     $(LOCAL_PATH)/ringtones/DancinFool.ogg:system/media/audio/ringtones/DancinFool.ogg \
+    $(LOCAL_PATH)/ringtones/DonMessWivIt.ogg:system/media/audio/ringtones/DonMessWivIt.ogg \
     $(LOCAL_PATH)/ringtones/Doorbell_Synthetic.ogg:system/media/audio/ringtones/Doorbell_Synthetic.ogg \
     $(LOCAL_PATH)/ringtones/Draco.ogg:system/media/audio/ringtones/Draco.ogg \
     $(LOCAL_PATH)/ringtones/Droid_X2.ogg:system/media/audio/ringtones/Droid_X2.ogg \
-    $(LOCAL_PATH)/ringtones/DancinFool.ogg:system/media/audio/ringtones/DancinFool.ogg \
     $(LOCAL_PATH)/ringtones/Eastern_Sky.ogg:system/media/audio/ringtones/Eastern_Sky.ogg \
     $(LOCAL_PATH)/ringtones/Eridani.ogg:system/media/audio/ringtones/Eridani.ogg \
-    $(LOCAL_PATH)/ringtones/Eastern_Sky.ogg:system/media/audio/ringtones/Eastern_Sky.ogg \
+    $(LOCAL_PATH)/ringtones/EtherShake.ogg:system/media/audio/ringtones/EtherShake.ogg \
     $(LOCAL_PATH)/ringtones/FriendlyGhost.ogg:system/media/audio/ringtones/FriendlyGhost.ogg \
 	$(LOCAL_PATH)/ringtones/GameOverGuitar.ogg:system/media/audio/ringtones/GameOverGuitar.ogg \
     $(LOCAL_PATH)/ringtones/Gimme_Mo_Town.ogg:system/media/audio/ringtones/Gimme_Mo_Town.ogg \
