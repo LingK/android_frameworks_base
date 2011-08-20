@@ -1,4 +1,4 @@
-# Copyright (C) 2008 The Android Open Source Project
+# Copyright (C) 2011 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,16 +18,12 @@ include $(CLEAR_VARS)
 copy_from :=                \
     DroidSans.ttf           \
     DroidSans-Bold.ttf      \
-    DroidSansArabic.ttf     \
-    DroidSansHebrew.ttf     \
-    DroidSansThai.ttf       \
     DroidSerif-Regular.ttf  \
     DroidSerif-Bold.ttf     \
     DroidSerif-Italic.ttf   \
     DroidSerif-BoldItalic.ttf   \
     DroidSansMono.ttf        \
-    Clockopia.ttf           \
-    MTLmr3m.ttf
+    Clockopia.ttf
 
 ifneq ($(NO_FALLBACK_FONT),true)
 ifeq ($(filter %system/fonts/DroidSansFallback.ttf,$(PRODUCT_COPY_FILES)),)

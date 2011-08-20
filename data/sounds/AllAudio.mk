@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009 The Android Open Source Project
+# Copyright (C) 2011 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,3 @@
 #
 
 $(call inherit-product, frameworks/base/data/sounds/OriginalAudio.mk)
-$(call inherit-product, frameworks/base/data/sounds/AudioPackage2.mk)
-$(call inherit-product, frameworks/base/data/sounds/AudioPackage3.mk)
-$(call inherit-product, frameworks/base/data/sounds/AudioPackage4.mk)
-$(call inherit-product, frameworks/base/data/sounds/AudioPackage5.mk)
