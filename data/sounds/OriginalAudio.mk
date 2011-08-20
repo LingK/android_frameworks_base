@@ -105,7 +105,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/ringtones/BeatPlucker.ogg:system/media/audio/ringtones/BeatPlucker.ogg \
     $(LOCAL_PATH)/ringtones/Bell_Synthetic.ogg:system/media/audio/ringtones/Bell_Synthetic.ogg \
 	$(LOCAL_PATH)/ringtones/BentleyDubs.ogg:system/media/audio/ringtones/BentleyDubs.ogg \
-	$(LOCAL_PATH)/ringtones/BigEasy.ogg:system/media/audio/ringtones/BigEasy.ogg \
+	$(LOCAL_PATH)/ringtones/Big_Easy.ogg:system/media/audio/ringtones/Big_Easy.ogg \
     $(LOCAL_PATH)/ringtones/BirdLoop.ogg:system/media/audio/ringtones/BirdLoop.ogg \
     $(LOCAL_PATH)/ringtones/Bollywood.ogg:system/media/audio/ringtones/Bollywood.ogg \
     $(LOCAL_PATH)/ringtones/Bootes.ogg:system/media/audio/ringtones/Bootes.ogg \
