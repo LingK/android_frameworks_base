@@ -23,6 +23,10 @@ import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import java.lang.ref.WeakReference;
 
+/**
+* This class override the glow effect color used at the edges of scrollable widgets.
+* @hide
+*/
 public class OverscrollEdge extends EdgeGlow{
     WeakReference<Context> mContext;
     int mOverscrollColor;

@@ -1275,10 +1275,9 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
 
         mOverscrollMax = (b - t) / getOverscrollWeight();
 
-        mOverscrollEffect = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.OVERSCROLL_EFFECT, OVER_SCROLL_SETTING_EDGEGLOW);
-
-        if (mOverscrollEffect != 0 && mOverscrollEffect != 3){
+        if ((mOverScrollEffect == OVER_SCROLL_SETTING_EDGEGLOW ||
+                mOverScrollEffect == OVER_SCROLL_SETTING_BOUNCEGLOW)&&
+                (getOverScrollMode() != OVER_SCROLL_NEVER)){
             mEdgeGlowTop.updateOverscroll();
             mEdgeGlowBottom.updateOverscroll();
         }

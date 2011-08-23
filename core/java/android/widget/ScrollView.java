@@ -1308,10 +1308,12 @@ public class ScrollView extends FrameLayout {
                 scrollToChild(mChildToScrollTo);
         }
         mChildToScrollTo = null;
-
-        mEdgeGlowTop.updateOverscroll();
-        mEdgeGlowBottom.updateOverscroll();
-
+        if ((mOverScrollEffect == OVER_SCROLL_SETTING_EDGEGLOW ||
+                mOverScrollEffect == OVER_SCROLL_SETTING_BOUNCEGLOW)&&
+                (getOverScrollMode() != OVER_SCROLL_NEVER)){
+            mEdgeGlowTop.updateOverscroll();
+            mEdgeGlowBottom.updateOverscroll();
+        }
         // Calling this with the present values causes it to re-clam them
         scrollTo(mScrollX, mScrollY);
     }
