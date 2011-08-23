@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Interpolator;
@@ -39,7 +38,6 @@ import android.graphics.Region;
 import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -48,7 +46,6 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Config;
 import android.util.EventLog;
@@ -67,6 +64,7 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.OverscrollEdge;
 import android.widget.ScrollBarDrawable;
 
 import java.lang.ref.SoftReference;
@@ -1867,11 +1865,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
     private int mDrawingCacheBackgroundColor = 0;
 
     /**
-     * Delegates whether to allow/disallow overscroll glow
-     */
-    private static int mOverscrollEffect;
-
-    /**
      * Special tree observer used when mAttachInfo is null.
      */
     private ViewTreeObserver mFloatingTreeObserver;
@@ -2252,10 +2245,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
         mScrollCache.fadingEdgeLength = a.getDimensionPixelSize(
                 R.styleable.View_fadingEdgeLength,
                 ViewConfiguration.get(mContext).getScaledFadingEdgeLength());
-    }
-
-    public static int getOverscrollEffect() {
-        return mOverscrollEffect;
     }
 
     /**
@@ -6110,7 +6099,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      * @see #onAttachedToWindow()
      */
     protected void onDetachedFromWindow() {
-        mContext.getContentResolver().unregisterContentObserver(mContentObserverEffect);
         mPrivateFlags &= ~CANCEL_NEXT_UP_EVENT;
         removeUnsetPressCallback();
         removeLongPressCallback();
@@ -8835,14 +8823,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
         return factory.inflate(resource, root);
     }
 
-    private ContentObserver mContentObserverEffect = new ContentObserver(this.getHandler()) {
-        @Override
-        public void onChange(boolean selfChange) {
-            mOverscrollEffect = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.OVERSCROLL_EFFECT, View.OVER_SCROLL_SETTING_EDGEGLOW);
-        }
-    };
-
     /**
      * Scroll the view with standard behavior for scrolling beyond the normal
      * content boundaries. Views that call this method should override
@@ -8942,7 +8922,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      * @return This view's over-scroll mode.
      */
     public int getOverScrollMode() {
-        if (mOverscrollEffect <= 0) {
+        final int overScrollEffect = OverscrollEdge.getOverscrollEffect();
+        if (overScrollEffect <= 0) {
             /* Disabled */
             return OVER_SCROLL_NEVER;
         } else if ( mOverScrollMode != OVER_SCROLL_ALWAYS &&
@@ -8965,9 +8946,6 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
      * @param overScrollMode The new over-scroll mode for this view.
      */
     public void setOverScrollMode(int overScrollMode) {
-        Uri uri = Settings.System.getUriFor(Settings.System.OVERSCROLL_EFFECT);
-        mContext.getContentResolver().registerContentObserver(uri, true, mContentObserverEffect);
-        mContentObserverEffect.onChange(true);
         if (overScrollMode != OVER_SCROLL_ALWAYS &&
                 overScrollMode != OVER_SCROLL_IF_CONTENT_SCROLLS &&
                 overScrollMode != OVER_SCROLL_NEVER) {
