@@ -80,6 +80,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.EdgeGlow;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -1069,10 +1070,10 @@ public class WebView extends AbsoluteLayout
                 final Resources res = getContext().getResources();
                 final Drawable edge = res.getDrawable(R.drawable.overscroll_edge);
                 final Drawable glow = res.getDrawable(R.drawable.overscroll_glow);
-                mEdgeGlowTop = new OverscrollEdge(edge, glow, mContext,this.getHandler());
-                mEdgeGlowBottom = new OverscrollEdge(edge, glow, mContext,this.getHandler());
-                mEdgeGlowLeft = new OverscrollEdge(edge, glow, mContext,this.getHandler());
-                mEdgeGlowRight = new OverscrollEdge(edge, glow, mContext,this.getHandler());
+                mEdgeGlowTop = new OverscrollEdge(edge, glow, mContext);
+                mEdgeGlowBottom = new OverscrollEdge(edge, glow, mContext);
+                mEdgeGlowLeft = new OverscrollEdge(edge, glow, mContext);
+                mEdgeGlowRight = new OverscrollEdge(edge, glow, mContext);
             }
         } else {
             mEdgeGlowTop = null;
@@ -2594,6 +2595,10 @@ public class WebView extends AbsoluteLayout
     protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
             boolean clampedY) {
         mInOverScrollMode = false;
+        mEdgeGlowTop.updateOverscroll();
+        mEdgeGlowBottom.updateOverscroll();
+        mEdgeGlowLeft.updateOverscroll();
+        mEdgeGlowRight.updateOverscroll();
         int maxX = computeMaxScrollX();
         int maxY = computeMaxScrollY();
         if (maxX == 0) {
@@ -3561,12 +3566,13 @@ public class WebView extends AbsoluteLayout
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        int mOverscrollEffect = getOverscrollEffect();
-        if (mOverscrollEffect == OVER_SCROLL_SETTING_EDGEGLOW ||
-                mOverscrollEffect == OVER_SCROLL_SETTING_BOUNCEGLOW){
-            if (mEdgeGlowTop != null && drawEdgeGlows(canvas)) {
-                invalidate();
-            }
+        int mOverscrollEffect = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.OVERSCROLL_EFFECT, OVER_SCROLL_SETTING_EDGEGLOW);
+        if (mOverscrollEffect == 0 || mOverscrollEffect == 3){
+            return;
+        }
+        if (mEdgeGlowTop != null && drawEdgeGlows(canvas)) {
+            invalidate();
         }
     }
 
@@ -4517,20 +4523,12 @@ public class WebView extends AbsoluteLayout
 
     @Override
     protected void onAttachedToWindow() {
-        mEdgeGlowTop.attach();
-        mEdgeGlowBottom.attach();
-        mEdgeGlowRight.attach();
-        mEdgeGlowLeft.attach();
         super.onAttachedToWindow();
         if (hasWindowFocus()) setActive(true);
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        mEdgeGlowTop.detach();
-        mEdgeGlowBottom.detach();
-        mEdgeGlowRight.detach();
-        mEdgeGlowLeft.detach();
         clearHelpers();
         dismissZoomControl();
         if (hasWindowFocus()) setActive(false);

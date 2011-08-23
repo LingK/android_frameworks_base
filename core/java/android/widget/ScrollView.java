@@ -1284,20 +1284,6 @@ public class ScrollView extends FrameLayout {
     }    
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mEdgeGlowTop.attach();
-        mEdgeGlowBottom.attach();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mEdgeGlowTop.detach();
-        mEdgeGlowBottom.detach();
-    }
-
-    @Override
     public boolean requestChildRectangleOnScreen(View child, Rect rectangle,
             boolean immediate) {
         // offset into coordinate space of this scroll view
@@ -1322,6 +1308,9 @@ public class ScrollView extends FrameLayout {
                 scrollToChild(mChildToScrollTo);
         }
         mChildToScrollTo = null;
+
+        mEdgeGlowTop.updateOverscroll();
+        mEdgeGlowBottom.updateOverscroll();
 
         // Calling this with the present values causes it to re-clam them
         scrollTo(mScrollX, mScrollY);
@@ -1416,8 +1405,8 @@ public class ScrollView extends FrameLayout {
                 final Resources res = getContext().getResources();
                 final Drawable edge = res.getDrawable(R.drawable.overscroll_edge);
                 final Drawable glow = res.getDrawable(R.drawable.overscroll_glow);
-                mEdgeGlowTop = new OverscrollEdge(edge, glow, mContext,this.getHandler());
-                mEdgeGlowBottom = new OverscrollEdge(edge, glow, mContext,this.getHandler());
+                mEdgeGlowTop = new OverscrollEdge(edge, glow, mContext);
+                mEdgeGlowBottom = new OverscrollEdge(edge, glow, mContext);
             }
         } else {
             mEdgeGlowTop = null;
