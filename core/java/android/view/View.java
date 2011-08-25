@@ -8940,6 +8940,13 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
     }
 
     /**
+     * Returns the over-scroll effect for this view.
+     */
+    public int getOverscrollEffect(){
+        return mOverScrollEffect;
+    }
+
+    /**
      * Set the over-scroll mode for this view. Valid over-scroll modes are
      * {@link #OVER_SCROLL_ALWAYS} (default), {@link #OVER_SCROLL_IF_CONTENT_SCROLLS}
      * (allow over-scrolling only if the view content is larger than the container),
@@ -9611,6 +9618,5 @@ public class View implements Drawable.Callback, KeyEvent.Callback, Accessibility
                 host.invalidate();
             }
         }
-
     }
 }
