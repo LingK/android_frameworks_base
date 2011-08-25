@@ -46,7 +46,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -1270,6 +1269,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         }
 
         mOverScrollMode = getOverScrollMode();
+        mOverscrollEffect = getOverscrollEffect();
         layoutChildren();
         mInLayout = false;
 
@@ -1277,7 +1277,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
 
         if ((mOverScrollEffect == OVER_SCROLL_SETTING_EDGEGLOW ||
                 mOverScrollEffect == OVER_SCROLL_SETTING_BOUNCEGLOW)&&
-                (getOverScrollMode() != OVER_SCROLL_NEVER)){
+                (mOverScrollMode != OVER_SCROLL_NEVER)){
             mEdgeGlowTop.updateOverscroll();
             mEdgeGlowBottom.updateOverscroll();
         }

@@ -60,6 +60,7 @@ public class ScrollView extends FrameLayout {
 
 
     private long mLastScroll;
+    private int mOverScrollEffect;
 
     private final Rect mTempRect = new Rect();
     private OverScroller mScroller;
@@ -1302,6 +1303,7 @@ public class ScrollView extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
+        mOverScrollEffect = getOverscrollEffect();
         mIsLayoutDirty = false;
         // Give a child focus if it needs it 
         if (mChildToScrollTo != null && isViewDescendantOf(mChildToScrollTo, this)) {

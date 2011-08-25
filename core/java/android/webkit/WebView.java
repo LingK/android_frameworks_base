@@ -568,6 +568,7 @@ public class WebView extends AbsoluteLayout
     private static final int SLIDE_TITLE_DURATION = 500;   // milliseconds
     private OverScroller mScroller;
     private boolean mInOverScrollMode = false;
+    private int mOverScrollEffect;
     private static Paint mOverScrollBackground;
     private static Paint mOverScrollBorder;
 
@@ -4527,6 +4528,7 @@ public class WebView extends AbsoluteLayout
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (hasWindowFocus()) setActive(true);
+        mOverScrollEffect = getOverscrollEffect();
     }
 
     @Override
