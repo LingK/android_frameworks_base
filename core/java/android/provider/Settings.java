@@ -2785,12 +2785,6 @@ public final class Settings {
         public static final String LOCKSCREEN_ROTARY_HIDE_ARROWS = "lockscreen_rotary_hide_arrows";
 
         /**
-         * Sets the lockscreen style
-         * @hide
-         */
-        public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
-
-        /**
          * Sets the incoming call accept/reject style
          * @hide
          */
@@ -2947,7 +2941,13 @@ public final class Settings {
         public static final String LOCKSCREEN_GESTURES_COLOR = "lockscreen_gestures_color";
 
         /**
-         * Use the Notification Power Widget? (Who wouldn't!)
+         * Sets the lockscreen style
+         * @hide
+         */
+        public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
+
+        /**
+         * Use the Notification Power Widget
          *
          * @hide
          */
