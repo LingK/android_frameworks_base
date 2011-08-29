@@ -1685,13 +1685,6 @@ public final class Settings {
         public static final String VOLUME_CONTROL_SILENT = "volume_contol_silent";
 
         /**
-         * Whether to lock ringer volume changes in silent mode.
-         *
-         * @hide
-         */
-        public static final String LOCK_VOLUME_KEYS = "lock_volume_keys";
-
-        /**
          * Whether notifications should vibrate during phone calls or not.
          *
          * @hide
@@ -2792,6 +2785,12 @@ public final class Settings {
         public static final String LOCKSCREEN_ROTARY_HIDE_ARROWS = "lockscreen_rotary_hide_arrows";
 
         /**
+         * Sets the lockscreen style
+         * @hide
+         */
+        public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
+
+        /**
          * Sets the incoming call accept/reject style
          * @hide
          */
@@ -2948,13 +2947,7 @@ public final class Settings {
         public static final String LOCKSCREEN_GESTURES_COLOR = "lockscreen_gestures_color";
 
         /**
-         * Sets the lockscreen style
-         * @hide
-         */
-        public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
-
-        /**
-         * Use the Notification Power Widget
+         * Use the Notification Power Widget? (Who wouldn't!)
          *
          * @hide
          */
