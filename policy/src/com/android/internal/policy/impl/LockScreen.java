@@ -79,7 +79,8 @@ import java.net.URISyntaxException;
  * past it, as applicable.
  */
 class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateMonitor.InfoCallback,
-        KeyguardUpdateMonitor.SimStateCallback, CircularSelector.OnCircularSelectorTriggerListener, SlidingTab.OnTriggerListener, RotarySelector.OnDialTriggerListener {
+        KeyguardUpdateMonitor.SimStateCallback, CircularSelector.OnCircularSelectorTriggerListener,
+        SlidingTab.OnTriggerListener, RotarySelector.OnDialTriggerListener, OnGesturePerformedListener {
 
     private static final boolean DBG = false;
     private static final String TAG = "LockScreen";
@@ -102,12 +103,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private SlidingTab mTabSelector;
     private SlidingTab mSelector2;
     private RotarySelector mRotarySelector;
+    private CircularSelector mCircularSelector;
     private DigitalClock mClock;
     private SlidingTab mSelector;
 
-	private RotarySelector mRotarySelector;
-	private CircularSelector mCircularSelector;
-    private TextView mTime;
     private TextView mDate;
     private TextView mTime;
     private TextView mAmPm;
@@ -115,7 +114,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private TextView mStatus2;
     private TextView mScreenLocked;
     private TextView mEmergencyCallText;
-    private Button mEmergencyCallButton;
+
     private ImageButton mPlayIcon;
     private ImageButton mPauseIcon;
     private ImageButton mRewindIcon;
@@ -178,9 +177,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     private int mLockMusicHeadset = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_MUSIC_CONTROLS_HEADSET, 0));
-
-    private boolean mLockscreenShortcuts = (Settings.System.getInt(mContext.getContentResolver(),
-	    Settings.System.LOCKSCREEN_SHORTCUTS, 1) == 1);
     
     private boolean useLockMusicHeadsetWired = ((mLockMusicHeadset == 1) || (mLockMusicHeadset == 3));
     private boolean useLockMusicHeadsetBT = ((mLockMusicHeadset == 2) || (mLockMusicHeadset == 3));
@@ -188,7 +184,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
 
-<<<<<<< HEAD
     private boolean mCustomAppToggle = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_APP_TOGGLE, 0) == 1);
 
@@ -227,10 +222,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     // Custom App Drawable & Name
     private Bitmap mCustomAppIcon;
     private String mCustomAppName;
-
-    // Default to portrait
-    private boolean mLockScreenOrientationLand = (Settings.System.getInt(mContext.getContentResolver(),
-    	    Settings.System.LOCKSCREEN_ORIENTATION, Configuration.ORIENTATION_PORTRAIT) == Configuration.ORIENTATION_LANDSCAPE);
     
     /**
      * The status of this lock screen.
@@ -373,9 +364,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 				Settings.System.LOCKSCREEN_HIDE_CARRIER, 0) == 1);
 
         mEnableMenuKeyInLockScreen = shouldEnableMenuKey();
-
         mCreationOrientation = configuration.orientation;
-
         mKeyboardHidden = configuration.hardKeyboardHidden;
 
         if (LockPatternKeyguardView.DEBUG_CONFIGURATION) {
@@ -429,9 +418,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mRotarySelector.setLeftHandleResource(R.drawable.ic_jog_dial_unlock);
         mCircularSelector = (CircularSelector) findViewById(R.id.circular_selector);
         mCircularSelector.setOnCircularSelectorTriggerListener(this);
-        
-        mHideMusicControlsButton = (ImageView) findViewById(R.id.hide_music_controls_button);
-        mDisplayMusicControlsButton = (ImageView) findViewById(R.id.display_music_controls_button);
 
         mPlayIcon = (ImageButton) findViewById(R.id.musicControlPlay);
         mPauseIcon = (ImageButton) findViewById(R.id.musicControlPause);
@@ -745,7 +731,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen)
                 || (keyCode == KeyEvent.KEYCODE_MENU && mMenuUnlockScreen)
                 || (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen)) {
-
             mCallback.goToUnlockScreen();
         }
         return false;
@@ -758,58 +743,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	public void onCircularSelectorTrigger(View v, int Trigger) {
 		mCallback.goToUnlockScreen();	
 	}
-
-	 /** {@inheritDoc} */
-    public void onDialTrigger(View v, int whichHandle) {
-        boolean mUnlockTrigger=false;
-        boolean mCustomAppTrigger=false;
-
-        if(whichHandle == RotarySelector.OnDialTriggerListener.LEFT_HANDLE){
-            mUnlockTrigger=true;
-        }
-
-        if (mUnlockTrigger) {
-            mCallback.goToUnlockScreen();
-        } 
-        
-        if (whichHandle == RotarySelector.OnDialTriggerListener.RIGHT_HANDLE) {
-            toggleSilentMode();
-            updateRightTabResources();
-
-            String message = mSilentMode ? getContext().getString(
-                    R.string.global_action_silent_mode_on_status) : getContext().getString(
-                    R.string.global_action_silent_mode_off_status);
-
-            final int toastIcon = mSilentMode ? R.drawable.ic_lock_ringer_off
-                    : R.drawable.ic_lock_ringer_on;
-            final int toastColor = mSilentMode ? getContext().getResources().getColor(
-                    R.color.keyguard_text_color_soundoff) : getContext().getResources().getColor(
-                    R.color.keyguard_text_color_soundon);
-            toastMessage(mScreenLocked, message, toastColor, toastIcon);
-            mCallback.pokeWakelock();
-        }
-    }
-
-    private void toggleSilentMode() {
-        final boolean mVolumeControlSilent = Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.VOLUME_CONTROL_SILENT, 0) != 0;
-        mSilentMode = mVolumeControlSilent
-            ? ((mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) || !mSilentMode)
-            : !mSilentMode;
-        if (mSilentMode) {
-            final boolean vibe = mVolumeControlSilent
-            ? (mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE)
-            : (Settings.System.getInt(
-                getContext().getContentResolver(),
-                Settings.System.VIBRATE_IN_SILENT, 1) == 1);
-
-            mAudioManager.setRingerMode(vibe
-                ? AudioManager.RINGER_MODE_VIBRATE
-                : AudioManager.RINGER_MODE_SILENT);
-        } else {
-            mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-        }
-    }
 
     /** {@inheritDoc} */
     public void onTrigger(View v, int whichHandle) {
@@ -950,7 +883,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mShowingBatteryInfo = showBatteryInfo;
         mPluggedIn = pluggedIn;
         mBatteryLevel = batteryLevel;
-
         refreshBatteryStringAndIcon();
         updateStatusLines();
     }
@@ -1302,7 +1234,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     }
                 }
 
-                getContext().getText(R.string.lockscreen_sim_locked_message)));
+                getContext().getText(R.string.lockscreen_sim_locked_message);
                 mEmergencyCallText.setVisibility(View.GONE);
                 break;
             case SimPukLocked:
@@ -1418,14 +1350,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     void updateConfiguration() {
         Configuration newConfig = getResources().getConfiguration();
-        
-        Log.d(TAG, "Update configuration is: " + newConfig.toString());
-        if(mLockScreenOrientationLand){
-        	newConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        	Log.d(TAG, "Update configuration is now: " + newConfig.toString());
-        }
-
-        if (newConfig.orientation != mCreationOrientation ) {
+        if (newConfig.orientation != mCreationOrientation) {
             mCallback.recreateMe(newConfig);
         } else if (newConfig.hardKeyboardHidden != mKeyboardHidden) {
             mKeyboardHidden = newConfig.hardKeyboardHidden;
@@ -1618,7 +1543,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mCarrier.setVisibility(visibility);
         mNowPlaying.setVisibility(visibility);
         mAlbumArt.setVisibility(visibility);
-
         if (DateFormat.is24HourFormat(mContext))
             mAmPm.setVisibility(View.INVISIBLE);
 
