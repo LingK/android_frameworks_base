@@ -1,5 +1,5 @@
 /*
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.media.AudioSystem;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -1167,8 +1168,6 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     protected boolean onKeyDown(int featureId, int keyCode, KeyEvent event) {
         final KeyEvent.DispatcherState dispatcher =
                 mDecor != null ? mDecor.getKeyDispatcherState() : null;
-        //Log.i(TAG, "Key down: repeat=" + event.getRepeatCount()
-        //        + " flags=0x" + Integer.toHexString(event.getFlags()));
         
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
@@ -1177,19 +1176,32 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                         Context.AUDIO_SERVICE);
                 if (audioManager != null) {
                     /*
-                     * Adjust the volume in on key down since it is more
-                     * responsive to the user.
+                     * Adjust the volume in on key down
+                     * since it is more responsive to the user.
+                     * (if volume key lock condition unsatisfied)
                      */
-                    audioManager.adjustSuggestedStreamVolume(
-                            keyCode == KeyEvent.KEYCODE_VOLUME_UP
-                                    ? AudioManager.ADJUST_RAISE
-                                    : AudioManager.ADJUST_LOWER,
-                            mVolumeControlStreamType,
-                            AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+                    boolean lockVolumeKeys = Settings.System.getInt(getContext().getContentResolver(),
+                            Settings.System.LOCK_VOLUME_KEYS, 0) == 1;
+                    /*
+                     * Volume key lock condition -
+                     * lockVolumeKeys is true, phone is in silent mode
+                     * and stream to be adjusted is the ringer.
+                     */
+                    if (!(lockVolumeKeys &&
+                          audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL &&
+                          !(AudioSystem.getForceUse(AudioSystem.FOR_COMMUNICATION) == AudioSystem.FORCE_BT_SCO ||
+                            AudioSystem.isStreamActive(AudioSystem.STREAM_VOICE_CALL) ||
+                            AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC)))) {
+                        audioManager.adjustSuggestedStreamVolume(
+                                keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                                        ? AudioManager.ADJUST_RAISE
+                                        : AudioManager.ADJUST_LOWER,
+                                mVolumeControlStreamType,
+                                AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+                    }
                 }
                 return true;
             }
-
 
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 /* Suppress PLAYPAUSE toggle when phone is ringing or in-call
@@ -1314,7 +1326,6 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 break;
             }
         }
-
         return false;
     }
 
