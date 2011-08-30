@@ -440,7 +440,7 @@ public class StatusBarPolicy {
               R.drawable.stat_sys_data_fully_in_h,
               R.drawable.stat_sys_data_fully_out_h,
               R.drawable.stat_sys_data_fully_inandout_h }
-    };
+        };
     //CDMA
     // Use 3G icons for EVDO data and 1x icons for 1XRTT data
     private static final int[][] sDataNetType_1x = {
@@ -452,8 +452,7 @@ public class StatusBarPolicy {
               R.drawable.stat_sys_data_fully_in_1x,
               R.drawable.stat_sys_data_fully_out_1x,
               R.drawable.stat_sys_data_fully_inandout_1x }
-            };
-
+        };
     //4G icon for LTE
     private static final int[][] sDataNetType_lte = {
          { R.drawable.stat_sys_data_connected_4g,
@@ -464,20 +463,7 @@ public class StatusBarPolicy {
            R.drawable.stat_sys_data_fully_in_4g,
            R.drawable.stat_sys_data_fully_out_4g,
            R.drawable.stat_sys_data_fully_inandout_4g },
-         };
-
-    //LTE, + stuff like HSPAP+, which is still
-    //3.5G but carriers like to pretend it's 4G
-    private static final int[][] sDataNetType_4g = {
-            { R.drawable.stat_sys_data_connected_4g,
-              R.drawable.stat_sys_data_in_4g,
-              R.drawable.stat_sys_data_out_4g,
-              R.drawable.stat_sys_data_inandout_4g },
-            { R.drawable.stat_sys_data_fully_connected_4g,
-              R.drawable.stat_sys_data_fully_in_4g,
-              R.drawable.stat_sys_data_fully_out_4g,
-              R.drawable.stat_sys_data_fully_inandout_4g }
-    };
+        };
 
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
@@ -1485,8 +1471,6 @@ public class StatusBarPolicy {
             break;
         case TelephonyManager.NETWORK_TYPE_LTE:
             mDataIconList = sDataNetType_lte[mInetCondition];
-        case TelephonyManager.NETWORK_TYPE_HSPAP:
-            mDataIconList = sDataNetType_4g[mInetCondition];
             break;
         default:
             mDataIconList = sDataNetType_g[mInetCondition];
