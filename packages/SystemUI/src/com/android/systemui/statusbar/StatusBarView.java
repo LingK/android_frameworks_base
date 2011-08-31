@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,33 +40,20 @@ public class StatusBarView extends FrameLayout {
     private static final String TAG = "StatusBarView";
 
     static final int DIM_ANIM_TIME = 400;
-
     StatusBarService mService;
-
     boolean mTracking;
-
     int mStartX, mStartY;
-
     ViewGroup mNotificationIcons;
-
     ViewGroup mStatusIcons;
-
     View mDate;
-
     FixedSizeDrawable mBackground;
-
     View mBatteryIndicator;
-
     View mBatteryChargingIndicator;
-
     boolean mScreenOn = true;
-
     private boolean mAttached = false;
-
     Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
-
         public SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -82,12 +68,10 @@ public class StatusBarView extends FrameLayout {
         public void onChange(boolean selfChange) {
             updateSettings();
         }
-
     }
 
     public StatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         mHandler = new Handler();
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observer();
@@ -99,11 +83,9 @@ public class StatusBarView extends FrameLayout {
         mNotificationIcons = (ViewGroup)findViewById(R.id.notificationIcons);
         mStatusIcons = (ViewGroup)findViewById(R.id.statusIcons);
         mDate = findViewById(R.id.date);
-
         mBackground = new FixedSizeDrawable(mDate.getBackground());
         mBackground.setFixedBounds(0, 0, 0, 0);
         mDate.setBackgroundDrawable(mBackground);
-
         mBatteryIndicator = findViewById(R.id.battery_indicator);
         mBatteryChargingIndicator = findViewById(R.id.battery_indicator_charging);
     }
@@ -149,8 +131,6 @@ public class StatusBarView extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-
-        // put the date date view quantized to the icons
         int oldDateRight = mDate.getRight();
         int newDateRight;
 
@@ -179,7 +159,6 @@ public class StatusBarView extends FrameLayout {
                 Settings.System.STATUS_BAR_CM_BATTERY, 0) == 2);
         if (batteryBar) {
             mBatteryIndicator.setVisibility(VISIBLE);
-
             Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null,
                     new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
             int level = batteryIntent.getIntExtra("level", 0);
@@ -199,7 +178,6 @@ public class StatusBarView extends FrameLayout {
                 mBatteryChargingIndicator.setBackgroundColor(0xFF33CC33);
                 int chargingWidth = Math.min(5, ((r-l) * (100 - level)) / 2);
                 mBatteryChargingIndicator.layout(r, t, (r + chargingWidth), t + 2);
-
                 Animation a = new TranslateAnimation(0, (float) level - (r-l), 0, 0);
                 a.setInterpolator(new AccelerateInterpolator());
                 a.setDuration(2000);
@@ -262,7 +240,6 @@ public class StatusBarView extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent event, boolean skipService){
         if(skipService)
             return super.onInterceptTouchEvent(event);
-
         return mService.interceptTouchEvent(event)
                     ? true : super.onInterceptTouchEvent(event);
     }
