@@ -2259,10 +2259,21 @@ public final class Settings {
         public static final String LOCK_MMS_IN_MEMORY = "lock_mms_in_memory";
 
         /**
-         * Whether to show the CM battery percentage implementation instead
-         * of the stock battery icon
+         * Display style of AM/PM next to clock in status bar
+         * 0: Normal display (Eclair stock)
+         * 1: Small display (Froyo stock)
+         * 2: No display (Gingerbread stock)
+         * default: 2
+         * @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
+
+        /**
+         * Whether to show the CM battery percentage implementation or
+         * battery bar instead of the stock battery icon
          * 0: don't show / show stock icon instead
-         * 1: show cm battery / dont show stock icon
+         * 1: show cm battery / don't show stock icon
+         * 2: show battery bar / don't show cm battery or stock icon
          * default: 0
          * @hide
          */
