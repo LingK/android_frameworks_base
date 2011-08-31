@@ -2466,16 +2466,6 @@ public final class Settings {
         public static final String CARRIER_LABEL_CUSTOM_STRING = "carrier_label_custom_string";
 
         /**
-         * Display style of AM/PM next to clock in status bar
-         * 0: Normal display (Eclair stock)
-         * 1: Small display (Froyo stock)
-         * 2: No display (Gingerbread stock)
-         * default: 2
-         * @hide
-         */
-        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
-
-        /**
          * Whether to show the signal text or signal bars.
          * default: 0
          * 0: show signal bars
