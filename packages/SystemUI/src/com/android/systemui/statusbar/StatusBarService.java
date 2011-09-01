@@ -574,7 +574,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         if (mCompactCarrier) {
             mCarrierLabelLayout.setVisibility(View.GONE);
             if (mBottomBar)
-                mCompactCarrierLayout.setVisibility(View.VISIBLE);
+                mCompactCarrierLayout.setVisibility(View.GONE);
             if (mLatest.hasClearableItems())
                 mCompactClearButton.setVisibility(View.VISIBLE);
         } else {
