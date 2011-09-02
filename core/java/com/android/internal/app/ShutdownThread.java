@@ -113,10 +113,7 @@ public final class ShutdownThread extends Thread {
 
                                 String actions[] = context.getResources().getStringArray
                                     (com.android.internal.R.array.shutdown_reboot_actions);
-                                                      
-                                if (actions == "hotreboot" && which < actions.length)
-                                    rebootOrShutdown(true, "pkill sys");
-                    
+
                                 if (actions != null && which < actions.length)
                                     mRebootReason = actions[which];
                             }
