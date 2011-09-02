@@ -1,23 +1,45 @@
+/*
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package android.app;
 
-import java.io.IOException;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.location.LocationManager;
+import android.net.wifi.WifiManager;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.provider.Settings;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.io.IOException;
 
 /** @hide */
-public class ConnectionSettings implements Parcelable{
+public class ConnectionSettings implements Parcelable {
 
     int connectionId;
-
     int value;
-
     boolean override;
+    public static final int PROFILE_CONNECTION_WIFI = 1;
+    public static final int PROFILE_CONNECTION_WIFIAP = 2;
+    public static final int PROFILE_CONNECTION_WIMAX = 3;
+    public static final int PROFILE_CONNECTION_GPS = 4;
+    public static final int PROFILE_CONNECTION_BLUETOOTH = 7;
 
     /** @hide */
     public static final Parcelable.Creator<ConnectionSettings> CREATOR = new Parcelable.Creator<ConnectionSettings>() {
@@ -31,15 +53,12 @@ public class ConnectionSettings implements Parcelable{
         }
     };
 
-
-    public ConnectionSettings(Parcel parcel){
+    public ConnectionSettings(Parcel parcel) {
         readFromParcel(parcel);
     }
 
     public ConnectionSettings(int connectionId) {
-        this.connectionId = connectionId;
-        this.value = 0;
-        this.override = false;
+        this(connectionId, 0, false);
     }
 
     public ConnectionSettings(int connectionId, int value, boolean override) {
@@ -68,6 +87,50 @@ public class ConnectionSettings implements Parcelable{
         return override;
     }
 
+    public void processOverride(Context context) {
+        BluetoothAdapter bta = BluetoothAdapter.getDefaultAdapter();
+        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        switch (getConnectionId()) {
+            case PROFILE_CONNECTION_BLUETOOTH:
+                if (getValue() == 1) {
+                    bta.enable();
+                } else {
+                    bta.disable();
+                }
+                break;
+            case PROFILE_CONNECTION_GPS:
+                if (getValue() == 1) {
+                    Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, true);
+                } else {
+                    Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, false);
+                }
+                break;
+            case PROFILE_CONNECTION_WIFI:
+                if (getValue() == 1) {
+                    int wifiApState = wm.getWifiApState();
+                    if ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) || (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED)) {
+                        wm.setWifiApEnabled(null, false);
+                    }
+                    wm.setWifiEnabled(true);
+                } else {
+                    wm.setWifiEnabled(false);
+                }
+                break;
+            case PROFILE_CONNECTION_WIFIAP:
+                if (getValue() == 1) {
+                    int wifiState = wm.getWifiState();
+                    if ((wifiState == WifiManager.WIFI_STATE_ENABLING) || (wifiState == WifiManager.WIFI_STATE_ENABLED)) {
+                        wm.setWifiEnabled(false);
+                    }
+                    wm.setWifiApEnabled(null, true);
+                } else {
+                    wm.setWifiApEnabled(null, false);
+                }
+                break;
+            default: break;
+        }
+    }
+
     /** @hide */
     public static ConnectionSettings fromXml(XmlPullParser xpp, Context context)
             throws XmlPullParserException, IOException {
@@ -91,11 +154,13 @@ public class ConnectionSettings implements Parcelable{
 
     /** @hide */
     public void getXmlString(StringBuilder builder) {
-        builder.append("<connectionDescriptor>\n");
-        builder.append("<connectionId>" + connectionId + "</connectionId>\n");
-        builder.append("<value>" + value + "</value>\n");
-        builder.append("<override>" + override + "</override>\n");
-        builder.append("</connectionDescriptor>\n");
+        builder.append("<connectionDescriptor>\n<connectionId>");
+        builder.append(connectionId);
+        builder.append("</connectionId>\n<value>");
+        builder.append(value);
+        builder.append("</value>\n<override>");
+        builder.append(override);
+        builder.append("</override>\n</connectionDescriptor>\n");
     }
 
     @Override
@@ -107,16 +172,14 @@ public class ConnectionSettings implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(connectionId);
-        dest.writeValue(override);
+        dest.writeInt(override ? 1 : 0);
         dest.writeInt(value);
     }
 
     /** @hide */
     public void readFromParcel(Parcel in) {
         connectionId = in.readInt();
-        override = (Boolean)in.readValue(null);
+        override = in.readInt() != 0;
         value = in.readInt();
     }
-
-
 }
