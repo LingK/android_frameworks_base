@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ public final class ShutdownThread extends Thread {
     private PowerManager.WakeLock mCpuWakeLock;
     private PowerManager.WakeLock mScreenWakeLock;
     private Handler mHandler;
+    private boolean mRilShutdown = SystemProperties.getBoolean("ro.ril.shutdown",false);
     
     private ShutdownThread() {
     }
@@ -111,8 +112,12 @@ public final class ShutdownThread extends Thread {
                                 if (which < 0)
                                     return;
 
-                                String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
-
+                                String actions[] = context.getResources().getStringArray
+                                    (com.android.internal.R.array.shutdown_reboot_actions);
+                                                      
+                                if (actions == "hotreboot" && which < actions.length)
+                                    rebootOrShutdown(true, "pkill sys");
+                    
                                 if (actions != null && which < actions.length)
                                     mRebootReason = actions[which];
                             }
@@ -342,7 +347,7 @@ public final class ShutdownThread extends Thread {
 
         Log.i(TAG, "Waiting for Bluetooth and Radio...");
         
-        // Wait a max of 32 seconds for clean shutdown
+        // Wait a max of 8 seconds for clean shutdown
         for (int i = 0; i < MAX_NUM_PHONE_STATE_READS; i++) {
             if (!bluetoothOff) {
                 try {
@@ -366,6 +371,16 @@ public final class ShutdownThread extends Thread {
                 break;
             }
             SystemClock.sleep(PHONE_STATE_POLL_SLEEP_MSEC);
+        }
+
+        // Send power off command to RIL
+        if (mRilShutdown) {
+            try {
+                Log.w(TAG, "Sending ril power off ...");
+                phone.setRilPowerOff();
+            } catch (RemoteException ex) {
+                Log.e(TAG, "RemoteException during Phone Power-off", ex);
+            }
         }
 
         // Shutdown MountService to ensure media is in a safe state
