@@ -2583,7 +2583,13 @@ public final class Settings {
         public static final String COLOR_NOTIFICATION_ITEM_TIME = "color_notification_item_time";
 
         /**
-         * Whether to wake the screen with the volume keys
+         * Whether to unlock the screen with the slide-out keyboard. The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String SLIDER_UNLOCK_SCREEN = "slider_unlock_screen";
+
+        /**
+         * Whether to wake the screen with the volume keys. The value is boolean (1 or 0).
          * @hide
          */
         public static final String VOLUME_WAKE_SCREEN = "volume_wake_screen";
