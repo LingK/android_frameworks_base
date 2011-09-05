@@ -417,6 +417,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             } catch (URISyntaxException e) {
             }
         }
+
         if (mCustomAppIcon == null)
             mCustomAppIcon=BitmapFactory.decodeResource(getContext().
                         getResources(), R.drawable.ic_jog_dial_custom);
@@ -444,6 +445,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             public void onClick(View v) {
                 mCallback.pokeWakelock();
                 refreshMusicStatus();
+
                 if (!am.isMusicActive()) {
                     mPauseIcon.setVisibility(View.VISIBLE);
                     mPlayIcon.setVisibility(View.GONE);
@@ -458,6 +460,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             public void onClick(View v) {
                 mCallback.pokeWakelock();
                 refreshMusicStatus();
+
                 if (am.isMusicActive()) {
                     mPlayIcon.setVisibility(View.VISIBLE);
                     mPauseIcon.setVisibility(View.GONE);
@@ -1067,28 +1070,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
                 mScreenLocked.setText("");
                 mScreenLocked.setVisibility(View.VISIBLE);
-
-                if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
-                    mRotarySelector.setVisibility(View.VISIBLE);
-                    mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
-                    mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
-                    mTabSelector.setVisibility(View.GONE);
-
-                    if (mSelector2 != null) {
-                        mSelector2.setVisibility(View.GONE);
-                    }
-                } else {
-                    mRotarySelector.setVisibility(View.GONE);
-                    mTabSelector.setVisibility(View.VISIBLE);
-
-                    if (mSelector2 != null) {
-                        if (mCustomAppToggle) {
-                            mSelector2.setVisibility(View.VISIBLE);
-                        } else {
-                            mSelector2.setVisibility(View.GONE);
-                        }
-                    }
-                }
+                findLockView();
 
                 mEmergencyCallText.setVisibility(View.GONE);
                 break;
@@ -1102,28 +1084,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
                 mScreenLocked.setText(R.string.lockscreen_instructions_when_pattern_disabled);
                 mScreenLocked.setVisibility(View.VISIBLE);
-
-                if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
-                    mRotarySelector.setVisibility(View.VISIBLE);
-                    mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
-                    mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
-                    mTabSelector.setVisibility(View.GONE);
-
-                    if (mSelector2 != null) {
-                        mSelector2.setVisibility(View.GONE);
-                    }
-                } else {
-                    mRotarySelector.setVisibility(View.GONE);
-                    mTabSelector.setVisibility(View.VISIBLE);
-
-                    if (mSelector2 != null) {
-                        if (mCustomAppToggle) {
-                            mSelector2.setVisibility(View.VISIBLE);
-                        } else {
-                            mSelector2.setVisibility(View.GONE);
-                        }
-                    }
-                }
+                findLockView();
 
                 mEmergencyCallText.setVisibility(View.GONE);
                 break;
@@ -1131,26 +1092,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mCarrier.setText(R.string.lockscreen_missing_sim_message_short);
                 mScreenLocked.setText(R.string.lockscreen_missing_sim_instructions);
                 mScreenLocked.setVisibility(View.VISIBLE);
-
-                if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
-                    mRotarySelector.setVisibility(View.VISIBLE);
-                    mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
-                    mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
-                    mTabSelector.setVisibility(View.GONE);
-                    if (mSelector2 != null) {
-                        mSelector2.setVisibility(View.GONE);
-                    }
-                } else {
-                    mRotarySelector.setVisibility(View.GONE);
-                    mTabSelector.setVisibility(View.VISIBLE);
-                    if (mSelector2 != null) {
-                        if (mCustomAppToggle) {
-                            mSelector2.setVisibility(View.VISIBLE);
-                        } else {
-                            mSelector2.setVisibility(View.GONE);
-                        }
-                    }
-                }
+                findLockView();
 
                 mEmergencyCallText.setVisibility(View.VISIBLE);
                 break;
@@ -1164,12 +1106,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
                 mScreenLocked.setText(R.string.lockscreen_missing_sim_instructions);
                 mScreenLocked.setVisibility(View.VISIBLE);
-                mRotarySelector.setVisibility(View.GONE);
-                mTabSelector.setVisibility(View.GONE);
-
-                if (mSelector2 != null) {
-                    mSelector2.setVisibility(View.GONE);
-                }
+                resetLockView();
 
                 mEmergencyCallText.setVisibility(View.VISIBLE);
                 mEmergencyCallButton.setVisibility(View.VISIBLE);
@@ -1183,28 +1120,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                                 ""));
 
                 mScreenLocked.setVisibility(View.INVISIBLE);
-
-                if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
-                    mRotarySelector.setVisibility(View.VISIBLE);
-                    mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
-                    mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
-                    mTabSelector.setVisibility(View.GONE);
-
-                    if (mSelector2 != null) {
-                        mSelector2.setVisibility(View.GONE);
-                    }
-                } else {
-                    mRotarySelector.setVisibility(View.GONE);
-                    mTabSelector.setVisibility(View.VISIBLE);
-
-                    if (mSelector2 != null) {
-                        if (mCustomAppToggle) {
-                            mSelector2.setVisibility(View.VISIBLE);
-                        } else {
-                            mSelector2.setVisibility(View.GONE);
-                        }
-                    }
-                }
+                findLockView();
 
                 mEmergencyCallText.setVisibility(View.GONE);
                 break;
@@ -1218,12 +1134,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
                 mScreenLocked.setText(R.string.lockscreen_sim_puk_locked_instructions);
                 mScreenLocked.setVisibility(View.VISIBLE);
-                mRotarySelector.setVisibility(View.GONE);
-                mTabSelector.setVisibility(View.GONE);
-
-                if (mSelector2 != null) {
-                     mSelector2.setVisibility(View.GONE);
-                }
+                resetLockView();
 
                 mEmergencyCallText.setVisibility(View.VISIBLE);
                 mEmergencyCallButton.setVisibility(View.VISIBLE);
@@ -1231,9 +1142,42 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
 
         if (mHideUnlockTab) {
-            mRotarySelector.setVisibility(View.GONE);
-            mTabSelector.setVisibility(View.GONE);
+            resetLockView();
         }
+    }
+
+    private void findLockView() {
+        if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
+            mTabSelector.setVisibility(View.GONE);
+            mRotarySelector.setVisibility(View.VISIBLE);
+            mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
+            mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
+
+            if (mSelector2 != null)
+                mSelector2.setVisibility(View.GONE);
+        } else {
+            mRotarySelector.setVisibility(View.GONE);
+            mTabSelector.setVisibility(View.VISIBLE);
+
+            if (mSelector2 != null) {
+                if (mCustomAppToggle) {
+                    mSelector2.setVisibility(View.VISIBLE);
+                } else {
+                    mSelector2.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    private void resetLockView() {
+        if (mTabSelector != null)
+            mTabSelector.setVisibility(View.GONE);
+
+        if (mSelector2 != null)
+            mSelector2.setVisibility(View.GONE);
+
+        if (mRotarySelector != null)
+            mRotarySelector.setVisibility(View.GONE);
     }
 
     static CharSequence getCarrierString(CharSequence telephonyPlmn, CharSequence telephonySpn, int carrierLabelType, String carrierLabelCustom) {
@@ -1422,6 +1366,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             if (song_id >= 0) {
                 return getArtworkUriFromFile(context, song_id, -1);
             }
+
             return null;
         }
 
@@ -1492,6 +1437,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_NOW_PLAYING, 1) == 1))
             mNowPlayingToggle = true;
+
         if (visibility == View.VISIBLE
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
