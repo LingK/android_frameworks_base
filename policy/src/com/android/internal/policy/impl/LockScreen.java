@@ -110,14 +110,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private TextView mAmPm;
     private TextView mStatus1;
     private TextView mStatus2;
-    private DigitalClock mClock;
-    private TextView mScreenLocked;
-
-    private TextView mDate;
-    private TextView mTime;
-    private TextView mAmPm;
-    private TextView mStatus1;
-    private TextView mStatus2;
     private TextView mScreenLocked;
     private TextView mEmergencyCallText;
 
