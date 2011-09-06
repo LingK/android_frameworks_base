@@ -19,6 +19,7 @@ package com.android.internal.policy.impl;
 import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.DigitalClock;
+import com.android.internal.widget.CircularSelector;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.RotarySelector;
 import com.android.internal.widget.SlidingTab;
@@ -79,8 +80,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
  * past it, as applicable.
  */
 class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateMonitor.InfoCallback,
-        KeyguardUpdateMonitor.SimStateCallback, SlidingTab.OnTriggerListener, RotarySelector.OnDialTriggerListener,
-        OnGesturePerformedListener{
+        KeyguardUpdateMonitor.SimStateCallback, CircularSelector.OnCircularSelectorTriggerListener,
+        SlidingTab.OnTriggerListener, RotarySelector.OnDialTriggerListener, OnGesturePerformedListener{
 
     private static final boolean DBG = false;
     private static final String TAG = "LockScreen";
@@ -91,8 +92,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private static final int CARRIER_TYPE_PLMN = 2;
     private static final int CARRIER_TYPE_CUSTOM = 3;
 
-    private CharSequence DEFAULT_PLMN = mContext.getResources().getText(
-            R.string.lockscreen_carrier_default);
+    private CharSequence DEFAULT_PLMN = mContext.getResources()
+            .getText(R.string.lockscreen_carrier_default);
 
     private Status mStatus = Status.Normal;
     private LockPatternUtils mLockPatternUtils;
@@ -102,16 +103,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private SlidingTab mTabSelector;
     private SlidingTab mSelector2;
     private RotarySelector mRotarySelector;
+	private CircularSelector mCircularSelector;
 
-    private TextView mDate;
-    private TextView mTime;
-    private TextView mAmPm;
-    private TextView mStatus1;
-    private TextView mStatus2;
-    private TextView mScreenLocked;
-    private TextView mEmergencyCallText;
-
-    private DigitalClock mClock;
     private TextView mDate;
     private TextView mTime;
     private TextView mAmPm;
@@ -147,9 +140,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     // last known plugged in state
     private boolean mPluggedIn = false;
 
-    // last known battery level
     private int mBatteryLevel = 100;
-
     private String mNextAlarm = null;
     private Drawable mAlarmIcon = null;
     private String mCharging = null;
@@ -209,7 +200,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
 
     private int mLockscreenStyle = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_STYLE_PREF, 3));
+            Settings.System.LOCKSCREEN_STYLE_PREF, 5));
 
     private int mCustomIconStyle = Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_ICON_STYLE, 1);
@@ -232,6 +223,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mUseRotaryLockscreen = (mLockscreenStyle == 2);
     private boolean mUseRotaryRevLockscreen = (mLockscreenStyle == 3);
     private boolean mUseLenseSquareLockscreen = (mLockscreenStyle == 4);
+    private boolean mUseCircularLockscreen = (mLockscreenStyle == 5);   
 
     private boolean mLensePortrait = false;
     private double mGestureSensitivity;
@@ -372,8 +364,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
      * @param callback Used to communicate back to the host keyguard view.
      */
     LockScreen(Context context, Configuration configuration, LockPatternUtils lockPatternUtils,
-            KeyguardUpdateMonitor updateMonitor,
-            KeyguardScreenCallback callback) {
+            KeyguardUpdateMonitor updateMonitor, KeyguardScreenCallback callback) {
         super(context);
 
         mLockPatternUtils = lockPatternUtils;
@@ -394,7 +385,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
 
         final LayoutInflater inflater = LayoutInflater.from(context);
-        if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
+        if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);    
 
         if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
             inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
@@ -437,9 +428,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         mScreenLocked = (TextView) findViewById(R.id.screenLocked);
         mRotarySelector = (RotarySelector) findViewById(R.id.rotary_selector);
+        
         mTabSelector = (SlidingTab) findViewById(R.id.tab_selector);
         mTabSelector.setHoldAfterTrigger(true, false);
         mTabSelector.setLeftHintText(R.string.lockscreen_unlock_label);
+
+        mCircularSelector = (CircularSelector) findViewById(R.id.circular_selector);
+        mCircularSelector.setOnCircularSelectorTriggerListener(this);
 
         if (mCustomAppActivity != null) {
             try {
@@ -555,7 +550,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mUpdateMonitor.registerInfoCallback(this);
         mUpdateMonitor.registerSimStateCallback(this);
-
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mSilentMode = isSilentMode();
 
@@ -646,8 +640,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         if (gestures != null) {
             if (mGestureActive) {
-                File mStoreFile = new File(Environment.getDataDirectory(),
-                        "/misc/lockscreen_gestures");
+                File mStoreFile = new File(Environment.getDataDirectory(), "/misc/lockscreen_gestures");
                 mGestureSensitivity = Settings.System.getInt(context.getContentResolver(),
                         Settings.System.LOCKSCREEN_GESTURES_SENSITIVITY, 3);
                 mLibrary = GestureLibraries.fromFile(mStoreFile);
@@ -699,7 +692,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     static void setBackground(Context bcontext, ViewGroup layout){
         String mLockBack = Settings.System.getString(bcontext
                 .getContentResolver(), Settings.System.LOCKSCREEN_BACKGROUND);
-
+        
         if (mLockBack!=null){
             if (!mLockBack.isEmpty()){
                 try {
@@ -774,6 +767,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
         return false;
     }
+
+	public void OnCircularSelectorGrabbedStateChanged(View v, int GrabState) {
+		 mCallback.pokeWakelock();		
+	}
+
+	public void onCircularSelectorTrigger(View v, int Trigger) {		
+		mCallback.goToUnlockScreen();
+	}
 
     /** {@inheritDoc} */
     public void onTrigger(View v, int whichHandle) {
@@ -883,7 +884,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         mPendingR1 = new Runnable() {
             public void run() {
-
                 textView.setText(text);
 
                 if (color != 0) {
@@ -895,6 +895,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         };
 
         textView.postDelayed(mPendingR1, 0);
+
         mPendingR2 = new Runnable() {
             public void run() {
                 textView.setText(oldText);
@@ -1072,7 +1073,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
      */
     private Status getCurrentStatus(IccCard.State simState) {
         boolean missingAndNotProvisioned = (!mUpdateMonitor.isDeviceProvisioned()
-                && simState == IccCard.State.ABSENT);
+            && simState == IccCard.State.ABSENT);
 
         if (missingAndNotProvisioned) {
             return Status.SimMissingLocked;
@@ -1151,24 +1152,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
                 mScreenLocked.setText("");
                 mScreenLocked.setVisibility(View.VISIBLE);
-
-                if (mSelector2 != null) {
-                    if (mCustomAppToggle) {
-                        mSelector2.setVisibility(View.VISIBLE);
-                    } else {
-                        mSelector2.setVisibility(View.GONE);
-                    }
-                }
-
-                if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
-                    mRotarySelector.setVisibility(View.VISIBLE);
-                    mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
-                    mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
-                    mTabSelector.setVisibility(View.GONE);
-                } else {
-                    mRotarySelector.setVisibility(View.GONE);
-                    mTabSelector.setVisibility(View.VISIBLE);
-                }
+                findLockView();
 
                 mEmergencyCallText.setVisibility(View.GONE);
                 break;
@@ -1246,61 +1230,61 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 break;
             case NetworkSubsetLocked:
                 mCarrier.setText(R.string.lockscreen_sim_network_subset_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case CorporateLocked:
                 mCarrier.setText(R.string.lockscreen_sim_corporate_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case ServiceProviderLocked:
                 mCarrier.setText(R.string.lockscreen_sim_service_provider_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case SimSimLocked:
                 mCarrier.setText(R.string.lockscreen_sim_sim_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimNetwork1Locked:
                 mCarrier.setText(R.string.lockscreen_ruim_network1_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimNetwork2Locked:
                 mCarrier.setText(R.string.lockscreen_ruim_network2_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimHrpdLocked:
                 mCarrier.setText(R.string.lockscreen_ruim_hrpd_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimCorporateLocked:
                 mCarrier.setText(R.string.lockscreen_ruim_corporate_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimServiceProviderLocked:
                 mCarrier.setText(R.string.lockscreen_ruim_service_provider_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
             case RuimRuimLocked:
                 mCarrier.setText(R.string.lockscreen_ruim_ruim_locked_message);
-                updateLayoutForPersoText();
+                updatePersoText();
                 break;
         }
 
-        if (mHideUnlockTab) {
+        if (mHideUnlockTab)
             resetLockView();
-        }
     }
 
-    private void updateLayoutForPersoText() {
+    private void updatePersoText() {
         mScreenLocked.setText(R.string.lockscreen_instructions_when_pattern_disabled);
         mScreenLocked.setVisibility(View.VISIBLE);
         mSelector2.setVisibility(View.VISIBLE);
         mEmergencyCallButton.setVisibility(View.GONE);
     }
-    
+
     private void findLockView() {
         if (mUseRotaryLockscreen || mUseRotaryRevLockscreen || mUseLenseSquareLockscreen) {
             mTabSelector.setVisibility(View.GONE);
+            mCircularSelector.setVisibility(View.GONE);
             mRotarySelector.setVisibility(View.VISIBLE);
             mRotarySelector.setRevamped(mUseRotaryRevLockscreen);
             mRotarySelector.setLenseSquare(mUseLenseSquareLockscreen);
@@ -1309,15 +1293,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mSelector2.setVisibility(View.GONE);
         } else {
             mRotarySelector.setVisibility(View.GONE);
-            mTabSelector.setVisibility(View.VISIBLE);
-
-            if (mSelector2 != null) {
-                if (mCustomAppToggle) {
-                    mSelector2.setVisibility(View.VISIBLE);
-                } else {
-                    mSelector2.setVisibility(View.GONE);
-                }
+            
+            if (mUseCircularLockscreen) {
+                mTabSelector.setVisibility(View.GONE);
+                mCircularSelector.setVisibility(View.VISIBLE);
+            } else {
+                mTabSelector.setVisibility(View.VISIBLE);
+                mCircularSelector.setVisibility(View.GONE);
             }
+
+            if (mSelector2 != null)
+                mSelector2.setVisibility(View.GONE);
         }
     }
 
@@ -1330,8 +1316,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         if (mRotarySelector != null)
             mRotarySelector.setVisibility(View.GONE);
-    }
 
+        if (mCircularSelector != null)
+            mCircularSelector.setVisibility(View.GONE);
+    }
+    
     static CharSequence getCarrierString(CharSequence telephonyPlmn, CharSequence telephonySpn, int carrierLabelType, String carrierLabelCustom) {
         switch (carrierLabelType) {
             default:
@@ -1458,10 +1447,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
             if (mSilentMode) {
                 final boolean vibe = mVolumeControlSilent
+
                 ? (mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_VIBRATE)
                 : (Settings.System.getInt(
                     getContext().getContentResolver(),
                     Settings.System.VIBRATE_IN_SILENT, 1) == 1);
+
                 mAudioManager.setRingerMode(vibe
                     ? AudioManager.RINGER_MODE_VIBRATE
                     : AudioManager.RINGER_MODE_SILENT);
@@ -1499,6 +1490,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                             long[] pattern = {
                                 0, 200
                             };
+
                             v.vibrate(pattern, -1);
                             mCallback.pokeWakelock();
                         } else {

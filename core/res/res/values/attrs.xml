@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2006 The Android Open Source Project
+<!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -2443,6 +2443,39 @@
       @hide -->
     <declare-styleable name="RotarySelector">
         <!-- Use "horizontal" or "vertical".  The default is horizontal. -->
+        <attr name="orientation" />
+    </declare-styleable>
+
+    <!-- attributes for internal rotary widget used in lock screen @hide -->
+    <declare-styleable name="CircularSelector">
+        <!-- Use "horizontal" or "vertical". The default is horizontal. -->
+        <attr name="orientation" />
+    </declare-styleable>
+
+    <declare-styleable name="ImageNotification">
+        <attr name="orientation" />
+        <attr name="notificationtext" />
+        <attr name="notificationimage" />
+    </declare-styleable>
+
+    <declare-styleable name="MusicControls">
+        <!-- Use "horizontal" or "vertical". The default is horizontal. -->
+        <attr name="orientation" />
+    </declare-styleable>
+
+    <!-- Standard orientation constant. -->
+    <attr name="notificationtext">
+        <!-- Defines an horizontal widget. -->
+        <flag name="image" value="0" />
+    </attr>
+
+    <!-- Standard orientation constant. -->
+    <attr name="notificationimage">
+        <flag name="image" value="0" />
+    </attr>
+
+    <declare-styleable name="MusicControls">
+        <!-- Use "horizontal" or "vertical". The default is horizontal. -->
         <attr name="orientation" />
     </declare-styleable>
 
