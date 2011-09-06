@@ -201,6 +201,14 @@
             android:layout_alignParentBottom="true"
             />
 
+        <com.android.internal.widget.UnlockRing
+            android:id="@+id/unlock_ring"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            />
+
         <Button
             android:id="@+id/emergencyCallButton"
             android:layout_width="wrap_content"
