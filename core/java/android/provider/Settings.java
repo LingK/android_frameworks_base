@@ -2743,7 +2743,29 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
         
-        
+        /**
+         * Contains activity of the app you want in quadrant 1
+         * @hide
+         */
+		public static String LOCKSCREEN_CUSTOM_APP_URING_1 = "lockscreen_quadrant_1_uri";
+
+        /**
+         * Contains activity of the app you want in quadrant 2
+         * @hide
+         */
+		public static String LOCKSCREEN_CUSTOM_APP_URING_2 = "lockscreen_quadrant_2_uri";
+
+        /**
+         * Contains activity of the app you want in quadrant 3
+         * @hide
+         */
+		public static String LOCKSCREEN_CUSTOM_APP_URING_3 = "lockscreen_quadrant_3_uri";
+
+        /**
+         * Contains activity of the app you want in quadrant 4
+         * @hide
+         */
+		public static String LOCKSCREEN_CUSTOM_APP_URING_4 = "lockscreen_quadrant_4_uri";
         
 		/** 
 		 * Liquid Settings (Finish)
