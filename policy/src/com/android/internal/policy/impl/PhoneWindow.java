@@ -1182,15 +1182,25 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                      */
                     boolean lockVolumeKeys = Settings.System.getInt(getContext().getContentResolver(),
                             Settings.System.LOCK_VOLUME_KEYS, 0) == 1;
+                    if (mTelephonyManager == null) {
+                        mTelephonyManager = (TelephonyManager) getContext().getSystemService(
+                                Context.TELEPHONY_SERVICE);
+                    }
                     /*
                      * Volume key lock condition -
                      * lockVolumeKeys is true, phone is in silent mode
                      * and stream to be adjusted is the ringer.
+                     * (checking for STREAM_VOICE_CALL alone doesn't
+                     * seem to suffice to see if in-call volume is active
+                     * so it also checks for CALL_STATE_OFFHOOK)
                      */
                     if (!(lockVolumeKeys &&
                           audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL &&
+                          (mVolumeControlStreamType == AudioManager.USE_DEFAULT_STREAM_TYPE ||
+                           mVolumeControlStreamType == AudioManager.STREAM_RING) &&
                           !(AudioSystem.getForceUse(AudioSystem.FOR_COMMUNICATION) == AudioSystem.FORCE_BT_SCO ||
                             AudioSystem.isStreamActive(AudioSystem.STREAM_VOICE_CALL) ||
+                            mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_OFFHOOK ||
                             AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC)))) {
                         audioManager.adjustSuggestedStreamVolume(
                                 keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -1198,6 +1208,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                                         : AudioManager.ADJUST_LOWER,
                                 mVolumeControlStreamType,
                                 AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
+                    } else {
+                        //Show volume popup to acknowledge button press and
+                        //show that volume did not change
+                        audioManager.adjustSuggestedStreamVolume(
+                                AudioManager.ADJUST_SAME,
+                                mVolumeControlStreamType,
+                                AudioManager.FLAG_SHOW_UI);
                     }
                 }
                 return true;
