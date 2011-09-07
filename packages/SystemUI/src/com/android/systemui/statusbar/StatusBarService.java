@@ -16,12 +16,16 @@
 
 package com.android.systemui.statusbar;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-			
+import com.android.internal.statusbar.IStatusBarService;
+import com.android.internal.statusbar.StatusBarIcon;
+import com.android.internal.statusbar.StatusBarIconList;
+import com.android.internal.statusbar.StatusBarNotification;
+import com.android.systemui.R;
+import com.android.systemui.statusbar.StatusBarView.SettingsObserver;
+import com.android.systemui.statusbar.powerwidget.PowerWidget;
+import com.android.systemui.statusbar.powerwidget.PowerWidgetBottom;
+
 import android.app.ActivityManagerNative;
-import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -51,6 +55,7 @@ import android.provider.CmSystem;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.util.Slog;
 import android.view.Display;
@@ -67,6 +72,7 @@ import android.view.WindowManagerImpl;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.ScrollView;
@@ -78,6 +84,10 @@ import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.powerwidget.PowerWidget;	
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class StatusBarService extends Service implements CommandQueue.Callbacks {
     private static final String DATA_TYPE_TMOBILE_STYLE = "vnd.tmobile.cursor.item/style";
@@ -131,6 +141,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     LinearLayout mNotificationLinearLayout;
     LinearLayout mBottomNotificationLinearLayout;
     View mExpandedContents;
+
     // top bar
     TextView mNoNotificationsTitle;
     TextView mClearButton;
@@ -163,6 +174,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     // the power widget
     PowerWidget mPowerWidget;
+    PowerWidgetBottom mPowerWidgetBottom;
 
     // compact carrier	
     LinearLayout mCarrierLabelLayout;
@@ -195,6 +207,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     // for disabling the status bar
     int mDisabled = 0;
+    
+    // tracking for the last visible power widget id so hide toggle works properly
+    int mLastPowerToggle = 1;
 
     // notification color default variables
     int mBlackColor = 0xff000000;
@@ -276,6 +291,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1);
             updateColors();
             updateLayout();
+            updateSettings();
             updateCarrierLabel();
         }
     }
@@ -375,12 +391,12 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new StatusBarPolicy(this);
 
-        // set up settings observer
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
-
         // load config to determine if we want statusbar buttons
         mHasSoftButtons = CmSystem.getDefaultBool(mContext, CmSystem.CM_HAS_SOFT_BUTTONS);
+        
+        mContext = getApplicationContext();
+        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
     }
 
     @Override
@@ -478,21 +494,53 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mTickerText = (TickerView)sb.findViewById(R.id.tickerText);
         mTickerText.mTicker = mTicker;
 
-        mTrackingView = (TrackingView)View.inflate(context, R.layout.status_bar_tracking, null);
+        TickerView tickerView = (TickerView) sb.findViewById(R.id.tickerText);
+        tickerView.mTicker = mTicker;
+
+        mTrackingView = (TrackingView) View.inflate(context, R.layout.status_bar_tracking, null);
         mTrackingView.mService = this;
-        mCloseView = (CloseDragHandle)mTrackingView.findViewById(R.id.close);
+        mCloseView = (CloseDragHandle) mTrackingView.findViewById(R.id.close);
         mCloseView.mService = this;
 
         mContext=context;
         updateColors();
         updateLayout();
+        updateSettings();
         updateCarrierLabel();
+
+        mPowerWidgetBottom = (PowerWidgetBottom) mTrackingView.findViewById(R.id.exp_power_stat);
+        mPowerWidgetBottom.setupSettingsObserver(mHandler);
+        mPowerWidgetBottom.setGlobalButtonOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        if(Settings.System.getInt(getContentResolver(),
+                                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1) {
+                            animateCollapse();
+                        }
+                    }
+                });
+        mPowerWidgetBottom.setGlobalButtonOnLongClickListener(new View.OnLongClickListener() {
+                   public boolean onLongClick(View v) {
+                       animateCollapse();
+                       return true;
+                   }
+               });
 
         mEdgeBorder = res.getDimensionPixelSize(R.dimen.status_bar_edge_ignore);
 
         // set the inital view visibility
         setAreThereNotifications();
         mDateView.setVisibility(View.INVISIBLE);
+    }
+    
+    private void updateSettings() {
+        int changedVal = Settings.System.getInt(getContentResolver(),
+                Settings.System.EXPANDED_VIEW_WIDGET, 0);
+
+        // check that it's not 0 to not reset the variable
+        // this should be the only place mLastPowerToggle is set
+        if (changedVal != 0) {
+            mLastPowerToggle = changedVal;
+        }
     }
 
     private void updateColors() {
@@ -595,7 +643,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         // handle expanded view reording for bottom bar
         LinearLayout powerAndCarrier=(LinearLayout)mExpandedView.findViewById(R.id.power_and_carrier);
         PowerWidget power=(PowerWidget)mExpandedView.findViewById(R.id.exp_power_stat);
-        //FrameLayout notifications=(FrameLayout)mExpandedView.findViewById(R.id.notifications);
 
         // remove involved views
         powerAndCarrier.removeView(power);
@@ -657,6 +704,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         WindowManagerImpl.getDefault().addView(view, lp);
 
         mPowerWidget.setupWidget();
+        mPowerWidgetBottom.setupWidget();
+	    mMusicControls.setupControls();
     }
 
     public void addIcon(String slot, int index, int viewIndex, StatusBarIcon icon) {
@@ -1015,7 +1064,8 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mExpandedVisible = true;
         visibilityChanged(true);
 
-        mPowerWidget.updateWidget();
+	    mPowerWidget.updateWidget();
+	    mPowerWidgetBottom.updateWidget();
 
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         mExpandedParams.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -1168,8 +1218,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mAnimY = y + (v*t) + (0.5f*a*t*t);                          // px
         mAnimVel = v + (a*t);                                       // px/s
         mAnimLastTime = now;                                        // ms
-        //Slog.d(TAG, "y=" + y + " v=" + v + " a=" + a + " t=" + t + " mAnimY=" + mAnimY
-        //        + " mAnimAccel=" + mAnimAccel);
     }
 
     void doRevealAnimation() {
@@ -1228,8 +1276,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mAnimY = y;
         mAnimVel = vel;
 
-        //Slog.d(TAG, "starting with mAnimY=" + mAnimY + " mAnimVel=" + mAnimVel);
-
         if (mExpanded) {
             if (!always &&
                     ((mBottomBar && (vel < -200.0f || (y < 25 && vel < 200.0f))) ||
@@ -1268,8 +1314,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 }
             }
         }
-        //Slog.d(TAG, "mAnimY=" + mAnimY + " mAnimVel=" + mAnimVel
-        //        + " mAnimAccel=" + mAnimAccel);
 
         long now = SystemClock.uptimeMillis();
         mAnimLastTime = now;
@@ -1635,7 +1679,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                 | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
                 pixelFormat);
-//        lp.token = mStatusBarView.getWindowToken();
         lp.gravity = Gravity.TOP | Gravity.FILL_HORIZONTAL;
         lp.setTitle("TrackingView");
         lp.y = mTrackingPosition;
