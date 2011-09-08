@@ -2750,12 +2750,6 @@ public final class Settings {
         public static final String USE_CUSTOM_DOUBLE_TAP_ACTIVITY = "use_custom_double_tap_home_app_activity";
 
         /**
-         * Sets the lockscreen background style
-         * @hide
-         */
-        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
-
-        /**
          * Contains activity of the app you want in quadrant 1
          * @hide
          */
