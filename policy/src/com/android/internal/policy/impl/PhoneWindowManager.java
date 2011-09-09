@@ -590,6 +590,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
+    /**
+     * Short press also has an expire time to destinguish double tap from single tap.
+     */
+    Runnable mHomeShortPress = new Runnable() {
+        public void run() {
+            launchHomeFromHotKey();
+        }
+    };
+
     Runnable mBackLongPress = new Runnable() {
         public void run() {
             if (Settings.Secure.getInt(mContext.getContentResolver(),
