@@ -555,6 +555,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         return Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.USE_QUICK_RECENT, 0) != 0;
     }
+
     /**
      * When a home-key longpress expires, close other system windows and launch the recent apps
      */
@@ -587,6 +588,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         public void run() {
             sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
             showRecentAppsDialog();
+        }
+    };
+
+    /**
+     * Short press also has an expire time to destinguish double tap from single tap.
+     */
+    Runnable mHomeShortPress = new Runnable() {
+        public void run() {
+            launchHomeFromHotKey();
         }
     };
 
