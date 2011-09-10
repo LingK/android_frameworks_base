@@ -391,12 +391,12 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new StatusBarPolicy(this);
 
+        // load config to determine if we want statusbar buttons
+        mHasSoftButtons = CmSystem.getDefaultBool(mContext, CmSystem.CM_HAS_SOFT_BUTTONS);
+        
         mContext = getApplicationContext();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
-
-        // load config to determine if we want statusbar buttons
-        mHasSoftButtons = CmSystem.getDefaultBool(mContext, CmSystem.CM_HAS_SOFT_BUTTONS);
     }
 
     @Override
@@ -494,6 +494,9 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mTickerText = (TickerView)sb.findViewById(R.id.tickerText);
         mTickerText.mTicker = mTicker;
 
+        TickerView tickerView = (TickerView) sb.findViewById(R.id.tickerText);
+        tickerView.mTicker = mTicker;
+
         mTrackingView = (TrackingView) View.inflate(context, R.layout.status_bar_tracking, null);
         mTrackingView.mService = this;
         mCloseView = (CloseDragHandle) mTrackingView.findViewById(R.id.close);
@@ -502,6 +505,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mContext=context;
         updateColors();
         updateLayout();
+        updateSettings();
         updateCarrierLabel();
 
         mPowerWidgetBottom = (PowerWidgetBottom) mTrackingView.findViewById(R.id.exp_power_stat);
