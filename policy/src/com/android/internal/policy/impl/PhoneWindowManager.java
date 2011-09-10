@@ -551,10 +551,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mContext.getContentResolver(), Settings.Secure.DEVICE_PROVISIONED, 0) != 0;
     }
 
-    private boolean useQuickHomeKey() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.USE_QUICK_RECENT, 0) != 0;
-    }
     /**
      * When a home-key longpress expires, close other system windows and launch the recent apps
      */
@@ -566,13 +562,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
              */
             mHomePressed = false;
             performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-
-            if (useQuickHomeKey()) {
-                /* The recent apps dialog has already been displayed, and all we're doing on long
-                 * press is the above, to pin the recent dialog on screen. */
-                return;
-            }
-
             if (Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.USE_CUSTOM_APP, 0) != 0) {
                 runCustomApp();
@@ -580,13 +569,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
                 showRecentAppsDialog();
             }
-        }
-    };
-
-    Runnable mDisplayRecent = new Runnable() {
-        public void run() {
-            sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
-            showRecentAppsDialog();
         }
     };
 
@@ -599,7 +581,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
-    Runnable mBackLongPress = new Runnable() {
+    /**
+     * Short press also has an expire time to destinguish double tap from single tap.
+     */
+    Runnable mHomeShortPress = new Runnable() {
+        public void run() {
+            launchHomeFromHotKey();
+        }
+    };
+
+	Runnable mBackLongPress = new Runnable() {
         public void run() {
             if (Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 0) {
@@ -695,15 +686,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mRecentAppsDialog = new RecentApplicationsDialog(mContext);
         }
         mRecentAppsDialog.show();
-    }
-
-    /**
-     * Hide the recent apps dialog, if shown
-     */
-    void hideRecentAppsDialog() {
-        if (mRecentAppsDialog == null)
-            return;
-        mRecentAppsDialog.cancel();
     }
 
     void runCustomApp() {
@@ -1422,22 +1404,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             
             if (down && repeatCount == 0) {
                 if (!keyguardOn) {
-                    if (useQuickHomeKey()) {
-                        /* Show the recent apps dialog immediately.  We can't do that from here; post a message
-                         * to handle it. */
-                        mHandler.post(mDisplayRecent);
-                    }
                     mHandler.postDelayed(mHomeLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
                 }
                 mHomePressed = true;
-            } else if (!down && useQuickHomeKey()) {
-                if (mRecentAppsDialog != null) {
-                    if(mRecentAppsDialog.isShowing() && mHomePressed) {
-                        /* If the apps dialog is still shown, then the home button was released without
-                         * selecting anything.  If the dialog wasn't pinned by mHomeLongPress, hide it. */
-                        hideRecentAppsDialog();
-                    }
-                }
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1578,11 +1547,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * given the situation with the keyguard.
      */
     void launchHomeFromHotKey() {
-        if (useQuickHomeKey()) {
-            // Make sure we always hide the recent dialog when we're going home.
-            hideRecentAppsDialog();
-        }
-
         if (mKeyguardMediator.isShowingAndNotHidden()) {
             // don't launch home if keyguard showing
         } else if (!mHideLockScreen && mKeyguardMediator.isInputRestricted()) {
