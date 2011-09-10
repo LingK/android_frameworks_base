@@ -2843,18 +2843,6 @@ public final class Settings {
         public static final String LOCKSCREEN_STYLE_PREF = "lockscreen_style_pref";
 
         /**
-         * Sets the lockscreen background style
-         * @hide
-         */
-        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
-
-        /**
-         * External BT GPS device
-         * @hide
-         */
-        public static final String EXTERNAL_GPS_BT_DEVICE = "0";
-
-        /**
          * Sets the incoming call accept/reject style
          * @hide
          */

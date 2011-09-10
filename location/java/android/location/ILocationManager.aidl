@@ -88,6 +88,4 @@ interface ILocationManager
 
     // for NI support
     boolean sendNiResponse(int notifId, int userResponse);
-    // Added call to switch gps source
-    void setGPSSource(String device);
 }
