@@ -513,7 +513,6 @@ public class SenseLikeLock extends View {
         if (icon instanceof BitmapDrawable) {
             return((BitmapDrawable)icon).getBitmap();
         } else {
-            Log.d(TAG, "The drawable"+ icon.toString() +" is null");
             return null;
         }
     }
