@@ -1600,7 +1600,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	    Intent intent = new Intent();
 	    PackageManager pm = mContext.getPackageManager();
 	    mCustomApps = new Intent[4];
-	    FastBitmapDrawable[] shortcutsicons;
+	    Drawable[] shortcutsicons;
 
 	    for(int i = 0; i < mCustomQuandrants.length ; i++){
 		    if(mCustomQuandrants[i] != null){
@@ -1644,13 +1644,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 		        mCustomApps[i] = new Intent(Intent.ACTION_MAIN).setComponent(com);
 	   }
 	   
-	   shortcutsicons = new FastBitmapDrawable[numapps];
+	   shortcutsicons = new Drawable[numapps];
 	   float iconScale =0.80f;
 	  
 	   for(int i = 0; i < numapps ; i++){
 		   try {
-			   shortcutsicons[i] = (FastBitmapDrawable) pm.getActivityIcon( mCustomApps[i]);
-			   shortcutsicons[i] = (FastBitmapDrawable) scaledDrawable(shortcutsicons[i], mContext ,iconScale);
+			   shortcutsicons[i] = pm.getActivityIcon(mCustomApps[i]);
+			   shortcutsicons[i] = scaledDrawable(shortcutsicons[i], mContext, iconScale);
            } catch (ArrayIndexOutOfBoundsException ex) {
                Log.w(TAG, "Missing shortcut_icons array item #" + i);
                shortcutsicons[i] = null;
@@ -1662,7 +1662,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
        mSenseRingSelector.setShortCutsDrawables(shortcutsicons[0], shortcutsicons[1], shortcutsicons[2], shortcutsicons[3]);
    }
    
-   static FastBitmapDrawable scaledDrawable(FastBitmapDrawable icon,Context context, float scale) {
+   static Drawable scaledDrawable(Drawable icon, Context context, float scale) {
 		final Resources resources=context.getResources();
 		int sIconHeight= (int) resources.getDimension(android.R.dimen.app_icon_size);
 		int sIconWidth = sIconHeight;
