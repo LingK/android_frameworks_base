@@ -1662,7 +1662,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
        mSenseRingSelector.setShortCutsDrawables(shortcutsicons[0], shortcutsicons[1], shortcutsicons[2], shortcutsicons[3]);
    }
    
-   static Drawable scaledDrawable(Drawable icon,Context context, float scale) {
+   static FastBitmapDrawable scaledDrawable(FastBitmapDrawable icon,Context context, float scale) {
 		final Resources resources=context.getResources();
 		int sIconHeight= (int) resources.getDimension(android.R.dimen.app_icon_size);
 		int sIconWidth = sIconHeight;
