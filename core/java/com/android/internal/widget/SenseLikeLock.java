@@ -82,9 +82,9 @@ public class SenseLikeLock extends View {
 	private float mDensityScaleFactor = 1;
 	private int mShortCutSelected;
 
-    Boolean mUseShortcutOne = false;
-    Boolean mUseShortcutTwo = false;
-    Boolean mUseShortcutThree = false;
+    private Boolean mUseShortcutOne = false;
+    private Boolean mUseShortcutTwo = false;
+    private Boolean mUseShortcutThree = false;
     private Boolean mUseShortcutFour = false;
     private Boolean mIsInRingMode = false;
 	
@@ -338,10 +338,10 @@ public class SenseLikeLock extends View {
             drawShorts(canvas, halfWidth, padding);  
         } else {
         	Log.d(TAG, "Shorcut bar drawing with moving ring");
-            if(!mUseShortcutOne)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-            if(!mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
-            if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-            if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+            if(mUseShortcutOne)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+            if(mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+            if(mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+            if(mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
             canvas.drawBitmap(mLockIcon,  (width/2)-(mLockIcon.getWidth()/2), (height -(mLockIcon.getHeight()/3)), mPaint);
         }
 
@@ -361,31 +361,31 @@ public class SenseLikeLock extends View {
         switch(mShortCutSelected) {
 	        case 1 : { 
 	          Log.d(TAG, "Drawing shorcut new position");
-              if(!mUseShortcutOne)drawMovableShort(canvas, 1, mShortcutsBackground.getWidth()/2 );
-              if(!mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
-              if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-              if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+              if(mUseShortcutOne)drawMovableShort(canvas, 1, mShortcutsBackground.getWidth()/2 );
+              if(mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+              if(mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+              if(mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
 	          break;
 	         }
            case 2 : {
-             if(!mUseShortcutOne)drawMovableShort(canvas, 2, mShortcutsBackground.getWidth()/2);
-             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-             if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-             if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+             if(mUseShortcutOne)drawMovableShort(canvas, 2, mShortcutsBackground.getWidth()/2);
+             if(mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+             if(mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
             }
       	    break;
           case 3 : {
-             if(!mUseShortcutOne)drawMovableShort(canvas, 3, mShortcutsBackground.getWidth()/2);
-             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-             if(!mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
-             if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+             if(mUseShortcutOne)drawMovableShort(canvas, 3, mShortcutsBackground.getWidth()/2);
+             if(mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+             if(mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
             }
       	    break;
           case 4 : {
-             if(!mUseShortcutOne) drawMovableShort(canvas, 4, mShortcutsBackground.getWidth()/2);
-             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-             if(!mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
-             if(!mUseShortcutFour)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+             if(mUseShortcutOne) drawMovableShort(canvas, 4, mShortcutsBackground.getWidth()/2);
+             if(mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+             if(mUseShortcutFour)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
             }
       	    break;
         }
