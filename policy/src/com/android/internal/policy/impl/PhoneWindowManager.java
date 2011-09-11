@@ -238,6 +238,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mLidKeyboardAccessibility;
     int mLidNavigationAccessibility;
     boolean mScreenOn = false;
+    int mScreenOffReason;
     boolean mOrientationSensorEnabled = false;
     int mCurrentAppOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     static final int DEFAULT_ACCELEROMETER_ROTATION = 0;
@@ -2125,14 +2126,25 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // to wake the device but don't pass the key to the application.
             result = 0;
 
-            final boolean isWakeKey = (policyFlags
-		    & (WindowManagerPolicy.FLAG_WAKE | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0
-		    || (keyCode == BTN_MOUSE) && mTrackballWakeScreen
-		    || (keyCode == KeyEvent.KEYCODE_VOLUME_UP) && mVolumeWakeScreen
-		    || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && mVolumeWakeScreen;
+            boolean isWakeKey = (policyFlags
+                    & (WindowManagerPolicy.FLAG_WAKE | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0
+                    || ((keyCode == BTN_MOUSE) && mTrackballWakeScreen)
+                    || ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) && mVolumeWakeScreen)
+                    || ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) && mVolumeWakeScreen);
+
+            // Don't wake the screen if we have not set the option "wake with volume" in CMParts
+            // OR if "wake with volume" is set but screen is off due to proximity sensor
+            // regardless if WAKE Flag is set in keylayout
+            final boolean isOffByProx = (mScreenOffReason == WindowManagerPolicy.OFF_BECAUSE_OF_PROX_SENSOR);
+
+            if (isWakeKey
+                    && (!mVolumeWakeScreen || isOffByProx)
+                    && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN))) {
+                isWakeKey = false;
+            }
 
             // make sure keyevent get's handled as power key on volume-wake
-            if(!isScreenOn && mVolumeWakeScreen && isWakeKey && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+            if(mVolumeWakeScreen && isWakeKey && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)
                     || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
             	keyCode=KeyEvent.KEYCODE_POWER;
 
@@ -2406,6 +2418,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mKeyguardMediator.onScreenTurnedOff(why);
         synchronized (mLock) {
             mScreenOn = false;
+            mScreenOffReason = why;
             updateOrientationListenerLp();
             updateLockScreenTimeout();
         }
