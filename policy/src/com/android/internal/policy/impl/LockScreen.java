@@ -886,11 +886,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
-    @Override
-    public void onSenseLikeSelectorTrigger(View v, int Trigger) {
-	    mCallback.goToUnlockScreen();
-    }
-
     // Grabbed Selector State
     public void onGrabbedStateChange(View v, int grabbedState) {
         if (grabbedState == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
