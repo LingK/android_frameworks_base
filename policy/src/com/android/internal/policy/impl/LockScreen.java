@@ -941,11 +941,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
-    @Override
-    public void onSenseLikeSelectorTrigger(View v, int Trigger) {
-	    mCallback.goToUnlockScreen();
-    }
-
     // Grabbed Selector State
     public void onGrabbedStateChange(View v, int grabbedState) {
         if (grabbedState == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
@@ -1696,6 +1691,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
             mAlbumArtToggle = true;
     }
+
     @Override
     public void onSenseLikeSelectorTrigger(View v, int Trigger) {
 	    Vibrator vibe = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
