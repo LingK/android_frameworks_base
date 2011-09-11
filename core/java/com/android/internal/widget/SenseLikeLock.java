@@ -17,6 +17,7 @@
 package com.android.internal.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -24,6 +25,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -40,9 +43,9 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import com.android.internal.R;
+import com.android.internal.view.FastBitmapDrawable;
 
 public class SenseLikeLock extends View{
-	
 	private String TAG = "SenseLikeLock";
 	private static final boolean DBG = true;
 	private static final boolean IDBG = DBG;
@@ -60,7 +63,7 @@ public class SenseLikeLock extends View{
 	Bitmap mShortcutsBackground;
 	Bitmap mLockIcon;
 	Bitmap mLockAppIcon;
-	   
+
 	Bitmap mShortCutOne;
 	Bitmap mShortCutTwo;
 	Bitmap mShortCutThree;
@@ -75,10 +78,15 @@ public class SenseLikeLock extends View{
 	private float mDensity;
 	   
 	private OnSenseLikeSelectorTriggerListener mSenseLikeTriggerListener;
-	private int mGrabbedState = OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE;
-	Boolean mSlideisSensitive = false;
+	private int  mGrabbedState = OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE;
 	private float mDensityScaleFactor = 1;
 	private int mShortCutSelected;
+
+    Boolean mUseShortcutOne = false;
+    Boolean mUseShortcutTwo = false;
+    Boolean mUseShortcutThree = false;
+    private Boolean mUseShortcutFour = false;
+    private Boolean mIsInRingMode = false;
 	
 	private enum mSelected {
 		LOCK(1),
@@ -193,7 +201,7 @@ public class SenseLikeLock extends View{
 	}
 
 	private boolean isLockIconTriggered() {
-		int padding = 5;
+		int padding = 15;
 		int width = getWidth();
 		int heighth = getHeight();
 
@@ -215,7 +223,7 @@ public class SenseLikeLock extends View{
 	private boolean isShortTriggered(int x, int y) {
 		int width = this.getWidth()/2;
 		int height = this.getHeight() - (this.mLockIcon.getHeight()/4);
-		int radius = this.mShortcutsBackground.getWidth()/4;
+		int radius = this.mShortcutsBackground.getWidth()/2;
 		int CartesianShiftTouchX;
     	int CartesianShiftTouchY; 
     	
@@ -249,25 +257,41 @@ public class SenseLikeLock extends View{
 			if(mLockX >  width - (padding*6) && mLockX < width - (padding*4)){
 				mShortCutSelected = 1;
 				Log.d(TAG, "Shortcut one");
-				return true;
-			}
+
+				if(mUseShortcutOne)
+                    return true;
+                else
+                    return false;
+            }
 
 			if(mLockX >  width - (padding*3) && mLockX < width - (padding)){
 				mShortCutSelected = 2;
 				Log.d(TAG, "Shortcut two");
-				return true;
+				
+                if(mUseShortcutTwo)
+                    return true;
+                else
+                    return false;
 			}
 
 			if(mLockX <  width + (padding*3) && mLockX > width + (padding)){
 				mShortCutSelected = 3;
 				Log.d(TAG, "Shortcut three");
-				return true;
+				
+            	if(mUseShortcutThree)
+                    return true;
+                else
+                    return false;
 			}
 
 			if(mLockX <  width + (padding*6) && mLockX > width + (padding*4)){
 				mShortCutSelected = 4;
 				Log.d(TAG, "Shortcut four");
-				return true;
+				
+                if(mUseShortcutFour)
+                    return true;
+                else
+                    return false;
 			}
 			
 			Log.d(TAG, "No shortcut selected");
@@ -290,7 +314,6 @@ public class SenseLikeLock extends View{
         final int halfHeight = height/2;
         mShortCutHeight = height - (this.mLockIcon.getHeight()/2) - this.mLowerBackground.getHeight();
         int padding = this.mShortcutsBackground.getWidth()/2;
-
         if (DBG) log("The width of the view is " + width + " and the hieght of the veiw is " + height );
 
         if (VISUAL_DEBUG) {
@@ -306,7 +329,7 @@ public class SenseLikeLock extends View{
 
         canvas.drawBitmap(this.mLowerBackground,  0, (height -(this.mLowerBackground.getHeight()) ), mPaint);
 
-        if (mIsTouchInCircle) {	
+        if (mIsTouchInCircle && !mIsInRingMode) {	
             mLockIcon = getBitmapFor(R.drawable.sense_ring_on_unlock);
             canvas.drawBitmap(mLockIcon,  mLockX-(mLockIcon.getWidth()/2), mLockY - mLockIcon.getHeight()/2, mPaint);	
         } else if (mUsingShortcuts) {
@@ -315,16 +338,11 @@ public class SenseLikeLock extends View{
             drawShorts(canvas, halfWidth, padding);  
         } else {
         	Log.d(TAG, "Shorcut bar drawing with moving ring");
-        	drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-        	drawShortTwo(canvas,  halfWidth - (padding*3), mShortCutHeight);
-        	drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-        	drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
-
-        	if(isVertical()) {
-	            canvas.drawBitmap(mLockIcon,  (width/2)-(mLockIcon.getWidth()/2), (height -(mLockIcon.getHeight()/3)), mPaint);
-	     	} else {
-	     		canvas.drawBitmap(mLockIcon,  (width - mLockIcon.getWidth())/2, (height -(mLockIcon.getHeight()/2)), mPaint);
-	    	}
+            if(!mUseShortcutOne)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+            if(!mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+            if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+            if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+            canvas.drawBitmap(mLockIcon,  (width/2)-(mLockIcon.getWidth()/2), (height -(mLockIcon.getHeight()/3)), mPaint);
         }
 
 		return;
@@ -341,35 +359,35 @@ public class SenseLikeLock extends View{
 
 	private void drawShorts(Canvas canvas, int halfWidth, int padding) {
         switch(mShortCutSelected) {
-	         case 1 : { 
-	               Log.d(TAG, "Drawing shorcut new position");
-	               drawMovableShort(canvas, 1, mShortcutsBackground.getWidth()/2 );
-	               drawShortTwo(canvas,  halfWidth - (padding*3), mShortCutHeight);
-	               drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-	               drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
-	               break;
-	           }
-            case 2 : {
-              	  drawMovableShort(canvas, 2, mShortcutsBackground.getWidth()/2);
-              	  drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-              	  drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-              	  drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
-               }
-      	       break;
-            case 3 : {
-              	  drawMovableShort(canvas, 3, mShortcutsBackground.getWidth()/2);
-              	  drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-              	  drawShortTwo(canvas,  halfWidth - (padding*3), mShortCutHeight);
-              	  drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
-              }
-      	      break;
-            case 4 : {
-              	  drawMovableShort(canvas, 4, mShortcutsBackground.getWidth()/2);
-              	  drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
-              	  drawShortTwo(canvas,  halfWidth - (padding*3), mShortCutHeight);
-              	  drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
-              }
-      	      break;
+	        case 1 : { 
+	          Log.d(TAG, "Drawing shorcut new position");
+              if(!mUseShortcutOne)drawMovableShort(canvas, 1, mShortcutsBackground.getWidth()/2 );
+              if(!mUseShortcutTwo)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+              if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+              if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+	          break;
+	         }
+           case 2 : {
+             if(!mUseShortcutOne)drawMovableShort(canvas, 2, mShortcutsBackground.getWidth()/2);
+             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(!mUseShortcutThree)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+             if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+            }
+      	    break;
+          case 3 : {
+             if(!mUseShortcutOne)drawMovableShort(canvas, 3, mShortcutsBackground.getWidth()/2);
+             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(!mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+             if(!mUseShortcutFour)drawShortFour(canvas, halfWidth + (padding*4), mShortCutHeight);
+            }
+      	    break;
+          case 4 : {
+             if(!mUseShortcutOne) drawMovableShort(canvas, 4, mShortcutsBackground.getWidth()/2);
+             if(!mUseShortcutTwo)drawShortOne(canvas, halfWidth - (padding*6), mShortCutHeight);
+             if(!mUseShortcutThree)drawShortTwo(canvas, halfWidth - (padding*3), mShortCutHeight);
+             if(!mUseShortcutFour)drawShortThree(canvas, halfWidth + (padding), mShortCutHeight);
+            }
+      	    break;
         }
 	}
 
@@ -430,14 +448,11 @@ public class SenseLikeLock extends View{
            }
     }
 
-    private void initializeUI() {
-        mLockIcon = getBitmapFor(R.drawable.sense_ring);
+    private void initializeUI(){
+    	Log.d(TAG, "Initializing user interface");
+    	mLockIcon = getBitmapFor(R.drawable.sense_ring);
     	mLowerBackground = getBitmapFor(R.drawable.sense_panel);
     	mShortcutsBackground = getBitmapFor(R.drawable.app_bg);
-    	mShortCutOne = getBitmapFor(R.drawable.app_camera);
-    	mShortCutTwo = getBitmapFor(R.drawable.app_gmail);
-    	mShortCutThree = getBitmapFor(R.drawable.app_msg);
-    	mShortCutFour = getBitmapFor(R.drawable.app_phone);
     	mLockAppIcon = getBitmapFor(R.drawable.sense_ring_appready);
     }
 
@@ -446,23 +461,21 @@ public class SenseLikeLock extends View{
     	mLockY = eventY;
     }
     
-    public interface OnSenseLikeSelectorTriggerListener{
+    public interface OnSenseLikeSelectorTriggerListener {
     	static final int ICON_GRABBED_STATE_NONE = 0;
     	static final int ICON_GRABBED_STATE_GRABBED = 1;
     	static final int ICON_SHORTCUT_GRABBED_STATE_GRABBED = 2;
-
     	static final int LOCK_ICON_TRIGGERED = 10;
     	static final int LOCK_ICON_SHORTCUT_ONE_TRIGGERED   = 11;
     	static final int LOCK_ICON_SHORTCUT_TWO_TRIGGERED   = 12;
     	static final int LOCK_ICON_SHORTCUT_THREE_TRIGGERED = 13;
     	static final int LOCK_ICON_SHORTCUT_FOUR_TRIGGERED  = 14;
-    	
     	public void OnSenseLikeSelectorGrabbedStateChanged(View v, int GrabState);
     	public void onSenseLikeSelectorTrigger(View v, int Trigger);	
     }
     
     public void setOnSenseLikeSelectorTriggerListener(OnSenseLikeSelectorTriggerListener l) {
-        if (DBG) log("Setting the listners");
+        if (DBG) log("Setting the listeners");
     	this.mSenseLikeTriggerListener = l;
     }
     
@@ -477,24 +490,9 @@ public class SenseLikeLock extends View{
     }
     
     private void dispatchTriggerEvent(int whichTrigger) {
-    	if (IDBG) log("Dispatching a trigered event");
-
-        if (mSenseLikeTriggerListener != null) {
-        	switch (whichTrigger) {
-        	    case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED:
-        	    case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_TWO_TRIGGERED:
-        	    case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_THREE_TRIGGERED:
-        	    case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_FOUR_TRIGGERED:{
-        		    doUnlockAnimation();
-        		    break;
-        	    }
-        	    case OnSenseLikeSelectorTriggerListener.LOCK_ICON_TRIGGERED:
-        		    doUnlockAnimation();
-        		    break;
-        	    }
-
-            mSenseLikeTriggerListener.onSenseLikeSelectorTrigger(this, whichTrigger);
-        }
+        if (IDBG) log("Dispatching a trigered event");
+        doUnlockAnimation();
+        mSenseLikeTriggerListener.onSenseLikeSelectorTrigger(this, whichTrigger);
     }
     
     private boolean isVertical() {
@@ -509,7 +507,19 @@ public class SenseLikeLock extends View{
         return BitmapFactory.decodeResource(getContext().getResources(), resId);
     }
 
-    private void reset() {
+    private Bitmap getBitmapFromDrawable(FastBitmapDrawable icon) {
+        Log.d(TAG, "Decoding drawable to bitmap");
+
+        if (icon instanceof FastBitmapDrawable)
+            return((FastBitmapDrawable)icon).getBitmap();
+        else
+        {
+            Log.d(TAG, "The drawable"+ icon.toString() +" is null");
+            return null;
+        }
+    }
+
+    private void reset(){
     	setGrabbedState(OnSenseLikeSelectorTriggerListener.ICON_GRABBED_STATE_NONE);
     	mIsTouchInCircle = false;
     	mUsingShortcuts = false;
@@ -518,7 +528,49 @@ public class SenseLikeLock extends View{
     	this.mLockY = 0;
     }
     
-    public void setSlide(boolean SlideAll){
-    	mSlideisSensitive = SlideAll;
+    public void setShortCutsDrawables(FastBitmapDrawable FarLeft, FastBitmapDrawable Left, FastBitmapDrawable Right, FastBitmapDrawable FarRight){
+        log("Setting the icon One");
+        if(FarLeft != null)mShortCutOne = getBitmapFromDrawable(FarLeft);
+
+        if(mShortCutOne != null)
+           mUseShortcutOne = true;
+        else
+           mUseShortcutOne = false;
+
+        log("Setting the icon Two");
+        if(FarLeft != null)mShortCutTwo = getBitmapFromDrawable(Left);
+
+        if(mShortCutTwo != null)
+           mUseShortcutTwo = true;
+        else
+           mUseShortcutTwo = false;
+
+        log("Setting the icon Three");
+        if(FarLeft != null)mShortCutThree = getBitmapFromDrawable(Right);
+
+        if(mShortCutThree != null)
+           mUseShortcutThree = true;
+        else
+           mUseShortcutThree = false;
+
+        log("Setting the icon Four");
+        if(FarLeft != null)mShortCutFour = getBitmapFromDrawable(FarRight);
+
+        if(mShortCutFour != null)
+           mUseShortcutFour = true;
+        else
+           mUseShortcutFour = false;
+    }
+    
+    public Intent[] setDefaultIntents(){
+    	Intent intent = new Intent(Intent.ACTION_DIAL); 
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	Intent[] i = {new Intent(Intent.ACTION_DIAL).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),new Intent(),new Intent(),new Intent()};
+    	return i;
+    }
+    
+    public void setToTwoShortcuts(boolean UseOnlyTwoShortcuts){
+    	if(UseOnlyTwoShortcuts == true)Log.d(TAG, "Using only two shortcuts");
+    	mUseShortcutTwo = UseOnlyTwoShortcuts;
     }
 }

@@ -19,6 +19,7 @@ package com.android.internal.policy.impl;
 import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.DigitalClock;
+import com.android.internal.view.FastBitmapDrawable;
 import com.android.internal.widget.CircularSelector;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.RotarySelector;
@@ -75,6 +76,7 @@ import android.provider.Settings;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import com.android.internal.widget.SenseLikeLock.OnSenseLikeSelectorTriggerListener;
 
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general
@@ -190,7 +192,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private String mCustomAppActivity = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_APP_ACTIVITY));
     private int mLockscreenStyle = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_STYLE_PREF, 7));
+            Settings.System.LOCKSCREEN_STYLE_PREF, 6));
     private int mCustomIconStyle = Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_ICON_STYLE, 1);
     private int mWidgetLayout = Settings.System.getInt(mContext.getContentResolver(),
@@ -203,14 +205,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Settings.System.CARRIER_LABEL_TYPE, CARRIER_TYPE_DEFAULT));
     private String mCarrierLabelCustom = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.CARRIER_LABEL_CUSTOM_STRING));
-    private String mCustomQuandrant1 = (Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_1));
-    private String mCustomQuandrant2 = (Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_2));
-    private String mCustomQuandrant3 = (Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_3));
-    private String mCustomQuandrant4 = (Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_4));
+
+    // Custom Quadrants
+    private String[] mCustomQuandrants = {(Settings.System.getString(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_1)),(Settings.System.getString(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_2)),(Settings.System.getString(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_3)),(Settings.System.getString(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_4))};
+    Intent[] mCustomApps;
 
     // Current Selector
     private boolean mUseSliderLockscreen = (mLockscreenStyle == 1);
@@ -221,7 +223,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mUseUnlockRingLockscreen = (mLockscreenStyle == 6);
     private boolean mUseSenseLikeLockscreen = (mLockscreenStyle == 7);
 
-    // Gestures & Icons
+    // Gesture Variables
     private boolean mLensePortrait = false;
     private double mGestureSensitivity;
     private boolean mGestureTrail;
@@ -436,6 +438,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mUnlockRing.setOnUnlockRingTriggerListener(this);
         mSenseRingSelector = (SenseLikeLock) findViewById(R.id.sense_selector);
         mSenseRingSelector.setOnSenseLikeSelectorTriggerListener(this);
+        setupSenseLikeRingShortcuts();
 
         // Custom Apps & Icons
         if (mCustomAppActivity != null) {
@@ -864,15 +867,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (trigger == UnlockRing.OnUnlockRingTriggerListener.UNLOCK_HANDLE) {
             mCallback.goToUnlockScreen();
 
-        } else if (mCustomQuandrant1 != null
+        } else if (mCustomQuandrants[0] != null
                 && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_1) {
-            if (mCustomQuandrant1.equals(TOGGLE_SILENT)) {
+            if (mCustomQuandrants[0].equals(TOGGLE_SILENT)) {
                 toggleSilentMode();
                 mCallback.pokeWakelock();
                 mTabSelector.reset(false);
             } else {
                 try {
-                    Intent i = Intent.parseUri(mCustomQuandrant1, 0);
+                    Intent i = Intent.parseUri(mCustomQuandrants[0], 0);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                     mContext.startActivity(i);
@@ -881,15 +884,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     mTabSelector.reset(false);
                 }
             }
-        } else if (mCustomQuandrant2 != null
+        } else if (mCustomQuandrants[1] != null
                 && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_2) {
-            if (mCustomQuandrant2.equals(TOGGLE_SILENT)) {
+            if (mCustomQuandrants[1].equals(TOGGLE_SILENT)) {
                 toggleSilentMode();
                 mTabSelector.reset(false);
                 mCallback.pokeWakelock();
             } else {
                 try {
-                    Intent i = Intent.parseUri(mCustomQuandrant2, 0);
+                    Intent i = Intent.parseUri(mCustomQuandrants[1], 0);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                     mContext.startActivity(i);
@@ -898,15 +901,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     mTabSelector.reset(false);
                 }
             }
-        } else if (mCustomQuandrant3 != null
+        } else if (mCustomQuandrants[2] != null
                 && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_3) {
-            if (mCustomQuandrant3.equals(TOGGLE_SILENT)) {
+            if (mCustomQuandrants[2].equals(TOGGLE_SILENT)) {
                 toggleSilentMode();
                 mTabSelector.reset(false);
                 mCallback.pokeWakelock();
             } else {
                 try {
-                    Intent i = Intent.parseUri(mCustomQuandrant3, 0);
+                    Intent i = Intent.parseUri(mCustomQuandrants[2], 0);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                     mContext.startActivity(i);
@@ -915,15 +918,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     mTabSelector.reset(false);
                 }
             }
-        } else if (mCustomQuandrant4 != null
+        } else if (mCustomQuandrants[3] != null
                 && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_4) {
-            if (mCustomQuandrant4.equals(TOGGLE_SILENT)) {
+            if (mCustomQuandrants[3].equals(TOGGLE_SILENT)) {
                 toggleSilentMode();
                 mTabSelector.reset(false);
                 mCallback.pokeWakelock();
             } else {
                 try {
-                    Intent i = Intent.parseUri(mCustomQuandrant4, 0);
+                    Intent i = Intent.parseUri(mCustomQuandrants[3], 0);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                             | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                     mContext.startActivity(i);
@@ -1690,4 +1693,132 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
             mAlbumArtToggle = true;
     }
+    @Override
+    public void onSenseLikeSelectorTrigger(View v, int Trigger) {
+	    Vibrator vibe = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+            long[] pattern = {
+                           0, 100
+	    };
+
+	    switch(Trigger){
+	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED:
+		       vibe.vibrate(pattern, -1);
+		       mCustomApps[0].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               getContext().startActivity(mCustomApps[0]);
+               mCallback.goToUnlockScreen();
+		       break;
+	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_TWO_TRIGGERED:
+		       vibe.vibrate(pattern, -1);
+		       mCustomApps[1].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               getContext().startActivity(mCustomApps[1]);
+               mCallback.goToUnlockScreen();
+		       break;
+	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_THREE_TRIGGERED:
+		       vibe.vibrate(pattern, -1);
+		       mCustomApps[2].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               getContext().startActivity(mCustomApps[2]);
+               mCallback.goToUnlockScreen();
+		       break;
+	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_FOUR_TRIGGERED:
+		       vibe.vibrate(pattern, -1);
+		       mCustomApps[3].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               getContext().startActivity(mCustomApps[3]);
+               mCallback.goToUnlockScreen();
+		       break;
+	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_TRIGGERED:
+		       mCallback.goToUnlockScreen();
+		       break;
+	    }  
+    }
+   
+    private void setupSenseLikeRingShortcuts(){
+	    int numapps = 0;
+	    Intent intent = new Intent();
+	    PackageManager pm = mContext.getPackageManager();
+	    mCustomApps = new Intent[4];
+	    FastBitmapDrawable[] shortcutsicons;
+
+	    for(int i = 0; i < mCustomQuandrants.length ; i++){
+		    if(mCustomQuandrants[i] != null){
+			    numapps++;
+		    }
+		}
+	   
+	    if(numapps != 4){
+		   mCustomApps = mSenseRingSelector.setDefaultIntents();
+           for(int i = 0; i < 4; i++){
+              if(mCustomQuandrants[i] != null){
+                mCustomApps[i] =  Intent.parseUri(mCustomQuandrants[i]  ,0);
+              }
+           }   
+		   numapps = 4;
+	    } else for(int i = 0; i < numapps ; i++) {
+				try{
+					intent = Intent.parseUri(mCustomQuandrants[i], 0);
+				}catch (java.net.URISyntaxException ex) {
+					Log.w(TAG, "Invalid hotseat intent: " + mCustomQuandrants[i]);
+		        }
+
+				ResolveInfo bestMatch = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		        List<ResolveInfo> allMatches = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+		         
+		        if (DBG) { 
+		                Log.d(TAG, "Best match for intent: " + bestMatch);
+		                Log.d(TAG, "All matches: ");
+		                for (ResolveInfo ri : allMatches) {
+		                    Log.d(TAG, "  --> " + ri);
+		                }
+		        }
+		         
+		        ComponentName com = new ComponentName(
+	                    bestMatch.activityInfo.applicationInfo.packageName,
+	                    bestMatch.activityInfo.name);
+		        mCustomApps[i] = new Intent(Intent.ACTION_MAIN).setComponent(com);
+	   }
+	   
+	   shortcutsicons = new FastBitmapDrawable[numapps];
+	   float iconScale =0.80f;
+	  
+	   for(int i = 0; i < numapps ; i++){
+		   try {
+			   shortcutsicons[i] = (FastBitmapDrawable) pm.getActivityIcon( mCustomApps[i]);
+			   shortcutsicons[i] = (FastBitmapDrawable) scaledDrawable(shortcutsicons[i], mContext ,iconScale);
+           } catch (ArrayIndexOutOfBoundsException ex) {
+               Log.w(TAG, "Missing shortcut_icons array item #" + i);
+               shortcutsicons[i] = null;
+           } catch (PackageManager.NameNotFoundException e) {
+               e.printStackTrace(); 
+           }
+	   }
+	   
+       mSenseRingSelector.setShortCutsDrawables(shortcutsicons[0], shortcutsicons[1], shortcutsicons[2], shortcutsicons[3]);
+   }
+   
+   static Drawable scaledDrawable(Drawable icon,Context context, float scale) {
+		final Resources resources=context.getResources();
+		int sIconHeight= (int) resources.getDimension(android.R.dimen.app_icon_size);
+		int sIconWidth = sIconHeight;
+		int width = sIconWidth;
+		int height = sIconHeight;
+		Bitmap original;
+
+		try{
+		    original= Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		} catch (OutOfMemoryError e) {
+		   return icon;
+		}
+
+		Canvas canvas = new Canvas(original);
+		canvas.setBitmap(original);
+		icon.setBounds(0,0, width, height);
+		icon.draw(canvas);
+
+		try{
+		    Bitmap endImage=Bitmap.createScaledBitmap(original, (int)(width*scale), (int)(height*scale), true);
+		    original.recycle();
+		    return new FastBitmapDrawable(endImage);
+		} catch (OutOfMemoryError e) {
+		    return icon;
+		}
+	}
 }
