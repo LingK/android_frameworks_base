@@ -30,6 +30,7 @@ import com.android.internal.widget.SlidingTab.OnTriggerListener;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import java.net.URISyntaxException;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.res.Configuration;
@@ -75,6 +77,7 @@ import android.preference.MultiSelectListPreference;
 import android.provider.Settings;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import com.android.internal.widget.SenseLikeLock.OnSenseLikeSelectorTriggerListener;
 
