@@ -507,13 +507,12 @@ public class SenseLikeLock extends View{
         return BitmapFactory.decodeResource(getContext().getResources(), resId);
     }
 
-    private Bitmap getBitmapFromDrawable(FastBitmapDrawable icon) {
+    private Bitmap getBitmapFromDrawable(Drawable icon) {
         Log.d(TAG, "Decoding drawable to bitmap");
 
-        if (icon instanceof FastBitmapDrawable)
-            return((FastBitmapDrawable)icon).getBitmap();
-        else
-        {
+        if (icon instanceof BitmapDrawable) {
+            return((BitmapDrawable)icon).getBitmap();
+        } else {
             Log.d(TAG, "The drawable"+ icon.toString() +" is null");
             return null;
         }
@@ -528,7 +527,7 @@ public class SenseLikeLock extends View{
     	this.mLockY = 0;
     }
     
-    public void setShortCutsDrawables(FastBitmapDrawable FarLeft, FastBitmapDrawable Left, FastBitmapDrawable Right, FastBitmapDrawable FarRight){
+    public void setShortCutsDrawables(Drawable FarLeft, Drawable Left, Drawable Right, Drawable FarRight) {
         log("Setting the icon One");
         if(FarLeft != null)mShortCutOne = getBitmapFromDrawable(FarLeft);
 
