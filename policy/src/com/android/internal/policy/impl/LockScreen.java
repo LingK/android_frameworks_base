@@ -1611,10 +1611,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	    if(numapps != 4){
 		   mCustomApps = mSenseRingSelector.setDefaultIntents();
            for(int i = 0; i < 4; i++){
-              if(mCustomQuandrants[i] != null){
-                mCustomApps[i] =  Intent.parseUri(mCustomQuandrants[i]  ,0);
-              }
-           }   
+			 try{
+		        if(mCustomQuandrants[i] != null) {
+                    mCustomApps[i] =  Intent.parseUri(mCustomQuandrants[i]  ,0);
+                }
+			 }catch (java.net.URISyntaxException ex) {
+					Log.w(TAG, "Invalid hotseat intent: " + mCustomQuandrants[i]);
+		     }
+           }
 		   numapps = 4;
 	    } else for(int i = 0; i < numapps ; i++) {
 				try{
