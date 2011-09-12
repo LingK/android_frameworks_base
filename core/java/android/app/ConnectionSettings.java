@@ -35,6 +35,7 @@ public class ConnectionSettings implements Parcelable {
     int connectionId;
     int value;
     boolean override;
+
     public static final int PROFILE_CONNECTION_WIFI = 1;
     public static final int PROFILE_CONNECTION_WIFIAP = 2;
     public static final int PROFILE_CONNECTION_WIMAX = 3;
@@ -89,42 +90,63 @@ public class ConnectionSettings implements Parcelable {
 
     public void processOverride(Context context) {
         BluetoothAdapter bta = BluetoothAdapter.getDefaultAdapter();
+        LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         switch (getConnectionId()) {
             case PROFILE_CONNECTION_BLUETOOTH:
+                Boolean state_BT = bta.isEnabled();
                 if (getValue() == 1) {
-                    bta.enable();
+                    if (!state_BT) {
+                        bta.enable();
+                    }
                 } else {
-                    bta.disable();
+                    if (state_BT){
+                        bta.disable();
+                    }
                 }
                 break;
             case PROFILE_CONNECTION_GPS:
+                Boolean state_GPS = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 if (getValue() == 1) {
-                    Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, true);
+                    if (!state_GPS) {
+                        Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, true);
+                    }
                 } else {
-                    Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, false);
+                    if (state_GPS) {
+                        Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, false);
+                    }
                 }
                 break;
             case PROFILE_CONNECTION_WIFI:
+                Boolean state_WIFI = wm.isWifiEnabled();
+                int wifiApState = wm.getWifiApState();
                 if (getValue() == 1) {
-                    int wifiApState = wm.getWifiApState();
                     if ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) || (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED)) {
                         wm.setWifiApEnabled(null, false);
                     }
-                    wm.setWifiEnabled(true);
+                    if (!state_WIFI) {
+                        wm.setWifiEnabled(true);
+                    }
                 } else {
-                    wm.setWifiEnabled(false);
+                    if (state_WIFI) {
+                        wm.setWifiEnabled(false);
+                    }
                 }
                 break;
             case PROFILE_CONNECTION_WIFIAP:
+                Boolean state_WIFI_AP = wm.isWifiApEnabled();
+                int wifiState = wm.getWifiState();
                 if (getValue() == 1) {
-                    int wifiState = wm.getWifiState();
                     if ((wifiState == WifiManager.WIFI_STATE_ENABLING) || (wifiState == WifiManager.WIFI_STATE_ENABLED)) {
                         wm.setWifiEnabled(false);
                     }
-                    wm.setWifiApEnabled(null, true);
+                    if (!state_WIFI_AP) {
+                        wm.setWifiApEnabled(null, true);
+                    }
                 } else {
-                    wm.setWifiApEnabled(null, false);
+                    if (!state_WIFI_AP) {
+                        wm.setWifiApEnabled(null, false);
+                    }
                 }
                 break;
             default: break;
