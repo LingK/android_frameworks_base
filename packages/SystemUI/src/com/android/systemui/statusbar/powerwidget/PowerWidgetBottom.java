@@ -188,6 +188,7 @@ public class PowerWidgetBottom extends FrameLayout {
     }
 
     protected void updateButtonLayoutWidth() {
+        // use our context to set a valid button width
         BUTTON_LAYOUT_PARAMS.width = mContext.getResources().getDisplayMetrics().widthPixels / LAYOUT_SCROLL_BUTTON_THRESHOLD;
     }
 
@@ -195,11 +196,15 @@ public class PowerWidgetBottom extends FrameLayout {
         Slog.d(TAG, "Updating Widget Visibility");
         // now check if we need to display the widget still
         boolean displayPowerWidget = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.EXPANDED_VIEW_WIDGET, 2) == 2;
+                Settings.System.EXPANDED_VIEW_WIDGET, 1) == 2;
         if (!displayPowerWidget) {
             setVisibility(View.GONE);
+            // StatusBarService.mTogglesNotVisibleButton.setVisibility(View.VISIBLE);
+            // StatusBarService.mTogglesVisibleButton.setVisibility(View.GONE);
         } else {
             setVisibility(View.VISIBLE);
+            // StatusBarService.mTogglesNotVisibleButton.setVisibility(View.GONE);
+            // StatusBarService.mTogglesVisibleButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -217,6 +222,7 @@ public class PowerWidgetBottom extends FrameLayout {
                 PowerButtonBottom.handleOnReceive(context, intent);
             }
 
+            // update our widget
             updateWidget();
         }
     };
