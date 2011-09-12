@@ -45,8 +45,6 @@ public class Profile implements Parcelable {
     private Map<Integer, StreamSettings> streams = new HashMap<Integer, StreamSettings>();
     private Map<Integer, ConnectionSettings> connections = new HashMap<Integer, ConnectionSettings>();
 
-    private Map<Integer, ConnectionSettings> connections = new HashMap<Integer, ConnectionSettings>();
-
     /** @hide */
     public static final Parcelable.Creator<Profile> CREATOR = new Parcelable.Creator<Profile>() {
         public Profile createFromParcel(Parcel in) {
@@ -337,5 +335,4 @@ public class Profile implements Parcelable {
     public Collection<ConnectionSettings> getConnectionSettings(){
         return connections.values();
     }
-
 }
