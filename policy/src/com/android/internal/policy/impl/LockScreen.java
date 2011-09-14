@@ -441,7 +441,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mUnlockRing.setOnUnlockRingTriggerListener(this);
         mSenseRingSelector = (SenseLikeLock) findViewById(R.id.sense_selector);
         mSenseRingSelector.setOnSenseLikeSelectorTriggerListener(this);
-        setupSenseLikeRingShortcuts();
+        //setupSenseLikeRingShortcuts();
 
         // Custom Apps & Icons
         if (mCustomAppActivity != null) {
@@ -939,6 +939,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 }
             }
         }
+    }
+
+    @Override
+    public void onSenseLikeSelectorTrigger(View v, int Trigger) {
+        mCallback.goToUnlockScreen(); 
     }
 
     // Grabbed Selector State
@@ -1690,44 +1695,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
             mAlbumArtToggle = true;
-    }
-
-    @Override
-    public void onSenseLikeSelectorTrigger(View v, int Trigger) {
-	    Vibrator vibe = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-            long[] pattern = {
-                           0, 100
-	    };
-
-	    switch(Trigger){
-	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_ONE_TRIGGERED:
-		       vibe.vibrate(pattern, -1);
-		       mCustomApps[0].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               getContext().startActivity(mCustomApps[0]);
-               mCallback.goToUnlockScreen();
-		       break;
-	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_TWO_TRIGGERED:
-		       vibe.vibrate(pattern, -1);
-		       mCustomApps[1].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               getContext().startActivity(mCustomApps[1]);
-               mCallback.goToUnlockScreen();
-		       break;
-	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_THREE_TRIGGERED:
-		       vibe.vibrate(pattern, -1);
-		       mCustomApps[2].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               getContext().startActivity(mCustomApps[2]);
-               mCallback.goToUnlockScreen();
-		       break;
-	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_SHORTCUT_FOUR_TRIGGERED:
-		       vibe.vibrate(pattern, -1);
-		       mCustomApps[3].addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-               getContext().startActivity(mCustomApps[3]);
-               mCallback.goToUnlockScreen();
-		       break;
-	       case OnSenseLikeSelectorTriggerListener.LOCK_ICON_TRIGGERED:
-		       mCallback.goToUnlockScreen();
-		       break;
-	    }  
     }
    
     private void setupSenseLikeRingShortcuts(){
