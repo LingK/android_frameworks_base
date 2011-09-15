@@ -865,79 +865,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 	}
 
     public void onUnlockRingTrigger(View v, int trigger) {
-        final String TOGGLE_SILENT = "silent_mode";
-        
         if (trigger == UnlockRing.OnUnlockRingTriggerListener.UNLOCK_HANDLE) {
             mCallback.goToUnlockScreen();
-
-        } else if (mCustomQuandrants[0] != null
-                && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_1) {
-            if (mCustomQuandrants[0].equals(TOGGLE_SILENT)) {
-                toggleSilentMode();
-                mCallback.pokeWakelock();
-                mTabSelector.reset(false);
-            } else {
-                try {
-                    Intent i = Intent.parseUri(mCustomQuandrants[0], 0);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                    mContext.startActivity(i);
-                    mCallback.goToUnlockScreen();
-                } catch (Exception e) {
-                    mTabSelector.reset(false);
-                }
-            }
-        } else if (mCustomQuandrants[1] != null
-                && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_2) {
-            if (mCustomQuandrants[1].equals(TOGGLE_SILENT)) {
-                toggleSilentMode();
-                mTabSelector.reset(false);
-                mCallback.pokeWakelock();
-            } else {
-                try {
-                    Intent i = Intent.parseUri(mCustomQuandrants[1], 0);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                    mContext.startActivity(i);
-                    mCallback.goToUnlockScreen();
-                } catch (Exception e) {
-                    mTabSelector.reset(false);
-                }
-            }
-        } else if (mCustomQuandrants[2] != null
-                && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_3) {
-            if (mCustomQuandrants[2].equals(TOGGLE_SILENT)) {
-                toggleSilentMode();
-                mTabSelector.reset(false);
-                mCallback.pokeWakelock();
-            } else {
-                try {
-                    Intent i = Intent.parseUri(mCustomQuandrants[2], 0);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                    mContext.startActivity(i);
-                    mCallback.goToUnlockScreen();
-                } catch (Exception e) {
-                    mTabSelector.reset(false);
-                }
-            }
-        } else if (mCustomQuandrants[3] != null
-                && trigger == UnlockRing.OnUnlockRingTriggerListener.QUADRANT_4) {
-            if (mCustomQuandrants[3].equals(TOGGLE_SILENT)) {
-                toggleSilentMode();
-                mTabSelector.reset(false);
-                mCallback.pokeWakelock();
-            } else {
-                try {
-                    Intent i = Intent.parseUri(mCustomQuandrants[3], 0);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                    mContext.startActivity(i);
-                    mCallback.goToUnlockScreen();
-                } catch (Exception e) {
-                    mTabSelector.reset(false);
-                }
-            }
         }
     }
 
