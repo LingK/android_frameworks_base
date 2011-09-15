@@ -28,19 +28,13 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-/**
- * This widget displays the percentage of the battery as a number
- */
 public class CmBatteryText extends TextView {
-    private boolean mAttached;
 
-    // weather to show this battery widget or not
+    private boolean mAttached;
     private boolean mShowCmBattery;
     private int mPercentColor = 0xffffffff;
     Handler mHandler;
 
-    // tracks changes to settings, so status bar is auto updated the moment the
-    // setting is toggled
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -101,9 +95,6 @@ public class CmBatteryText extends TextView {
         }
     }
 
-    /**
-     * Handles changes ins battery level and charger connection
-     */
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -114,41 +105,32 @@ public class CmBatteryText extends TextView {
         }
     };
 
-    /**
-     * Sets the output text. Kind of onDraw of canvas based classes
-     *
-     * @param intent
-     */
     final void updateCmBatteryText(Intent intent) {
         int level = intent.getIntExtra("level", 0);
         setText(Integer.toString(level));
     }
 
-    /**
-     * Invoked by SettingsObserver, this method keeps track of just changed
-     * settings. Also does the initial call from constructor
-     */
-    private void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        mShowCmBattery = (Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
-                
-        updateColors();
-        
-        if (mShowCmBattery) {
-            setVisibility(View.VISIBLE);
-        } else {
-            setVisibility(View.GONE);
-        }
-    }
-
-    private void updateColors() {
+    private void updateColor() {
 		ContentResolver resolver = mContext.getContentResolver();
 
         mPercentColor = Settings.System
 				.getInt(resolver, Settings.System.COLOR_BATTERY_PERCENT, mPercentColor);
 
        	setTextColor(mPercentColor);
+        refreshDrawableState();
+    }
+
+    private void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mShowCmBattery = (Settings.System
+                .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
+                
+        updateColor();
+        
+        if (mShowCmBattery)
+            setVisibility(View.VISIBLE);
+        else
+            setVisibility(View.GONE);
     }
 }
