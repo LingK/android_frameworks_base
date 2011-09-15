@@ -620,15 +620,18 @@ public class StatusBarPolicy {
 
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CM_BATTERY), false, this);
-
 			resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_PHONE_SIGNAL), false, this);
-
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CM_SIGNAL_TEXT), false, this);
-
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUS_BAR_HEADSET), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_HEADSET), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.COLOR_BATTERY_PERCENT), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.COLOR_BATTERY_ICON), false, this);
+			resolver.registerContentObserver(Settings.System.getUriFor(
+					Settings.System.COLOR_BATTERY_BAR), false, this);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -1590,7 +1593,6 @@ public class StatusBarPolicy {
     private final void updateTTY(Intent intent) {
         final String action = intent.getAction();
         final boolean enabled = intent.getBooleanExtra(TtyIntent.TTY_ENABLED, false);
-
         if (false) Slog.v(TAG, "updateTTY: enabled: " + enabled);
 
         if (enabled) {
@@ -1685,8 +1687,8 @@ public class StatusBarPolicy {
 	    mPhoneSignalStatus = !mShowPhoneSignal;
 		mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
 		
-		mShowCmSignal = Settings.System.getInt(mContext.getContentResolver(),
-		Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, 0) != 0;
+		mShowCmSignal = Settings.System.getInt(resolver,
+		        Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, 0) != 0;
 		mService.setIconVisibility("phone_signal", !mShowCmSignal);
 
         mShowHeadset = (Settings.System.getInt(resolver,
