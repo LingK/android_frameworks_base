@@ -32,7 +32,6 @@ public class CmBatteryBar extends ProgressBar {
     private static final String TAG = "CmBatteryBar";
     private boolean mAttached = false;
     private boolean mShowCmBatteryBar = false;
-    private int mBatteryBarColor = 0xff99ac06;
     private int mBatteryLevel = 0;
     private int mChargingLevel = -1;
     private int mAnimDuration = 500;
@@ -46,10 +45,8 @@ public class CmBatteryBar extends ProgressBar {
 
         void observer() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CM_BATTERY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.COLOR_BATTERY_BAR), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUS_BAR_CM_BATTERY), false, this);
         }
 
         @Override
@@ -63,13 +60,11 @@ public class CmBatteryBar extends ProgressBar {
         public void run() {
             if (mChargingLevel > -1) {
                 setProgress(mChargingLevel);
-
                 if (mChargingLevel >= 100) {
                     mChargingLevel = mBatteryLevel;
                 } else {
                     mChargingLevel += 10;
                 }
-
                 invalidate();
                 mHandler.postDelayed(onFakeTimer, mAnimDuration);
             }
@@ -122,9 +117,9 @@ public class CmBatteryBar extends ProgressBar {
             String action = intent.getAction();
             if (Intent.ACTION_BATTERY_CHANGED.equals(action)) {
                 mBatteryLevel = intent.getIntExtra("level", 0);
+
                 boolean oldBatteryPlugged = mBatteryPlugged;
                 mBatteryPlugged = intent.getIntExtra("plugged", 0) != 0;
-
                 if (mBatteryPlugged && mBatteryLevel < 100) {
                     if (!oldBatteryPlugged) {
                         startTimer();
@@ -164,27 +159,14 @@ public class CmBatteryBar extends ProgressBar {
         invalidate();
     }
 
-    private void updateColor() {
-		ContentResolver resolver = mContext.getContentResolver();
-
-        mBatteryBarColor = Settings.System
-				.getInt(resolver, Settings.System.COLOR_BATTERY_BAR, mBatteryBarColor);
-
-       	setBackgroundColor(mBatteryBarColor);
-        refreshDrawableState();
-    }
-
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
-        mShowCmBatteryBar = (Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 2);
-
-        updateColor();
-
-        if (mShowCmBatteryBar)
+        mShowCmBatteryBar = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_CM_BATTERY, 0) == 2);
+        if (mShowCmBatteryBar) {
             setVisibility(VISIBLE);
-        else
+        } else {
             setVisibility(GONE);
+        }
     }
 }

@@ -16,9 +16,9 @@
 
 package com.android.systemui.statusbar;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.text.SimpleDateFormat;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -39,21 +39,26 @@ import android.widget.TextView;
 
 import com.android.internal.R;
 
+/**
+ * This widget display an analogic clock with two hands for hours and
+ * minutes.
+ */
 public class Clock extends TextView {
-
     private boolean mAttached;
     private Calendar mCalendar;
     private String mClockFormatString;
     private SimpleDateFormat mClockFormat;
 
-    private int mClockColor = 0xffffffff;
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
+
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
 
     private int mAmPmStyle;
     private boolean mShowClock;
+	private int mClockColor = 0xffffffff;
+
     Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
@@ -101,21 +106,28 @@ public class Clock extends TextView {
         if (!mAttached) {
             mAttached = true;
             IntentFilter filter = new IntentFilter();
+
             filter.addAction(Intent.ACTION_TIME_TICK);
             filter.addAction(Intent.ACTION_TIME_CHANGED);
             filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
 
+        // NOTE: It's safe to do these after registering the receiver since the receiver always runs
+        // in the main thread, therefore the receiver can't run before this method returns.
+
+        // The time zone may have changed while the receiver wasn't registered, so update the Time
         mCalendar = Calendar.getInstance(TimeZone.getDefault());
+
+        // Make sure we update to the current time
         updateClock();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-
         if (mAttached) {
             getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;
@@ -126,7 +138,6 @@ public class Clock extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             if (action.equals(Intent.ACTION_TIMEZONE_CHANGED)) {
                 String tz = intent.getStringExtra("time-zone");
                 mCalendar = Calendar.getInstance(TimeZone.getTimeZone(tz));
@@ -159,8 +170,12 @@ public class Clock extends TextView {
 
         SimpleDateFormat sdf;
         String format = context.getString(res);
-
         if (!format.equals(mClockFormatString)) {
+            /*
+             * Search for an unquoted "a" in the format string, so we can
+             * add dummy characters around it to let us find it again after
+             * formatting and change its size.
+             */
             if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
                 int a = -1;
                 boolean quoted = false;
@@ -170,7 +185,6 @@ public class Clock extends TextView {
                     if (c == '\'') {
                         quoted = !quoted;
                     }
-
                     if (!quoted && c == 'a') {
                         a = i;
                         break;
@@ -178,8 +192,8 @@ public class Clock extends TextView {
                 }
 
                 if (a >= 0) {
+                    // Move a back so any whitespace before AM/PM is also in the alternate size.
                     final int b = a;
-
                     while (a > 0 && Character.isWhitespace(format.charAt(a-1))) {
                         a--;
                     }
@@ -193,16 +207,13 @@ public class Clock extends TextView {
         } else {
             sdf = mClockFormat;
         }
-
         String result = sdf.format(mCalendar.getTime());
 
         if (AM_PM_STYLE != AM_PM_STYLE_NORMAL) {
             int magic1 = result.indexOf(MAGIC1);
             int magic2 = result.indexOf(MAGIC2);
-
             if (magic1 >= 0 && magic2 > magic1) {
                 SpannableStringBuilder formatted = new SpannableStringBuilder(result);
-
                 if (AM_PM_STYLE == AM_PM_STYLE_GONE) {
                     formatted.delete(magic1, magic2+1);
                 } else {
@@ -219,16 +230,7 @@ public class Clock extends TextView {
         }
 
         return result;
-    }
 
-	private void updateColor() {
-		ContentResolver resolver = mContext.getContentResolver();
-
-        mClockColor = Settings.System
-				.getInt(resolver, Settings.System.COLOR_CLOCK, mClockColor);
-
-		setTextColor(mClockColor);
-        refreshDrawableState();
     }
 
     private void updateSettings(){
@@ -237,22 +239,32 @@ public class Clock extends TextView {
         mAmPmStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_AM_PM, 2));
 
-        updateColor();
+		updateColors();
 
         if (mAmPmStyle != AM_PM_STYLE) {
             AM_PM_STYLE = mAmPmStyle;
             mClockFormatString = "";
 
-            if (mAttached)
+            if (mAttached) {
                 updateClock();
+            }
         }
 
         mShowClock = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_CLOCK, 1) == 1);
 
-        if (mShowClock)
+        if(mShowClock)
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);
+    }
+
+	private void updateColors() {
+		ContentResolver resolver = mContext.getContentResolver();
+
+        mClockColor = Settings.System
+				.getInt(resolver, Settings.System.COLOR_CLOCK, mClockColor);
+
+		setTextColor(mClockColor);
     }
 }
