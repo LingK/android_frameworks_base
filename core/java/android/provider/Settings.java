@@ -2494,22 +2494,10 @@ public final class Settings {
         public static final String STATUS_BAR_HEADSET = "status_bar_headset";
 
   		/**
-         * Specifies the color for status bar battery percent style
+         * Specifies the color for status bar battery percent
          * @hide
          */
 		public static final String COLOR_BATTERY_PERCENT = "color_battery_percent";
-
-  		/**
-         * Specifies the color for status bar battery icon style
-         * @hide
-         */
-		public static final String COLOR_BATTERY_ICON = "color_battery_icon";
-
-  		/**
-         * Specifies the color for status bar battery bar style
-         * @hide
-         */
-		public static final String COLOR_BATTERY_BAR = "color_battery_bar";
 		
  		/**
          * Specifies the color for status bar signaltext value

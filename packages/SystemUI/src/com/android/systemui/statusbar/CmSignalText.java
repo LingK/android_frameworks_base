@@ -16,9 +16,6 @@
 
 package com.android.systemui.statusbar;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -38,13 +35,16 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 public class CmSignalText extends TextView {
 
     int dBm = 0;
     int ASU = 0;
     private SignalStrength signal;
     private boolean mAttached;
-    private int mSignalColor = 0xffffffff;
+    private int mValueColor = 0xffffffff;
     private static final int STYLE_HIDE = 0;
     private static final int STYLE_SHOW = 1;
     private static final int STYLE_SHOW_DBM = 2;
@@ -57,11 +57,9 @@ public class CmSignalText extends TextView {
 
     public CmSignalText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
-
         updateSettings();
     }
 
@@ -89,11 +87,9 @@ public class CmSignalText extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             if (action.equals(Intent.ACTION_SIGNAL_DBM_CHANGED)) {
                 dBm = intent.getIntExtra("dbm", 0);
             }
-
             updateSettings();
         }
     };
@@ -123,23 +119,12 @@ public class CmSignalText extends TextView {
         updateSignalText();
     }
 
-    private void updateColor() {
-		ContentResolver resolver = mContext.getContentResolver();
-
-        mSignalColor = Settings.System
-				.getInt(resolver, Settings.System.COLOR_SIGNALTEXT_VALUE, mSignalColor);
-
-       	setTextColor(mSignalColor);
-        refreshDrawableState();
-    }
-
     final void updateSignalText() {
         ContentResolver resolver = mContext.getContentResolver();
 
         style = Settings.System
                 .getInt(resolver, Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, STYLE_HIDE);
-
-        updateColor();
+        updateColors();
 
         if (style == STYLE_SHOW) {
             this.setVisibility(View.VISIBLE);
@@ -156,5 +141,13 @@ public class CmSignalText extends TextView {
         } else {
             this.setVisibility(View.GONE);
         }
+    }
+
+    private void updateColors() {
+		ContentResolver resolver = mContext.getContentResolver();
+
+        mValueColor = Settings.System
+				.getInt(resolver, Settings.System.COLOR_SIGNALTEXT_VALUE, mValueColor);
+       	setTextColor(mValueColor);
     }
 }
