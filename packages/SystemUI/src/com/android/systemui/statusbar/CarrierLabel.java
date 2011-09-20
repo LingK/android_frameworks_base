@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.Handler;
 import android.provider.CmSystem;
 import android.provider.Settings;
@@ -38,13 +39,8 @@ import java.util.TimeZone;
 
 import com.android.internal.R;
 
-/**
- * This widget display an analogic clock with two hands for hours and
- * minutes.
- */
 public class CarrierLabel extends TextView {
     private boolean mAttached;
-    
     private boolean mShowSpn;
     private String mSpn;
     private boolean mShowPlmn;
@@ -135,7 +131,6 @@ public class CarrierLabel extends TextView {
 
     void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
         mCarrierLabelType = Settings.System.getInt(resolver,
                 Settings.System.CARRIER_LABEL_TYPE, TYPE_DEFAULT);
         mCarrierLabelCustom = Settings.System.getString(resolver,
@@ -166,6 +161,7 @@ public class CarrierLabel extends TextView {
                     str.append(plmn);
                     something = true;
                 }
+
                 if (showSpn && spn != null) {
                     if (something) {
                         str.append('\n');
@@ -192,21 +188,21 @@ public class CarrierLabel extends TextView {
                 break;
         }
 
-        updateColors();
+        updateColor();
 
-        if (haveSignal) {
+        if (haveSignal)
             setText(label);
-        } else {
+        else
             setText(com.android.internal.R.string.lockscreen_carrier_default);
-        }
     }
 
-    private void updateColors() {
+    private void updateColor() {
 		ContentResolver resolver = mContext.getContentResolver();
 
         mPlmnColor = Settings.System
 				.getInt(resolver, Settings.System.COLOR_LABEL_PLMN, mPlmnColor);
 
 		setTextColor(mPlmnColor);
+        refreshDrawableState();
     } 
 }

@@ -22,25 +22,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-/**
- * This widget displays the percentage of the battery as a number
- */
 public class CmBatteryText extends TextView {
     private boolean mAttached;
-
-    // weather to show this battery widget or not
     private boolean mShowCmBattery;
     private int mPercentColor = 0xffffffff;
     Handler mHandler;
 
-    // tracks changes to settings, so status bar is auto updated the moment the
-    // setting is toggled
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -49,7 +43,7 @@ public class CmBatteryText extends TextView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-					Settings.System.STATUS_BAR_CM_BATTERY), false, this);
+					Settings.System.STATUS_BAR_BATTERY), false, this);
 			resolver.registerContentObserver(Settings.System.getUriFor(
 					Settings.System.COLOR_BATTERY_PERCENT), false, this);
         }
@@ -74,7 +68,6 @@ public class CmBatteryText extends TextView {
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
-
         updateSettings();
     }
 
@@ -85,9 +78,7 @@ public class CmBatteryText extends TextView {
         if (!mAttached) {
             mAttached = true;
             IntentFilter filter = new IntentFilter();
-
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
     }
@@ -101,54 +92,43 @@ public class CmBatteryText extends TextView {
         }
     }
 
-    /**
-     * Handles changes ins battery level and charger connection
-     */
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 updateCmBatteryText(intent);
             }
         }
     };
 
-    /**
-     * Sets the output text. Kind of onDraw of canvas based classes
-     *
-     * @param intent
-     */
     final void updateCmBatteryText(Intent intent) {
         int level = intent.getIntExtra("level", 0);
         setText(Integer.toString(level));
     }
 
-    /**
-     * Invoked by SettingsObserver, this method keeps track of just changed
-     * settings. Also does the initial call from constructor
-     */
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
         mShowCmBattery = (Settings.System
                 .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
                 
-        updateColors();
+        updateColor();
         
-        if (mShowCmBattery) {
+        if (mShowCmBattery)
             setVisibility(View.VISIBLE);
-        } else {
+        else
             setVisibility(View.GONE);
-        }
     }
 
-    private void updateColors() {
+    private void updateColor() {
 		ContentResolver resolver = mContext.getContentResolver();
 
         mPercentColor = Settings.System
 				.getInt(resolver, Settings.System.COLOR_BATTERY_PERCENT, mPercentColor);
 
        	setTextColor(mPercentColor);
+        refreshDrawableState();
     }
 }

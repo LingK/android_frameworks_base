@@ -44,7 +44,7 @@ public class TickerView extends TextSwitcher
         showNext();
     }
 
-    public void updateColors(int color) {
+    public void updateColor(int color) {
         mTextColor = color;
     }
 }

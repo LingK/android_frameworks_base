@@ -67,9 +67,6 @@ public class StatusBarIconView extends AnimatedImageView {
         return a.equals(b);
     }
 
-    /**
-     * Returns whether the set succeeded.
-     */
     public boolean set(StatusBarIcon icon) {
         final boolean iconEquals = mIcon != null
                 && streq(mIcon.iconPackage, icon.iconPackage)
@@ -115,14 +112,6 @@ public class StatusBarIconView extends AnimatedImageView {
         return getIcon(getContext(), icon);
     }
 
-    /**
-     * Returns the right icon to use for this item, respecting the iconId and
-     * iconPackage (if set)
-     * 
-     * @param context Context to use to get resources if iconPackage is not set
-     * @return Drawable for this item, or null if the package or item could not
-     *         be found
-     */
     public static Drawable getIcon(Context context, StatusBarIcon icon) {
         Resources r = null;
 

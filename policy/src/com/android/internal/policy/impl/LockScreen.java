@@ -199,23 +199,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private int mCustomIconStyle = Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_CUSTOM_ICON_STYLE, 1);
     private int mWidgetLayout = Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_WIDGETS_LAYOUT, 0);
+            Settings.System.LOCKSCREEN_WIDGETS_LAYOUT, 2);
     private boolean mRotaryUnlockDown = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ROTARY_UNLOCK_DOWN, 0) == 1);
     private boolean mRotaryHideArrows = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_ROTARY_HIDE_ARROWS, 0) == 1);
     private int mCarrierLabelType = (Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.CARRIER_LABEL_TYPE, CARRIER_TYPE_DEFAULT));
+            Settings.System.CARRIER_LABEL_TYPE, CARRIER_TYPE_CUSTOM));
     private String mCarrierLabelCustom = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.CARRIER_LABEL_CUSTOM_STRING));
-
-    // Custom Quadrants
-    private String[] mCustomQuandrants = {(Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_1)),(Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_2)),(Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_3)),(Settings.System.getString(mContext.getContentResolver(),
-            Settings.System.LOCKSCREEN_CUSTOM_APP_URING_4))};
-    Intent[] mCustomApps;
 
     // Current Selector
     private boolean mUseSliderLockscreen = (mLockscreenStyle == 1);
@@ -386,7 +378,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mUnlockRing.setOnUnlockRingTriggerListener(this);
         mSenseRingSelector = (SenseLikeLock) findViewById(R.id.sense_selector);
         mSenseRingSelector.setOnSenseLikeSelectorTriggerListener(this);
-        //setupSenseLikeRingShortcuts();
 
         // Custom Apps & Icons
         if (mCustomAppActivity != null) {
@@ -1490,99 +1481,4 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
             mAlbumArtToggle = true;
     }
-   
-    private void setupSenseLikeRingShortcuts(){
-	    int numapps = 0;
-	    Intent intent = new Intent();
-	    PackageManager pm = mContext.getPackageManager();
-	    mCustomApps = new Intent[4];
-	    Drawable[] shortcutsicons;
-
-	    for(int i = 0; i < mCustomQuandrants.length ; i++){
-		    if(mCustomQuandrants[i] != null){
-			    numapps++;
-		    }
-		}
-	   
-	    if(numapps != 4){
-		   mCustomApps = mSenseRingSelector.setDefaultIntents();
-           for(int i = 0; i < 4; i++){
-			 try{
-		        if(mCustomQuandrants[i] != null) {
-                    mCustomApps[i] =  Intent.parseUri(mCustomQuandrants[i]  ,0);
-                }
-			 }catch (java.net.URISyntaxException ex) {
-					Log.w(TAG, "Invalid hotseat intent: " + mCustomQuandrants[i]);
-		     }
-           }
-		   numapps = 4;
-	    } else for(int i = 0; i < numapps ; i++) {
-				try{
-					intent = Intent.parseUri(mCustomQuandrants[i], 0);
-				}catch (java.net.URISyntaxException ex) {
-					Log.w(TAG, "Invalid hotseat intent: " + mCustomQuandrants[i]);
-		        }
-
-				ResolveInfo bestMatch = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-		        List<ResolveInfo> allMatches = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-		         
-		        if (DBG) { 
-		                Log.d(TAG, "Best match for intent: " + bestMatch);
-		                Log.d(TAG, "All matches: ");
-		                for (ResolveInfo ri : allMatches) {
-		                    Log.d(TAG, "  --> " + ri);
-		                }
-		        }
-		         
-		        ComponentName com = new ComponentName(
-	                    bestMatch.activityInfo.applicationInfo.packageName,
-	                    bestMatch.activityInfo.name);
-		        mCustomApps[i] = new Intent(Intent.ACTION_MAIN).setComponent(com);
-	   }
-	   
-	   shortcutsicons = new Drawable[numapps];
-	   float iconScale =0.80f;
-	  
-	   for(int i = 0; i < numapps ; i++){
-		   try {
-			   shortcutsicons[i] = pm.getActivityIcon(mCustomApps[i]);
-			   shortcutsicons[i] = scaledDrawable(shortcutsicons[i], mContext, iconScale);
-           } catch (ArrayIndexOutOfBoundsException ex) {
-               Log.w(TAG, "Missing shortcut_icons array item #" + i);
-               shortcutsicons[i] = null;
-           } catch (PackageManager.NameNotFoundException e) {
-               e.printStackTrace();
-           }
-	   }
-	   
-       mSenseRingSelector.setShortCutsDrawables(shortcutsicons[0], shortcutsicons[1], shortcutsicons[2], shortcutsicons[3]);
-   }
-   
-   static Drawable scaledDrawable(Drawable icon, Context context, float scale) {
-		final Resources resources=context.getResources();
-		int sIconHeight= (int) resources.getDimension(android.R.dimen.app_icon_size);
-		int sIconWidth = sIconHeight;
-		int width = sIconWidth;
-		int height = sIconHeight;
-		Bitmap original;
-
-		try{
-		    original= Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		} catch (OutOfMemoryError e) {
-		   return icon;
-		}
-
-		Canvas canvas = new Canvas(original);
-		canvas.setBitmap(original);
-		icon.setBounds(0,0, width, height);
-		icon.draw(canvas);
-
-		try{
-		    Bitmap endImage=Bitmap.createScaledBitmap(original, (int)(width*scale), (int)(height*scale), true);
-		    original.recycle();
-		    return new FastBitmapDrawable(endImage);
-		} catch (OutOfMemoryError e) {
-		    return icon;
-		}
-	}
 }
