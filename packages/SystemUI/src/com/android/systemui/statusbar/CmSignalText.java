@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.PhoneStateListener;
@@ -39,12 +40,12 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class CmSignalText extends TextView {
-
     int dBm = 0;
     int ASU = 0;
     private SignalStrength signal;
     private boolean mAttached;
     private int mValueColor = 0xffffffff;
+
     private static final int STYLE_HIDE = 0;
     private static final int STYLE_SHOW = 1;
     private static final int STYLE_SHOW_DBM = 2;
@@ -57,6 +58,7 @@ public class CmSignalText extends TextView {
 
     public CmSignalText(Context context, AttributeSet attrs) {
         super(context, attrs);
+
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
@@ -78,6 +80,7 @@ public class CmSignalText extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
         if (mAttached) {
             mAttached = false;
         }
@@ -87,6 +90,7 @@ public class CmSignalText extends TextView {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (action.equals(Intent.ACTION_SIGNAL_DBM_CHANGED)) {
                 dBm = intent.getIntExtra("dbm", 0);
             }
@@ -102,7 +106,7 @@ public class CmSignalText extends TextView {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CM_SIGNAL_TEXT), false, this);
+                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.PHONE_DBM_LEVEL), false, this);        
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -123,8 +127,9 @@ public class CmSignalText extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
 
         style = Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, STYLE_HIDE);
-        updateColors();
+                .getInt(resolver, Settings.System.STATUS_BAR_SIGNAL_TEXT, STYLE_HIDE);
+
+        updateColor();
 
         if (style == STYLE_SHOW) {
             this.setVisibility(View.VISIBLE);
@@ -143,11 +148,13 @@ public class CmSignalText extends TextView {
         }
     }
 
-    private void updateColors() {
+    private void updateColor() {
 		ContentResolver resolver = mContext.getContentResolver();
 
         mValueColor = Settings.System
 				.getInt(resolver, Settings.System.COLOR_SIGNALTEXT_VALUE, mValueColor);
+
        	setTextColor(mValueColor);
+        refreshDrawableState();
     }
 }

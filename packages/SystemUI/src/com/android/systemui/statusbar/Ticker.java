@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
- * Patched by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +40,6 @@ import com.android.systemui.R;
 
 public abstract class Ticker {
     private static final int TICKER_SEGMENT_DELAY = 3000;
-    
     private Context mContext;
     private Handler mHandler = new Handler();
     private ArrayList<Segment> mSegments = new ArrayList();
@@ -74,7 +72,6 @@ public abstract class Ticker {
             return null;
         }
 
-        /** returns null if there is no more text */
         CharSequence getText() {
             if (this.current > this.text.length()) {
                 return null;
@@ -93,7 +90,6 @@ public abstract class Ticker {
             }
         }
 
-        /** returns null if there is no more text */
         CharSequence advance() {
             this.first = false;
             int index = this.next;
@@ -158,7 +154,6 @@ public abstract class Ticker {
         mTextSwitcher.setOutAnimation(
                     AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
 
-        // Copy the paint style of one of the TextSwitchers children to use later for measuring
         TextView text = (TextView)mTextSwitcher.getChildAt(0);
         mPaint = text.getPaint();
     }
@@ -167,9 +162,6 @@ public abstract class Ticker {
     void addEntry(StatusBarNotification n) {
         int initialCount = mSegments.size();
 
-        // If what's being displayed has the same text and icon, just drop it
-        // (which will let the current one finish, this happens when apps do
-        // a notification storm).
         if (initialCount > 0) {
             final Segment seg = mSegments.get(0);
             if (n.pkg.equals(seg.notification.pkg)
@@ -185,12 +177,10 @@ public abstract class Ticker {
                 new StatusBarIcon(n.pkg, n.notification.icon, n.notification.iconLevel, 0));
         final Segment newSegment = new Segment(n, icon, n.notification.tickerText);
 
-        // If there's already a notification schedule for this package and id, remove it.
         for (int i=0; i<mSegments.size(); i++) {
             Segment seg = mSegments.get(i);
             if (n.id == seg.notification.id && n.pkg.equals(seg.notification.pkg)) {
-                // just update that one to use this new data instead
-                mSegments.remove(i--); // restart iteration here
+                mSegments.remove(i--);
             }
         }
 
@@ -242,12 +232,10 @@ public abstract class Ticker {
                 Segment seg = mSegments.get(0);
 
                 if (seg.first) {
-                    // this makes the icon slide in for the first one for a given
-                    // notification even if there are two notifications with the
-                    // same icon in a row
                     mIconSwitcher.setImageDrawable(seg.icon);
                 }
                 CharSequence text = seg.advance();
+
                 if (text == null) {
                     mSegments.remove(0);
                     continue;
@@ -257,6 +245,7 @@ public abstract class Ticker {
                 scheduleAdvance();
                 break;
             }
+
             if (mSegments.size() == 0) {
                 tickerDone();
             }
@@ -271,4 +260,3 @@ public abstract class Ticker {
     abstract void tickerDone();
     abstract void tickerHalting();
 }
-

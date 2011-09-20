@@ -603,9 +603,9 @@ public class StatusBarPolicy {
         }
     };
 
-    private boolean mShowCmSignal;
-    private boolean mShowCmBattery;
-    private boolean mCmBatteryStatus;
+    private boolean mShowSignal;
+    private boolean mShowBattery;
+    private boolean mBatteryStatus;
     private boolean mShowPhoneSignal;
     private boolean mPhoneSignalStatus;
 
@@ -619,13 +619,13 @@ public class StatusBarPolicy {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CM_BATTERY), false, this);
+                    Settings.System.STATUS_BAR_BATTERY), false, this);
 
 			resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_PHONE_SIGNAL), false, this);
 
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CM_SIGNAL_TEXT), false, this);                 
+                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);                 
 
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUS_BAR_HEADSET), false, this);
@@ -645,7 +645,7 @@ public class StatusBarPolicy {
         mSignalStrength = new SignalStrength();
         mBatteryStats = BatteryStatsService.getService();
 
-        // settings observer for cm-battery change
+        // settings observer for battery change
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
         updateSettings();
@@ -812,10 +812,10 @@ public class StatusBarPolicy {
         final int id = intent.getIntExtra("icon-small", 0);
         int level = intent.getIntExtra("level", 0);
         
-        if (!mShowCmBattery || mCmBatteryStatus != mShowCmBattery) {
+        if (!mShowBattery || mBatteryStatus != mShowBattery) {
             mService.setIcon("battery", id, level);
-            mService.setIconVisibility("battery", !mShowCmBattery);
-            mCmBatteryStatus = mShowCmBattery;
+            mService.setIconVisibility("battery", !mShowBattery);
+            mBatteryStatus = mShowBattery;
         }
 
         boolean plugged = intent.getIntExtra("plugged", 0) != 0;
@@ -1166,7 +1166,7 @@ public class StatusBarPolicy {
 
     private final void updateSignalStrength() {
         updateSignalStrengthDbm();
-        if (mShowCmSignal) {
+        if (mShowSignal) {
             mService.setIconVisibility("phone_signal", false);
             return;
         }
@@ -1861,19 +1861,19 @@ public class StatusBarPolicy {
     private void updateSettings(){
         ContentResolver resolver = mContext.getContentResolver();
 
-        mShowCmBattery = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_CM_BATTERY, 0) > 0);
-        mCmBatteryStatus = !mShowCmBattery;
-        mService.setIconVisibility("battery", !mShowCmBattery);
+        mShowBattery = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 0) > 0);
+        mBatteryStatus = !mShowBattery;
+        mService.setIconVisibility("battery", !mShowBattery);
 
 		mShowPhoneSignal = (Settings.System.getInt(resolver,
 				Settings.System.STATUS_BAR_PHONE_SIGNAL, 0) == 1);
 	    mPhoneSignalStatus = !mShowPhoneSignal;
 		mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
 		
-        mShowCmSignal = Settings.System.getInt(mContext.getContentResolver(),
-		Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, 0) != 0;
-		mService.setIconVisibility("phone_signal", !mShowCmSignal);
+        mShowSignal = Settings.System.getInt(mContext.getContentResolver(),
+		Settings.System.STATUS_BAR_SIGNAL_TEXT, 0) != 0;
+		mService.setIconVisibility("phone_signal", !mShowSignal);
 
         mShowHeadset = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_HEADSET, 1) == 1);

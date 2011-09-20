@@ -2269,15 +2269,15 @@ public final class Settings {
         public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
 
         /**
-         * Whether to show the CM battery percentage implementation or
+         * Whether to show the battery percentage implementation or
          * battery bar instead of the stock battery icon
          * 0: don't show / show stock icon instead
-         * 1: show cm battery / don't show stock icon
+         * 1: show mini battery / don't show stock icon
          * 2: show battery bar / don't show cm battery or stock icon
          * default: 0
          * @hide
          */
-        public static final String STATUS_BAR_CM_BATTERY = "status_bar_cm_battery";
+        public static final String STATUS_BAR_BATTERY = "status_bar_battery";
 
         /**
          * Whether to show the clock in status bar
@@ -2473,7 +2473,7 @@ public final class Settings {
          * 2: show signal text numbers w/small dBm appended
          * @hide
          */
-        public static final String STATUS_BAR_CM_SIGNAL_TEXT = "status_bar_cm_signal";
+        public static final String STATUS_BAR_SIGNAL_TEXT = "status_bar_signal_text";
         
         /**
          * Whether to show the phone signal in status bar
@@ -2761,26 +2761,62 @@ public final class Settings {
          * Contains activity of the app you want in quadrant 1
          * @hide
          */
-		public static String LOCKSCREEN_CUSTOM_APP_URING_1 = "lockscreen_quadrant_1_uri";
+		public static String LOCKSCREEN_CUSTOM_APP_HONEY_1 = "lockscreen_quadrant_1_uri";
 
         /**
          * Contains activity of the app you want in quadrant 2
          * @hide
          */
-		public static String LOCKSCREEN_CUSTOM_APP_URING_2 = "lockscreen_quadrant_2_uri";
+		public static String LOCKSCREEN_CUSTOM_APP_HONEY_2 = "lockscreen_quadrant_2_uri";
 
         /**
          * Contains activity of the app you want in quadrant 3
          * @hide
          */
-		public static String LOCKSCREEN_CUSTOM_APP_URING_3 = "lockscreen_quadrant_3_uri";
+		public static String LOCKSCREEN_CUSTOM_APP_HONEY_3 = "lockscreen_quadrant_3_uri";
 
         /**
          * Contains activity of the app you want in quadrant 4
          * @hide
          */
-		public static String LOCKSCREEN_CUSTOM_APP_URING_4 = "lockscreen_quadrant_4_uri";
+		public static String LOCKSCREEN_CUSTOM_APP_HONEY_4 = "lockscreen_quadrant_4_uri";
         
+        /**
+         * Whether or not to use predefined colors while charging
+         * @hide
+         */
+        public static final String COLOR_AUTO_CHARGING = "color_auto_charging";
+        
+        /**
+         * Whether or not to use predefined colors when not charging
+         * @hide
+         */
+		public static final String COLOR_AUTO_COLOR = "color_auto_color";
+		
+        /**
+         * The color choosen by user when battery level is above 40 percent
+         * @hide
+         */
+        public static final String COLOR_AUTO_REGULAR = "color_auto_regular";
+
+        /**
+         * The color choosen by user when battery level is below 40 percent
+         * @hide
+         */
+		public static final String COLOR_AUTO_MEDIUM = "color_auto_medium";
+		
+        /**
+         * The color choosen by user when battery level is below 15 percent
+         * @hide
+         */
+		public static final String COLOR_AUTO_LOW = "color_auto_low";
+		
+        /**
+         * Whether or not the color is determined by the percentage level
+         * @hide
+         */
+		public static final String COLOR_STATIC_VALUE = "color_static_value";
+
 		/** 
 		 * Liquid Settings (Finish)
 		 */
