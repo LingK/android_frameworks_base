@@ -39,7 +39,7 @@ import android.widget.TextView;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public class CmSignalText extends TextView {
+public class SignalText extends TextView {
     int dBm = 0;
     int ASU = 0;
     private SignalStrength signal;
@@ -52,11 +52,11 @@ public class CmSignalText extends TextView {
     private static int style;
     Handler mHandler;
 
-    public CmSignalText(Context context) {
+    public SignalText(Context context) {
         this(context, null);
     }
 
-    public CmSignalText(Context context, AttributeSet attrs) {
+    public SignalText(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mHandler = new Handler();

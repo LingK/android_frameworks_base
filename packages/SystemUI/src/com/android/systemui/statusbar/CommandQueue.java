@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,39 +19,25 @@ package com.android.systemui.statusbar;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-
 import com.android.internal.statusbar.IStatusBar;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 
-/**
- * This class takes the functions from IStatusBar that come in on
- * binder pool threads and posts messages to get them onto the main
- * thread, and calls onto Callbacks.  It also takes care of
- * coalescing these calls so they don't stack up.  For the calls
- * are coalesced, note that they are all idempotent.
- */
 class CommandQueue extends IStatusBar.Stub {
     private static final String TAG = "StatusBar.CommandQueue";
-
     private static final int MSG_MASK = 0xffff0000;
     private static final int INDEX_MASK = 0x0000ffff;
-
     private static final int MSG_ICON = 0x00010000;
     private static final int OP_SET_ICON = 1;
     private static final int OP_REMOVE_ICON = 2;
-
     private static final int MSG_ADD_NOTIFICATION = 0x00020000;
     private static final int MSG_UPDATE_NOTIFICATION = 0x00030000;
     private static final int MSG_REMOVE_NOTIFICATION = 0x00040000;
-
     private static final int MSG_DISABLE = 0x00050000;
-
     private static final int MSG_SET_VISIBILITY = 0x00060000;
     private static final int OP_EXPAND = 1;
     private static final int OP_COLLAPSE = 2;
-
     private StatusBarIconList mList;
     private Callbacks mCallbacks;
     private Handler mHandler = new H();
@@ -61,9 +47,6 @@ class CommandQueue extends IStatusBar.Stub {
         StatusBarNotification notification;
     }
 
-    /**
-     * These methods are called back on the main thread.
-     */
     public interface Callbacks {
         public void addIcon(String slot, int index, int viewIndex, StatusBarIcon icon);
         public void updateIcon(String slot, int index, int viewIndex,
@@ -200,4 +183,3 @@ class CommandQueue extends IStatusBar.Stub {
         }
     }
 }
-

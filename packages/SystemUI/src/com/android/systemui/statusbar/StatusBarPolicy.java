@@ -66,11 +66,7 @@ import com.android.server.am.BatteryStatsService;
 import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
 
-/**
- * This class contains all of the policy about which icons are installed in the status
- * bar at boot time.  It goes through the normal API for icons, even though it probably
- * strictly doesn't need to.
- */
+
 public class StatusBarPolicy {
     private static final String TAG = "StatusBarPolicy";
 

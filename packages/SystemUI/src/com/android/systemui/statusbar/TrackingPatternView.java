@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ public class TrackingPatternView extends View {
                 com.android.internal.R.drawable.status_bar_background);
         mTextureWidth = mTexture.getWidth();
         mTextureHeight = mTexture.getHeight();
-
         mPaint = new Paint();
         mPaint.setDither(false);
     }
@@ -48,13 +47,10 @@ public class TrackingPatternView extends View {
     public void onDraw(Canvas canvas) {
         final Bitmap texture = mTexture;
         final Paint paint = mPaint;
-
         final int width = getWidth();
         final int height = getHeight();
-
         final int textureWidth = mTextureWidth;
         final int textureHeight = mTextureHeight;
-
         int x = 0;
         int y;
 

@@ -29,9 +29,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-public class CmBatteryText extends TextView {
+public class BatteryText extends TextView {
     private boolean mAttached;
-    private boolean mShowCmBattery;
+    private boolean mShowBattery;
     private int mPercentColor = 0xffffffff;
     Handler mHandler;
 
@@ -54,15 +54,15 @@ public class CmBatteryText extends TextView {
         }
     }
 
-    public CmBatteryText(Context context) {
+    public BatteryText(Context context) {
         this(context, null);
     }
 
-    public CmBatteryText(Context context, AttributeSet attrs) {
+    public BatteryText(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CmBatteryText(Context context, AttributeSet attrs, int defStyle) {
+    public BatteryText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         mHandler = new Handler();
@@ -98,12 +98,12 @@ public class CmBatteryText extends TextView {
             String action = intent.getAction();
 
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                updateCmBatteryText(intent);
+                updateBatteryText(intent);
             }
         }
     };
 
-    final void updateCmBatteryText(Intent intent) {
+    final void updateBatteryText(Intent intent) {
         int level = intent.getIntExtra("level", 0);
         setText(Integer.toString(level));
     }
@@ -111,12 +111,12 @@ public class CmBatteryText extends TextView {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mShowCmBattery = (Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_CM_BATTERY, 0) == 1);
+        mShowBattery = (Settings.System
+                .getInt(resolver, Settings.System.STATUS_BAR_BATTERY, 0) == 1);
                 
         updateColor();
         
-        if (mShowCmBattery)
+        if (mShowBattery)
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);

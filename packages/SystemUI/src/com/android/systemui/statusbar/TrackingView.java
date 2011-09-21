@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-
 
 public class TrackingView extends LinearLayout {
     final Display mDisplay;
@@ -49,16 +48,18 @@ public class TrackingView extends LinearLayout {
         switch (event.getKeyCode()) {
         case KeyEvent.KEYCODE_BACK:
             if (down) {
-                //mService.deactivate();
+
             }
             return true;
         }
+
         return super.dispatchKeyEvent(event);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+
         mService.onTrackingViewAttached();
         mIsAttachedToWindow = true;
     }
@@ -66,6 +67,7 @@ public class TrackingView extends LinearLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
         mService.onTrackingViewDetached();
         mIsAttachedToWindow = false;
     }
