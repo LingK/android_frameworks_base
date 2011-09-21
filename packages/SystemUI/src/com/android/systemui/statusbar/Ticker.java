@@ -141,19 +141,16 @@ public abstract class Ticker {
     Ticker(Context context, CmStatusBarView sb) {
         mContext = context;
         mTickerView = sb.findViewById(R.id.ticker);
-
         mIconSwitcher = (ImageSwitcher)sb.findViewById(R.id.tickerIcon);
         mIconSwitcher.setInAnimation(
                     AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
         mIconSwitcher.setOutAnimation(
                     AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
-
         mTextSwitcher = (TextSwitcher)sb.findViewById(R.id.tickerText);
         mTextSwitcher.setInAnimation(
                     AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_in));
         mTextSwitcher.setOutAnimation(
                     AnimationUtils.loadAnimation(context, com.android.internal.R.anim.push_up_out));
-
         TextView text = (TextView)mTextSwitcher.getChildAt(0);
         mPaint = text.getPaint();
     }
@@ -189,15 +186,12 @@ public abstract class Ticker {
         if (initialCount == 0 && mSegments.size() > 0) {
             Segment seg = mSegments.get(0);
             seg.first = false;
-            
             mIconSwitcher.setAnimateFirstView(false);
             mIconSwitcher.reset();
             mIconSwitcher.setImageDrawable(seg.icon);
-            
             mTextSwitcher.setAnimateFirstView(false);
             mTextSwitcher.reset();
             mTextSwitcher.setText(seg.getText());
-            
             tickerStarting();
             scheduleAdvance();
         }
@@ -234,6 +228,7 @@ public abstract class Ticker {
                 if (seg.first) {
                     mIconSwitcher.setImageDrawable(seg.icon);
                 }
+
                 CharSequence text = seg.advance();
 
                 if (text == null) {
@@ -241,7 +236,6 @@ public abstract class Ticker {
                     continue;
                 }
                 mTextSwitcher.setText(text);
-
                 scheduleAdvance();
                 break;
             }

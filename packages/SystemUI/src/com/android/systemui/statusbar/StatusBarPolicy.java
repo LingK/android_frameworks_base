@@ -67,23 +67,13 @@ import com.android.server.am.BatteryStatsService;
 import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
 
-/**
- * This class contains all of the policy about which icons are installed in the status
- * bar at boot time.  It goes through the normal API for icons, even though it probably
- * strictly doesn't need to.
- */
 public class StatusBarPolicy {
     private static final String TAG = "StatusBarPolicy";
-
-    // message codes for the handler
     private static final int EVENT_BATTERY_CLOSE = 4;
-
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
-
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
-
     private static final int INET_CONDITION_THRESHOLD = 50;
 
     private final Context mContext;
@@ -465,7 +455,6 @@ public class StatusBarPolicy {
               R.drawable.stat_sys_data_fully_inandout_4g }
     };
 
-
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
     IccCard.State mSimState = IccCard.State.READY;
@@ -607,7 +596,6 @@ public class StatusBarPolicy {
     private boolean mBatteryStatus;
     private boolean mShowPhoneSignal;
     private boolean mPhoneSignalStatus;
-
     private boolean mShowHeadset;
 
     class SettingsObserver extends ContentObserver {

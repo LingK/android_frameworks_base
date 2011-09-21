@@ -147,7 +147,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     TextView mClearButton;
     TextView mCompactClearButton;
     ViewGroup mClearButtonParent;
-    CmBatteryMiniIcon mCmBatteryMiniIcon;
     // drag bar
     CloseDragHandle mCloseView;
     // ongoing
@@ -234,7 +233,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     Context mContext;
 
     // tracks changes to settings, so status bar is moved to top/bottom
-    // as soon as cmparts setting is changed
+    // as soon as parts setting is changed
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -446,7 +445,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mIcons = (LinearLayout)sb.findViewById(R.id.icons);
         mTickerView = sb.findViewById(R.id.ticker);
         mDateView = (DateView)sb.findViewById(R.id.date);
-        mCmBatteryMiniIcon = (CmBatteryMiniIcon)sb.findViewById(R.id.CmBatteryMiniIcon);
 
         mExpandedDialog = new ExpandedDialog(context);
         mExpandedView = expanded;

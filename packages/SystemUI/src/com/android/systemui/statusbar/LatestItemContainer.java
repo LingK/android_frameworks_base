@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2010 The Android Open Source Project
+* Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,8 @@ import com.android.systemui.R;
 
 public class LatestItemContainer extends LinearLayout {
     private final GestureDetector mGestureDetector;
-
     private Runnable mSwipeCallback = null;
-
     private final Handler mHandler = new Handler();
-
     private final Point mStartPoint = new Point();
 
     public LatestItemContainer(final Context context, AttributeSet attrs) {

@@ -1,18 +1,18 @@
 /*
- * Created by Sven Dawitz; Copyright (C) 2011 CyanogenMod Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2011 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.systemui.statusbar;
 
@@ -51,12 +51,9 @@ import com.android.systemui.R;
 public class CmStatusBarView extends StatusBarView {
     private static final boolean DEBUG = false;
     private static final String TAG = "CmStatusBarView";
-
-    //virtual button presses - double defined in StatusBarView and PhoneWindowManager
     public static final int KEYCODE_VIRTUAL_HOME_LONG=KeyEvent.getMaxKeyCode()+1;
     public static final int KEYCODE_VIRTUAL_BACK_LONG=KeyEvent.getMaxKeyCode()+2;
 
-    //set up statusbar buttons - quiet a lot for that awesome design!
     ViewGroup mSoftButtons;
     ImageButton mHomeButton;
     ImageButton mMenuButton;
@@ -72,8 +69,8 @@ public class CmStatusBarView extends StatusBarView {
     ImageButton mSeperator4;
     ImageButton mSeperator5;
 
-    boolean mHasSoftButtons;  // toggled by config.xml
-    boolean mIsBottom;   // this and below booleans toggled by system settings from cmparts
+    boolean mHasSoftButtons;
+    boolean mIsBottom;
     boolean mIsLeft;
     boolean mShowHome;
     boolean mShowMenu;
@@ -82,13 +79,11 @@ public class CmStatusBarView extends StatusBarView {
     boolean mShowQuickNa;
     ViewGroup mIcons;
 
-    // used for fullscreen handling and broadcasts
     ActivityManager mActivityManager;
     RunningAppProcessInfo mFsCallerProcess;
     ComponentName mFsCallerActivity;
     Intent mFsForceIntent;
     Intent mFsOffIntent;
-
     Handler mHandler;
 
     class FullscreenReceiver extends BroadcastReceiver {
@@ -160,7 +155,6 @@ public class CmStatusBarView extends StatusBarView {
     protected void onFinishInflate(){
         super.onFinishInflate();
 
-        // load config to determine if we want statusbar buttons
         mHasSoftButtons = CmSystem.getDefaultBool(mContext, CmSystem.CM_HAS_SOFT_BUTTONS);
         mHandler=new Handler();
         mSoftButtons = (ViewGroup)findViewById(R.id.buttons);
@@ -168,10 +162,6 @@ public class CmStatusBarView extends StatusBarView {
         if(!mHasSoftButtons)
             mSoftButtons.setVisibility(View.GONE);
 
-        /**
-         * All this is skipped if CmSystem.getDefaultBool(CM_HAS_SOFT_BUTTONS) is false
-         * If true then add statusbar buttons and set listeners and intents
-         */
         if (mHasSoftButtons) {
             mHomeButton = (ImageButton)findViewById(R.id.status_home);
             mHomeButton.setOnClickListener(
@@ -233,7 +223,6 @@ public class CmStatusBarView extends StatusBarView {
             mSearchButton.setOnLongClickListener(
                     new ImageButton.OnLongClickListener() {
                         public boolean onLongClick(View v) {
-                            // start custom app
                             boolean mCustomLongSearchAppToggle=(Settings.System.getInt(getContext().getContentResolver(),
                                     Settings.System.USE_CUSTOM_LONG_SEARCH_APP_TOGGLE, 0) == 1);
 
@@ -250,7 +239,7 @@ public class CmStatusBarView extends StatusBarView {
                 new ImageButton.OnClickListener() {
                     public void onClick(View v) {
                         if(mService.mExpanded){
-                            mService.animateCollapse(); // with regards to flawed sources. doesnt work without animating call. blame google (:
+                            mService.animateCollapse();
                             mService.performCollapse();
                         }else {
                             mService.performExpand();
@@ -278,11 +267,9 @@ public class CmStatusBarView extends StatusBarView {
             mSeperator5 = (ImageButton)findViewById(R.id.status_sep5);
             mIcons = (ViewGroup)findViewById(R.id.icons);
 
-            // set up settings observer
             SettingsObserver settingsObserver = new SettingsObserver(mHandler);
             settingsObserver.observe();
 
-            // catching fullscreen attempts
             FullscreenReceiver fullscreenReceiver = new FullscreenReceiver();
             mContext.registerReceiver(fullscreenReceiver, new IntentFilter("android.intent.action.FULLSCREEN_ATTEMPT"));
             mFsForceIntent=new Intent("android.intent.action.FORCE_FULLSCREEN");
@@ -322,7 +309,6 @@ public class CmStatusBarView extends StatusBarView {
         int resCollapsed=mIsBottom ? R.drawable.ic_statusbar_na_up_bottom : R.drawable.ic_statusbar_na_down_top;
         int resExpanded=mIsBottom ? R.drawable.ic_statusbar_na_down_bottom : R.drawable.ic_statusbar_na_up_top;
         int resUse=mService.mExpanded ? resExpanded : resCollapsed;
-
         mQuickNaButton.setBackgroundResource(resUse);
     }
 
@@ -354,15 +340,11 @@ public class CmStatusBarView extends StatusBarView {
         return super.onTouchEvent(event);
     }
 
-    // checks regularly if an old fs caller is in foreground again.
-    // this wont trigger a new fullscreen request, since that window
-    // already thinks, its fullscreen. tracking old callers reappearing
     HideButtonEnabler mHideButtonEnabler = new HideButtonEnabler();
     public class HideButtonEnabler implements Runnable {
         public void run(){
             Entry e=null;;
 
-            //cancel checking - list either new, or all old callers ended
             if(mKnownCallers.isEmpty()){
                 if(DEBUG) Slog.i(TAG, "HideButtonEnabler - mKnownCallers is empty - stopping to monitor active app");
                 return;
@@ -382,7 +364,6 @@ public class CmStatusBarView extends StatusBarView {
                 }
             }
 
-            //recheck every 500ms until list is empty (aka all fs processes ended)
             mHandler.removeCallbacks(mHideButtonEnabler);
             mHandler.postDelayed(mHideButtonEnabler, 500);
         }
@@ -410,11 +391,10 @@ public class CmStatusBarView extends StatusBarView {
 
             while(i.hasNext()){
                 e=i.next();
-                // return Entry if pid matches
+
                 if(e.ProcessInfo.pid == pid)
                     return e;
 
-                // remove if process/pid is ended
                 if(!isPidRunning(e.ProcessInfo.pid))
                     i.remove();
             }
@@ -439,21 +419,16 @@ public class CmStatusBarView extends StatusBarView {
         }
     }
 
-    // check regularly if the old activity is still active
     HideButtonDisabler mHideButtonDisabler = new HideButtonDisabler();
     public class HideButtonDisabler implements Runnable {
-        // in really really rare cases, getForegroundApp() returns a wrong process, like android.process.media. to prevent this
-        // we use this variable to make sure, the active app isnt returned in two consecutive loops before hiding the button
         private boolean mWasInactiveLastCall;
 
         public void run() {
             boolean appStillForeground=false;
 
-            // first time initialization - handled delayed, so the system got time to setup ActivityManager correctly
             if(mFsCallerProcess==null){
                 mFsCallerProcess=getForegroundApp();
                 Slog.i(TAG, "Fullscreen Attempt ProcessName: " + (mFsCallerProcess==null ? "null" : mFsCallerProcess.processName));
-                // can be null in rare cases. see comment in isStillActive() for details
                 mFsCallerActivity=getActivityForApp(mFsCallerProcess);
                 Slog.i(TAG, "Fullscreen Attempt Top Activity: " + (mFsCallerActivity==null ? "null" : mFsCallerActivity.flattenToShortString()));
 
@@ -463,20 +438,17 @@ public class CmStatusBarView extends StatusBarView {
                 mWasInactiveLastCall=false;
             }
 
-            // check if caller process and activity are still present
             if(isStillActive(mFsCallerProcess, mFsCallerActivity)){
                 appStillForeground=true;
                 mWasInactiveLastCall=false;
             }
 
-            // prepare for a second check (see above comment for details)
             if(appStillForeground==false && mWasInactiveLastCall==false){
                 mWasInactiveLastCall=true;
                 mHandler.postDelayed(mHideButtonDisabler, 250);
                 return;
             }
 
-            // finally handle pure callback or disabling hide button
             if(appStillForeground)
                 mHandler.postDelayed(mHideButtonDisabler, 500);
             else{
@@ -494,18 +466,12 @@ public class CmStatusBarView extends StatusBarView {
 
     private boolean isStillActive(RunningAppProcessInfo process, ComponentName activity)
     {
-        // activity can be null in cases, where one app starts another. for example, astro
-        // starting rock player when a movie file was clicked. we dont have an activity then,
-        // but the package exits as soon as back is hit. so we can ignore the activity
-        // in this case
         if(process==null)
             return false;
 
         RunningAppProcessInfo currentFg=getForegroundApp();
         ComponentName currentActivity=getActivityForApp(currentFg);
 
-        // in some cases, we cannot get any foreground app - we ignore that and return still active, since
-        // its kinda impossible and is a hint to the system being busy or bad stuff happens
         if(currentFg==null){
             if(DEBUG) Slog.i(TAG, "isStillActive() returned no foreground activity. this is impossible and so ignored");
             return true;
@@ -583,11 +549,9 @@ public class CmStatusBarView extends StatusBarView {
         mIcons.removeView(mSoftButtons);
         mIcons.addView(mSoftButtons, mIsLeft ? 0 : mIcons.getChildCount());
 
-        // toggle visibility of edges
         mEdgeLeft.setVisibility(mIsLeft ? View.GONE : View.VISIBLE);
         mEdgeRight.setVisibility(mIsLeft ? View.VISIBLE : View.GONE);
 
-        // toggle visibility of buttons - at first, toggle all visible
         mHomeButton.setVisibility(View.VISIBLE);
         mSeperator1.setVisibility(View.VISIBLE);
         mMenuButton.setVisibility(View.VISIBLE);
@@ -598,7 +562,6 @@ public class CmStatusBarView extends StatusBarView {
         mSeperator4.setVisibility(View.VISIBLE);
         mQuickNaButton.setVisibility(View.VISIBLE);
 
-        // now toggle off unneeded stuff
         if(!mShowHome){
             mHomeButton.setVisibility(View.GONE);
             mSeperator1.setVisibility(View.GONE);
@@ -618,7 +581,6 @@ public class CmStatusBarView extends StatusBarView {
         if(!mShowQuickNa)
             mQuickNaButton.setVisibility(View.GONE);
 
-        // adjust seperators
         if(!mShowQuickNa)
             mSeperator4.setVisibility(View.GONE);
         if(!mShowQuickNa && !mShowSearch)
@@ -627,13 +589,12 @@ public class CmStatusBarView extends StatusBarView {
             mSeperator2.setVisibility(View.GONE);
         if(!mShowQuickNa && !mShowSearch && !mShowBack && !mShowMenu)
             mSeperator1.setVisibility(View.GONE);
-        // nothing displayed at all
+
         if(!mShowQuickNa && !mShowSearch && !mShowBack && !mShowMenu && !mShowHome && mHideButton.getVisibility()==View.GONE){
             mEdgeLeft.setVisibility(View.GONE);
             mEdgeRight.setVisibility(View.GONE);
         }
 
-        // replace resources depending on top or bottom bar
         if(mIsBottom){
             mEdgeLeft.setBackgroundResource(R.drawable.ic_statusbar_edge_right_bottom);
             mHomeButton.setBackgroundResource(R.drawable.ic_statusbar_home_bottom);
@@ -703,11 +664,6 @@ public class CmStatusBarView extends StatusBarView {
         }
     }
 
-    /**
-     * Runnable to hold simulate a keypress.
-     *
-     * This is executed in a separate Thread to avoid blocking
-     */
     private void simulateKeypress(final int keyCode) {
         new Thread( new KeyEventInjector( keyCode ) ).start();
     }

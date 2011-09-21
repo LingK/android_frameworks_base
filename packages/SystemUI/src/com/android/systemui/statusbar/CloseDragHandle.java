@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
-
 public class CloseDragHandle extends LinearLayout {
     StatusBarService mService;
 
@@ -29,16 +28,12 @@ public class CloseDragHandle extends LinearLayout {
         super(context, attrs);
     }
 
-    /**
-     * Ensure that, if there is no target under us to receive the touch,
-     * that we process it ourself.  This makes sure that onInterceptTouchEvent()
-     * is always called for the entire gesture.
-     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() != MotionEvent.ACTION_DOWN) {
             mService.interceptTouchEvent(event);
         }
+
         return true;
     }
 
@@ -48,4 +43,3 @@ public class CloseDragHandle extends LinearLayout {
                 ? true : super.onInterceptTouchEvent(event);
     }
 }
-

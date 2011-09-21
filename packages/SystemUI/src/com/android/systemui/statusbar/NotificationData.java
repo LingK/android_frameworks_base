@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,16 @@ import com.android.internal.statusbar.StatusBarNotification;
 
 import java.util.ArrayList;
 
-/**
- * The list of currently displaying notifications.
- */
 public class NotificationData {
     public static final class Entry {
         public IBinder key;
         public StatusBarNotification notification;
         public StatusBarIconView icon;
-        public View row; // the outer expanded view
-        public View content; // takes the click events and sends the PendingIntent
-        public View expanded; // the inflated RemoteViews
+        public View row;
+        public View content;
+        public View expanded;
     }
+
     private final ArrayList<Entry> mEntries = new ArrayList<Entry>();
 
     public int size() {
@@ -54,6 +52,7 @@ public class NotificationData {
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -80,6 +79,7 @@ public class NotificationData {
                 return entry;
             }
         }
+
         return null;
     }
 
@@ -95,36 +95,32 @@ public class NotificationData {
                 return i;
             }
         }
+
         return N;
     }
 
-    /**
-     * Return whether there are any visible items (i.e. items without an error).
-     */
     public boolean hasVisibleItems() {
         final int N = mEntries.size();
         for (int i=0; i<N; i++) {
             Entry entry = mEntries.get(i);
-            if (entry.expanded != null) { // the view successfully inflated
+            if (entry.expanded != null) {
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Return whether there are any clearable items (that aren't errors).
-     */
     public boolean hasClearableItems() {
         final int N = mEntries.size();
         for (int i=0; i<N; i++) {
             Entry entry = mEntries.get(i);
-            if (entry.expanded != null) { // the view successfully inflated
+            if (entry.expanded != null) {
                 if ((entry.notification.notification.flags & Notification.FLAG_NO_CLEAR) == 0) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 }

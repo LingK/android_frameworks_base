@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,8 @@ import com.android.internal.statusbar.StatusBarIcon;
 
 import com.android.systemui.R;
 
-
 public class IconMerger extends LinearLayout {
     private static final String TAG = "IconMerger";
-
     private int mIconSize;
     private StatusBarIconView mMoreView;
     private StatusBarIcon mMoreIcon = new StatusBarIcon(null, R.drawable.stat_notify_more, 0);
@@ -40,7 +38,6 @@ public class IconMerger extends LinearLayout {
 
         mIconSize = context.getResources().getDimensionPixelSize(
                 com.android.internal.R.dimen.status_bar_icon_size);
-
         mMoreView = new StatusBarIconView(context, "more");
         mMoreView.set(mMoreIcon);
         addView(mMoreView, 0, new LinearLayout.LayoutParams(mIconSize, mIconSize));
@@ -50,6 +47,7 @@ public class IconMerger extends LinearLayout {
         if (index == 0) {
             throw new RuntimeException("Attempt to put view before the more view: " + v);
         }
+
         addView(v, index, new LinearLayout.LayoutParams(mIconSize, mIconSize));
     }
 
@@ -61,7 +59,6 @@ public class IconMerger extends LinearLayout {
         final int N = getChildCount();
         int i;
 
-        // get the rightmost one, and see if we even need to do anything
         int fitRight = -1;
         for (i=N-1; i>=0; i--) {
             final View child = getChildAt(i);
@@ -71,7 +68,6 @@ public class IconMerger extends LinearLayout {
             }
         }
 
-        // find the first visible one that isn't the more icon
         final StatusBarIconView moreView = mMoreView;
         int fitLeft = -1;
         int startIndex = -1;
@@ -88,14 +84,8 @@ public class IconMerger extends LinearLayout {
 
         if (moreView == null || startIndex < 0) {
             return;
-            /*
-            throw new RuntimeException("Status Bar / IconMerger moreView == " + moreView
-                    + " startIndex=" + startIndex);
-            */
         }
         
-        // if it fits without the more icon, then hide the more icon and update fitLeft
-        // so everything gets pushed left
         int adjust = 0;
         if (fitRight - fitLeft <= maxWidth) {
             adjust = fitLeft - moreView.getLeft();
@@ -105,7 +95,6 @@ public class IconMerger extends LinearLayout {
         }
         int extra = fitRight - r;
         int shift = -1;
-
         int breakingPoint = fitLeft + extra + adjust;
         int number = 0;
         for (i=startIndex; i<N; i++) {
@@ -123,17 +112,14 @@ public class IconMerger extends LinearLayout {
                         number += n;
                     }
                 } else {
-                    // decide how much to shift by
                     if (shift < 0) {
                         shift = childLeft - fitLeft;
                     }
-                    // shift this left by shift
                     child.layout(childLeft-shift, child.getTop(),
                                     childRight-shift, child.getBottom());
                 }
             }
         }
-
         mMoreIcon.number = number;
         mMoreView.set(mMoreIcon);
     }

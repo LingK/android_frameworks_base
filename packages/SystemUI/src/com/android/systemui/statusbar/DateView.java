@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,20 @@
 
 package com.android.systemui.statusbar;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.text.format.DateFormat;
-
 import android.util.AttributeSet;
 import android.util.Slog;
 import android.widget.TextView;
 import android.view.MotionEvent;
-
 import java.util.Date;
 
 public final class DateView extends TextView {
     private static final String TAG = "DateView";
-
     private boolean mUpdating = false;
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -64,7 +60,6 @@ public final class DateView extends TextView {
 
     @Override
     protected int getSuggestedMinimumWidth() {
-        // makes the large background bitmap not force us to full width
         return 0;
     }
 
@@ -72,14 +67,12 @@ public final class DateView extends TextView {
         Date now = new Date();
         Resources res = Resources.getSystem();
         setText(DateFormat.format(res.getString(com.android.internal.R.string.abbrev_wday_month_day_year),now));
-        
     }
 
     void setUpdates(boolean update) {
         if (update != mUpdating) {
             mUpdating = update;
             if (update) {
-                // Register for Intent broadcasts for the clock and battery
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_TIME_TICK);
                 filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
@@ -91,4 +84,3 @@ public final class DateView extends TextView {
         }
     }
 }
-

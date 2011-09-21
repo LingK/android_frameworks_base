@@ -51,7 +51,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"/>    
 
-        <com.android.systemui.statusbar.CmSignalText
+        <com.android.systemui.statusbar.SignalText
             android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -59,19 +59,11 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"/>
 
-        <com.android.systemui.statusbar.CmBatteryText
+        <com.android.systemui.statusbar.BatteryText
             android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingRight="2dip"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"/>
-
-        <com.android.systemui.statusbar.CmBatteryMiniIcon
-            android:id="@+id/CmBatteryMiniIcon"
-            android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"/>
 
