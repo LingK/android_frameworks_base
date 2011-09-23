@@ -132,7 +132,7 @@ public class CarrierLabel extends TextView {
     void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mCarrierLabelType = Settings.System.getInt(resolver,
-                Settings.System.CARRIER_LABEL_TYPE, TYPE_DEFAULT);
+                Settings.System.CARRIER_LABEL_TYPE, TYPE_CUSTOM);
         mCarrierLabelCustom = Settings.System.getString(resolver,
                 Settings.System.CARRIER_LABEL_CUSTOM_STRING);
     }
