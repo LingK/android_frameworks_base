@@ -212,7 +212,7 @@ public class Clock extends TextView {
         return result;
     }
 
-    private void updateSettings(){
+    protected void updateSettings(){
         ContentResolver resolver = mContext.getContentResolver();
 
         mAmPmStyle = (Settings.System.getInt(resolver,
