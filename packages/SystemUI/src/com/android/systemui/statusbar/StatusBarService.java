@@ -567,7 +567,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         mNotifyTicker = Settings.System
                 .getInt(resolver, Settings.System.COLOR_NOTIFICATION_TICKER_TEXT, mNotifyTicker);
-        mTickerText.updateColors(mNotifyTicker);
+        mTickerText.updateColor(mNotifyTicker);
 
         mNotifyLatest = Settings.System
                 .getInt(resolver, Settings.System.COLOR_NOTIFICATION_LATEST, mNotifyLatest);
