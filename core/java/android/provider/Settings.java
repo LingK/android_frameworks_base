@@ -2795,12 +2795,6 @@ public final class Settings {
 		public static final String COLOR_AUTO_COLOR = "color_auto_color";
 		
         /**
-         * The color choosen by user when battery level is above 40 percent
-         * @hide
-         */
-        public static final String COLOR_AUTO_REGULAR = "color_auto_regular";
-
-        /**
          * The color choosen by user when battery level is below 40 percent
          * @hide
          */
