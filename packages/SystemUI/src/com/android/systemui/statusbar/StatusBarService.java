@@ -146,19 +146,23 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     // top bar
     TextView mNoNotificationsTitle;
     TextView mClearButton;
+    BatteryIcon mBatteryIcon;
     TextView mCompactClearButton;
     ViewGroup mClearButtonParent;
 
     // drag bar
     CloseDragHandle mCloseView;
+
     // ongoing
     NotificationData mOngoing = new NotificationData();
     TextView mOngoingTitle;
     LinearLayout mOngoingItems;
+
     // latest
     NotificationData mLatest = new NotificationData();
     TextView mLatestTitle;
     LinearLayout mLatestItems;
+
     // position
     int[] mPositionTmp = new int[2];
     boolean mExpanded;
@@ -448,6 +452,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mClock = (LinearLayout)sb.findViewById(R.id.center);
         mTickerView = sb.findViewById(R.id.ticker);
         mDateView = (DateView)sb.findViewById(R.id.date);
+        mBatteryIcon = (BatteryIcon)sb.findViewById(R.id.BatteryIcon);
 
         mExpandedDialog = new ExpandedDialog(context);
         mExpandedView = expanded;
