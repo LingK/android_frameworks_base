@@ -28,6 +28,7 @@ import com.android.internal.statusbar.StatusBarIcon;
 import com.android.systemui.R;
 
 public class IconMerger extends LinearLayout {
+
     private static final String TAG = "IconMerger";
     private int mIconSize;
     private StatusBarIconView mMoreView;
@@ -58,7 +59,6 @@ public class IconMerger extends LinearLayout {
         final int maxWidth = r - l;
         final int N = getChildCount();
         int i;
-
         int fitRight = -1;
         for (i=N-1; i>=0; i--) {
             final View child = getChildAt(i);
@@ -71,6 +71,7 @@ public class IconMerger extends LinearLayout {
         final StatusBarIconView moreView = mMoreView;
         int fitLeft = -1;
         int startIndex = -1;
+
         for (i=0; i<N; i++) {
             final View child = getChildAt(i);
             if (child == moreView) {

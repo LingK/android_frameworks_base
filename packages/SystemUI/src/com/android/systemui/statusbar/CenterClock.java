@@ -47,8 +47,8 @@ public class CenterClock extends Clock {
         super.updateSettings();
 
         ContentResolver resolver = mContext.getContentResolver();
-
-        boolean mShowClock = (Settings.System.getInt(resolver, Settings.System.STATUS_BAR_CLOCK, 1) == 2);
+        boolean mShowClock = (Settings.System.getInt(resolver, 
+                Settings.System.STATUS_BAR_CLOCK, 1) == 2);
 
         if (mShowClock)
             setVisibility(View.VISIBLE);

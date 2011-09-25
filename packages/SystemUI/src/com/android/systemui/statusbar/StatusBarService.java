@@ -25,8 +25,8 @@ import com.android.systemui.statusbar.powerwidget.PowerWidget;
 import com.android.systemui.statusbar.powerwidget.PowerWidgetBottom;
 
 import android.app.ActivityManagerNative;
-import android.app.Dialog;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -90,6 +90,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class StatusBarService extends Service implements CommandQueue.Callbacks {
+
     private static final String DATA_TYPE_TMOBILE_STYLE = "vnd.tmobile.cursor.item/style";
     private static final String DATA_TYPE_TMOBILE_THEME = "vnd.tmobile.cursor.item/theme";
     private static final String ACTION_TMOBILE_THEME_CHANGED = "com.tmobile.intent.action.THEME_CHANGED";
@@ -111,13 +112,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     StatusBarPolicy mIconPolicy;
     CommandQueue mCommandQueue;
     IStatusBarService mBarService;
-
-    /**
-     * Shallow container for {@link #mStatusBarView} which is added to the
-     * window manager impl as the actual status bar root view. This is done so
-     * that the original status_bar layout can be reinflated into this container
-     * on skin change.
-     */
     FrameLayout mStatusBarContainer;
 
     int mIconSize;
@@ -239,7 +233,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     Context mContext;
 
     // tracks changes to settings, so status bar is moved to top/bottom
-    // as soon as parts setting is changed
+    // as soon as cmparts setting is changed
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -294,6 +288,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     Settings.System.STATUS_BAR_DEAD_ZONE, defValue) == 1);
             mCompactCarrier = (Settings.System.getInt(resolver,
                     Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1);
+
             updateColors();
             updateLayout();
             updateSettings();
@@ -319,6 +314,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 }
                 return true;
             }
+
             return super.dispatchKeyEvent(event);
         }
     }
@@ -497,7 +493,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mCompactCarrierLayout = (LinearLayout)expanded.findViewById(R.id.compact_carrier_layout);
 
         mTicker = new MyTicker(context, sb);
-        mTickerText = (TickerView) sb.findViewById(R.id.tickerText);
+        mTickerText = (TickerView)sb.findViewById(R.id.tickerText);
         mTickerText.mTicker = mTicker;
 
         mTrackingView = (TrackingView) View.inflate(context, R.layout.status_bar_tracking, null);
@@ -775,6 +771,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         final NotificationData.Entry oldEntry = oldList.getEntryAt(oldIndex);
         final StatusBarNotification oldNotification = oldEntry.notification;
         final RemoteViews oldContentView = oldNotification.notification.contentView;
+
         final RemoteViews contentView = notification.notification.contentView;
 
         if (false) {
@@ -1276,8 +1273,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mAnimY = y;
         mAnimVel = vel;
 
-        //Slog.d(TAG, "starting with mAnimY=" + mAnimY + " mAnimVel=" + mAnimVel);
-
         if (mExpanded) {
             if (!always &&
                     ((mBottomBar && (vel < -200.0f || (y < 25 && vel < 200.0f))) ||
@@ -1316,8 +1311,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 }
             }
         }
-        //Slog.d(TAG, "mAnimY=" + mAnimY + " mAnimVel=" + mAnimVel
-        //        + " mAnimAccel=" + mAnimAccel);
 
         long now = SystemClock.uptimeMillis();
         mAnimLastTime = now;
@@ -1555,7 +1548,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             super(context, sb);
         }
 
-        @Override
+         @Override
         void tickerStarting() {
             if (SPEW) Slog.d(TAG, "tickerStarting");
             mTicking = true;
@@ -1964,10 +1957,11 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     private void recreateStatusBar() {
         mStatusBarContainer.removeAllViews();
+
+        // extract icons from the soon-to-be recreated viewgroup.
         int nIcons = mStatusIcons.getChildCount();
         ArrayList<StatusBarIcon> icons = new ArrayList<StatusBarIcon>(nIcons);
         ArrayList<String> iconSlots = new ArrayList<String>(nIcons);
-
         for (int i = 0; i < nIcons; i++) {
             StatusBarIconView iconView = (StatusBarIconView)mStatusIcons.getChildAt(i);
             icons.add(iconView.getStatusBarIcon());

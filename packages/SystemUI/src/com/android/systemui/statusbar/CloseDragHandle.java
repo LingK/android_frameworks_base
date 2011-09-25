@@ -22,6 +22,7 @@ import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
 public class CloseDragHandle extends LinearLayout {
+
     StatusBarService mService;
 
     public CloseDragHandle(Context context, AttributeSet attrs) {

@@ -21,8 +21,8 @@ import android.util.AttributeSet;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
-public class TickerView extends TextSwitcher
-{
+public class TickerView extends TextSwitcher {
+
     Ticker mTicker;
 	private int mTextColor = 0xffffffff;
 
@@ -33,7 +33,6 @@ public class TickerView extends TextSwitcher
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
         mTicker.reflowText();
     }
 

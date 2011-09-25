@@ -41,20 +41,21 @@ import android.widget.TextView;
 import com.android.internal.R;
 
 public class Clock extends TextView {
+
+    Handler mHandler;
+    private int mAmPmStyle;
     private boolean mAttached;
+    private boolean mShowClock;
     private Calendar mCalendar;
     private String mClockFormatString;
-    private SimpleDateFormat mClockFormat;
-    private int mAmPmStyle;
-    private boolean mShowClock;
 	private int mClockColor = 0xffffffff;
+    private SimpleDateFormat mClockFormat;
 
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
-    Handler mHandler;
-
+    
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -113,6 +114,7 @@ public class Clock extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
         if (mAttached) {
             getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;

@@ -27,6 +27,7 @@ import android.widget.RemoteViews.RemoteView;
 
 @RemoteView
 public class AnimatedImageView extends ImageView {
+
     AnimationDrawable mAnim;
     boolean mAttached;
 

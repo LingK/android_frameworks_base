@@ -37,20 +37,23 @@ import android.widget.FrameLayout;
 import com.android.systemui.R;
 
 public class StatusBarView extends FrameLayout {
+
     private static final String TAG = "StatusBarView";
     static final int DIM_ANIM_TIME = 400;
-    StatusBarService mService;
+
+    Handler mHandler;
     boolean mTracking;
     int mStartX, mStartY;
+    boolean mScreenOn = true;
+    StatusBarService mService;
+    FixedSizeDrawable mBackground;
+    private boolean mAttached = false;
+
+    View mDate;
     ViewGroup mNotificationIcons;
     ViewGroup mStatusIcons;
-    View mDate;
-    FixedSizeDrawable mBackground;
     View mBatteryIndicator;
     View mBatteryChargingIndicator;
-    boolean mScreenOn = true;
-    private boolean mAttached = false;
-    Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
         public SettingsObserver(Handler handler) {
@@ -301,7 +304,6 @@ public class StatusBarView extends FrameLayout {
         if (batteryBar) {
             Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null,
                     new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
             boolean plugged = batteryIntent.getIntExtra("plugged", 0) != 0;
             updateColor(plugged, batteryIntent.getIntExtra("level", 0));
             mBatteryIndicator.setVisibility(VISIBLE);

@@ -16,15 +16,15 @@
 
 package com.android.systemui.statusbar;
 
+import java.util.ArrayList;
+
 import android.app.Notification;
 import android.os.IBinder;
 import android.view.View;
-
 import com.android.internal.statusbar.StatusBarNotification;
 
-import java.util.ArrayList;
-
 public class NotificationData {
+
     public static final class Entry {
         public IBinder key;
         public StatusBarNotification notification;
@@ -67,6 +67,7 @@ public class NotificationData {
         entry.icon = icon;
         final int index = chooseIndex(notification.notification.when);
         mEntries.add(index, entry);
+
         return index;
     }
 
@@ -107,6 +108,7 @@ public class NotificationData {
                 return true;
             }
         }
+
         return false;
     }
 

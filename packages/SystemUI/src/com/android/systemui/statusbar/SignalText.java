@@ -16,6 +16,9 @@
 
 package com.android.systemui.statusbar;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -36,22 +39,20 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 public class SignalText extends TextView {
+
     int dBm = 0;
     int ASU = 0;
-    private SignalStrength signal;
+    Handler mHandler;
     private boolean mAttached;
+    private SignalStrength signal;
     private int mValueColor = 0xffffffff;
 
+    private static int style;
     private static final int STYLE_HIDE = 0;
     private static final int STYLE_SHOW = 1;
     private static final int STYLE_SHOW_DBM = 2;
-    private static int style;
-    Handler mHandler;
-
+    
     public SignalText(Context context) {
         this(context, null);
     }
@@ -94,6 +95,7 @@ public class SignalText extends TextView {
             if (action.equals(Intent.ACTION_SIGNAL_DBM_CHANGED)) {
                 dBm = intent.getIntExtra("dbm", 0);
             }
+
             updateSettings();
         }
     };

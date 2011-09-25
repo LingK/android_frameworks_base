@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.util.Slog;
 
 public class ExpandedView extends LinearLayout {
+
     StatusBarService mService;
     int mPrevHeight = -1;
 
@@ -46,6 +47,7 @@ public class ExpandedView extends LinearLayout {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
          super.onLayout(changed, left, top, right, bottom);
+
          int height = bottom - top;
 
          if (height != mPrevHeight) {

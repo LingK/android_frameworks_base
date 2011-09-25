@@ -68,6 +68,7 @@ import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
 
 public class StatusBarPolicy {
+
     private static final String TAG = "StatusBarPolicy";
     private static final int EVENT_BATTERY_CLOSE = 4;
     private static final int AM_PM_STYLE_NORMAL  = 0;
@@ -381,7 +382,6 @@ public class StatusBarPolicy {
         R.drawable.stat_sys_roaming_cdma_0,
         R.drawable.stat_sys_roaming_cdma_0,
         R.drawable.stat_sys_roaming_cdma_0 //239
-
         // 240-255 Reserved
     };
 

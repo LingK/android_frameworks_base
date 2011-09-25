@@ -258,6 +258,7 @@ public class CmStatusBarView extends StatusBarView {
                     }
                 }
             );
+
             mEdgeLeft = (ImageButton)findViewById(R.id.status_edge_left);
             mEdgeRight = (ImageButton)findViewById(R.id.status_edge_right);
             mSeperator1 = (ImageButton)findViewById(R.id.status_sep1);
@@ -534,6 +535,7 @@ public class CmStatusBarView extends StatusBarView {
     {
         if(mShowQuickNa || mShowSearch || mShowBack || mShowMenu || mShowHome)
             mSeperator5.setVisibility(View.VISIBLE);
+
         mHideButton.setVisibility(View.VISIBLE);
         updateSoftButtons();
 

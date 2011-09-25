@@ -30,10 +30,11 @@ import android.view.View;
 import android.widget.TextView;
 
 public class BatteryText extends TextView {
+
+    Handler mHandler;
     private boolean mAttached;
     private boolean mShowBattery;
     private int mPercentColor = 0xffffffff;
-    Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {

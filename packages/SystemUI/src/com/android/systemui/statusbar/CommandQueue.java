@@ -25,6 +25,7 @@ import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 
 class CommandQueue extends IStatusBar.Stub {
+
     private static final String TAG = "StatusBar.CommandQueue";
     private static final int MSG_MASK = 0xffff0000;
     private static final int INDEX_MASK = 0x0000ffff;
@@ -38,6 +39,7 @@ class CommandQueue extends IStatusBar.Stub {
     private static final int MSG_SET_VISIBILITY = 0x00060000;
     private static final int OP_EXPAND = 1;
     private static final int OP_COLLAPSE = 2;
+
     private StatusBarIconList mList;
     private Callbacks mCallbacks;
     private Handler mHandler = new H();
@@ -129,6 +131,7 @@ class CommandQueue extends IStatusBar.Stub {
     private final class H extends Handler {
         public void handleMessage(Message msg) {
             final int what = msg.what & MSG_MASK;
+
             switch (what) {
                 case MSG_ICON: {
                     final int index = msg.what & INDEX_MASK;

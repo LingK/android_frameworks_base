@@ -29,6 +29,7 @@ import android.view.MotionEvent;
 import java.util.Date;
 
 public final class DateView extends TextView {
+
     private static final String TAG = "DateView";
     private boolean mUpdating = false;
 
@@ -72,6 +73,7 @@ public final class DateView extends TextView {
     void setUpdates(boolean update) {
         if (update != mUpdating) {
             mUpdating = update;
+
             if (update) {
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_TIME_TICK);

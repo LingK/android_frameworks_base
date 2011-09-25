@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.util.Slog;
 
 class FixedSizeDrawable extends Drawable {
+
     Drawable mDrawable;
     int mLeft;
     int mTop;
