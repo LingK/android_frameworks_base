@@ -1159,12 +1159,6 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         return mDecor.superDispatchTrackballEvent(event);
     }
 
-    /**
-     * A key was pressed down and not handled by anything else in the window.
-     *
-     * @see #onKeyUp
-     * @see android.view.KeyEvent
-     */
     protected boolean onKeyDown(int featureId, int keyCode, KeyEvent event) {
         final KeyEvent.DispatcherState dispatcher =
                 mDecor != null ? mDecor.getKeyDispatcherState() : null;
@@ -1174,26 +1168,16 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             case KeyEvent.KEYCODE_VOLUME_DOWN: {
                 AudioManager audioManager = (AudioManager) getContext().getSystemService(
                         Context.AUDIO_SERVICE);
+
                 if (audioManager != null) {
-                    /*
-                     * Adjust the volume in on key down
-                     * since it is more responsive to the user.
-                     * (if volume key lock condition unsatisfied)
-                     */
                     boolean lockVolumeKeys = Settings.System.getInt(getContext().getContentResolver(),
                             Settings.System.LOCK_VOLUME_KEYS, 0) == 1;
+
                     if (mTelephonyManager == null) {
                         mTelephonyManager = (TelephonyManager) getContext().getSystemService(
                                 Context.TELEPHONY_SERVICE);
                     }
-                    /*
-                     * Volume key lock condition -
-                     * lockVolumeKeys is true, phone is in silent mode
-                     * and stream to be adjusted is the ringer.
-                     * (checking for STREAM_VOICE_CALL alone doesn't
-                     * seem to suffice to see if in-call volume is active
-                     * so it also checks for CALL_STATE_OFFHOOK)
-                     */
+
                     if (!(lockVolumeKeys &&
                           audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL &&
                           (mVolumeControlStreamType == AudioManager.USE_DEFAULT_STREAM_TYPE ||
@@ -1209,14 +1193,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                                 mVolumeControlStreamType,
                                 AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
                     } else {
-                        //Show volume popup to acknowledge button press and
-                        //show that volume did not change
                         audioManager.adjustSuggestedStreamVolume(
                                 AudioManager.ADJUST_SAME,
                                 mVolumeControlStreamType,
                                 AudioManager.FLAG_SHOW_UI);
                     }
                 }
+
                 return true;
             }
 
