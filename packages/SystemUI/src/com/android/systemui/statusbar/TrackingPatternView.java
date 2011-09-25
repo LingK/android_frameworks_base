@@ -27,8 +27,9 @@ import android.graphics.Paint;
 import android.graphics.Canvas;
 
 public class TrackingPatternView extends View {
-    private Bitmap mTexture;
+
     private Paint mPaint;
+    private Bitmap mTexture;
     private int mTextureWidth;
     private int mTextureHeight;
     
@@ -45,6 +46,7 @@ public class TrackingPatternView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
+
         final Bitmap texture = mTexture;
         final Paint paint = mPaint;
         final int width = getWidth();

@@ -28,12 +28,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewDebug;
 import android.widget.FrameLayout;
-
 import com.android.internal.statusbar.StatusBarIcon;
 
 import com.android.systemui.R;
 
 public class StatusBarIconView extends AnimatedImageView {
+
     private static final String TAG = "StatusBarIconView";
     private StatusBarIcon mIcon;
     @ViewDebug.ExportedProperty private String mSlot;
@@ -45,6 +45,7 @@ public class StatusBarIconView extends AnimatedImageView {
 
     public StatusBarIconView(Context context, String slot) {
         super(context);
+
         final Resources res = context.getResources();
         mSlot = slot;
         mNumberPain = new Paint();
@@ -105,6 +106,7 @@ public class StatusBarIconView extends AnimatedImageView {
         if (!visibilityEquals) {
             setVisibility(icon.visible ? VISIBLE : GONE);
         }
+
         return true;
     }
 

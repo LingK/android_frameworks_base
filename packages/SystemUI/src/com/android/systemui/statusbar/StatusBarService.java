@@ -90,6 +90,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class StatusBarService extends Service implements CommandQueue.Callbacks {
+
     private static final String DATA_TYPE_TMOBILE_STYLE = "vnd.tmobile.cursor.item/style";
     private static final String DATA_TYPE_TMOBILE_THEME = "vnd.tmobile.cursor.item/theme";
     private static final String ACTION_TMOBILE_THEME_CHANGED = "com.tmobile.intent.action.THEME_CHANGED";
@@ -111,13 +112,6 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     StatusBarPolicy mIconPolicy;
     CommandQueue mCommandQueue;
     IStatusBarService mBarService;
-
-    /**
-     * Shallow container for {@link #mStatusBarView} which is added to the
-     * window manager impl as the actual status bar root view. This is done so
-     * that the original status_bar layout can be reinflated into this container
-     * on skin change.
-     */
     FrameLayout mStatusBarContainer;
 
     int mIconSize;
@@ -294,6 +288,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                     Settings.System.STATUS_BAR_DEAD_ZONE, defValue) == 1);
             mCompactCarrier = (Settings.System.getInt(resolver,
                     Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1);
+
             updateColors();
             updateLayout();
             updateSettings();
@@ -319,6 +314,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
                 }
                 return true;
             }
+
             return super.dispatchKeyEvent(event);
         }
     }
@@ -573,7 +569,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         mNotifyTicker = Settings.System
                 .getInt(resolver, Settings.System.COLOR_NOTIFICATION_TICKER_TEXT, mNotifyTicker);
-        mTickerText.updateColors(mNotifyTicker);
+        mTickerText.updateColor(mNotifyTicker);
 
         mNotifyLatest = Settings.System
                 .getInt(resolver, Settings.System.COLOR_NOTIFICATION_LATEST, mNotifyLatest);

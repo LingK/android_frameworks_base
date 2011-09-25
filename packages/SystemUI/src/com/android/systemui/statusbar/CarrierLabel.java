@@ -40,11 +40,13 @@ import java.util.TimeZone;
 import com.android.internal.R;
 
 public class CarrierLabel extends TextView {
+
+    Handler mHandler;
+    private String mPlmn;
+    private String mSpn;
     private boolean mAttached;
     private boolean mShowSpn;
-    private String mSpn;
     private boolean mShowPlmn;
-    private String mPlmn;
     private int mCarrierLabelType;
     private String mCarrierLabelCustom;
     private int mPlmnColor = 0xffffffff;
@@ -53,8 +55,7 @@ public class CarrierLabel extends TextView {
     private static final int TYPE_SPN = 1;
     private static final int TYPE_PLMN = 2;
     private static final int TYPE_CUSTOM = 3;
-    Handler mHandler;
-
+    
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -110,6 +111,7 @@ public class CarrierLabel extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
         if (mAttached) {
             getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;
@@ -150,7 +152,7 @@ public class CarrierLabel extends TextView {
 
         boolean haveSignal = false;
         haveSignal = (showPlmn && plmn != null) || (showSpn && spn != null);
-        String label = "";
+        String label = "Liquid Smooth";
 
         switch (mCarrierLabelType) {
             default:

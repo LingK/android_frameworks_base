@@ -16,6 +16,8 @@
 
 package com.android.systemui.statusbar;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -31,24 +33,25 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ImageSwitcher;
 
-import java.util.ArrayList;
-
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.internal.util.CharSequences;
 import com.android.systemui.R;
 
 public abstract class Ticker {
+
     private static final int TICKER_SEGMENT_DELAY = 3000;
     private Context mContext;
     private Handler mHandler = new Handler();
     private ArrayList<Segment> mSegments = new ArrayList();
+
     private TextPaint mPaint;
     private View mTickerView;
     private ImageSwitcher mIconSwitcher;
     private TextSwitcher mTextSwitcher;
 
     private final class Segment {
+
         StatusBarNotification notification;
         Drawable icon;
         CharSequence text;
@@ -59,6 +62,7 @@ public abstract class Ticker {
         StaticLayout getLayout(CharSequence substr) {
             int w = mTextSwitcher.getWidth() - mTextSwitcher.getPaddingLeft()
                     - mTextSwitcher.getPaddingRight();
+
             return new StaticLayout(substr, mPaint, w, Alignment.ALIGN_NORMAL, 1, 0, true);
         }
 
@@ -69,6 +73,7 @@ public abstract class Ticker {
             if (end > start) {
                 return substr.subSequence(start, end);
             }
+
             return null;
         }
 
@@ -119,6 +124,7 @@ public abstract class Ticker {
                     return result;
                 }
             }
+
             this.current = len;
             return null;
         }

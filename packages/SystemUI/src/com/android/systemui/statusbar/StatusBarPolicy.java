@@ -66,19 +66,14 @@ import com.android.server.am.BatteryStatsService;
 import com.android.systemui.R;
 import android.net.wimax.WimaxManagerConstants;
 
-
 public class StatusBarPolicy {
+
     private static final String TAG = "StatusBarPolicy";
-
-    // message codes for the handler
     private static final int EVENT_BATTERY_CLOSE = 4;
-
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
-
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
-
     private static final int INET_CONDITION_THRESHOLD = 50;
 
     private final Context mContext;
@@ -392,7 +387,6 @@ public class StatusBarPolicy {
         R.drawable.stat_sys_roaming_cdma_0,
         R.drawable.stat_sys_roaming_cdma_0,
         R.drawable.stat_sys_roaming_cdma_0 //239
-
         // 240-255 Reserved
     };
 
@@ -464,8 +458,6 @@ public class StatusBarPolicy {
            R.drawable.stat_sys_data_fully_inandout_4g },
         };
 
-    // Assume it's all good unless we hear otherwise.  We don't always seem
-    // to get broadcasts that it *is* there.
     IccCard.State mSimState = IccCard.State.READY;
     int mPhoneState = TelephonyManager.CALL_STATE_IDLE;
     int mDataState = TelephonyManager.DATA_DISCONNECTED;
@@ -525,13 +517,7 @@ public class StatusBarPolicy {
     private int mWimaxSignal = 0;
     private int mWimaxState = 0;
     private int mWimaxExtraState = 0;
-
-    // state of inet connection - 0 not connected, 100 connected
     private int mInetCondition = 0;
-
-    // sync state
-    // If sync is active the SyncActive icon is displayed. If sync is not active but
-    // sync is failing the SyncFailing icon is displayed. Otherwise neither are displayed.
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
@@ -604,7 +590,6 @@ public class StatusBarPolicy {
     private boolean mBatteryStatus;
     private boolean mShowPhoneSignal;
     private boolean mPhoneSignalStatus;
-
     private boolean mShowHeadset;
 
     class SettingsObserver extends ContentObserver {
@@ -825,7 +810,6 @@ public class StatusBarPolicy {
         }
 
         boolean oldPlugged = mBatteryPlugged;
-
         mBatteryPlugged = plugged;
         mBatteryLevel = level;
 
@@ -872,6 +856,7 @@ public class StatusBarPolicy {
         ImageView v = (ImageView)parent.findViewById(id);
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)v.getLayoutParams();
         lp.weight = height;
+
         if (background != 0) {
             v.setBackgroundResource(background);
             Drawable bkg = v.getBackground();
@@ -882,7 +867,6 @@ public class StatusBarPolicy {
     private void showLowBatteryWarning() {
         closeLastBatteryView();
 
-        // Show exact battery level.
         CharSequence levelText = mContext.getString(
                     R.string.battery_low_percent_format, mBatteryLevel);
 
@@ -1188,12 +1172,7 @@ public class StatusBarPolicy {
             }
             return;
         }
-        
-        /*
-         * Determine which radio tech signal level should be displayed based on
-         * 1.phone type (voice and/or/no data), 2. call state( idle/data or in
-         * voice call ), 3. radio tech
-         */
+
         iconLevel = getIconLevel();
 
         if (iconLevel == -1) {
@@ -1593,6 +1572,7 @@ public class StatusBarPolicy {
     private final void updateBluetooth(Intent intent) {
         int iconId = R.drawable.stat_sys_data_bluetooth;
         String action = intent.getAction();
+
         if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
             int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
             mBluetoothEnabled = state == BluetoothAdapter.STATE_ON;
@@ -1749,7 +1729,6 @@ public class StatusBarPolicy {
     private final void updateTTY(Intent intent) {
         final String action = intent.getAction();
         final boolean enabled = intent.getBooleanExtra(TtyIntent.TTY_ENABLED, false);
-
         if (false) Slog.v(TAG, "updateTTY: enabled: " + enabled);
 
         if (enabled) {

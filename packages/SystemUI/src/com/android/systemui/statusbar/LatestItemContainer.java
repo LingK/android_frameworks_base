@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import com.android.systemui.R;
 
 public class LatestItemContainer extends LinearLayout {
+
     private final GestureDetector mGestureDetector;
     private Runnable mSwipeCallback = null;
     private final Handler mHandler = new Handler();
@@ -41,6 +42,7 @@ public class LatestItemContainer extends LinearLayout {
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onFling(MotionEvent e1, MotionEvent e2, float vX, float vY) {
+
                         if (mSwipeCallback != null) {
                             if (Math.abs(vX) > Math.abs(vY)) {
                                 int id;
@@ -64,6 +66,7 @@ public class LatestItemContainer extends LinearLayout {
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (mSwipeCallback != null) {
             boolean handled = mGestureDetector.onTouchEvent(event);
+
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_OUTSIDE:
                 case MotionEvent.ACTION_CANCEL:
@@ -83,6 +86,7 @@ public class LatestItemContainer extends LinearLayout {
                     break;
             }
         }
+
         return super.onInterceptTouchEvent(event);
     }
 
