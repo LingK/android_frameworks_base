@@ -112,6 +112,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private SenseLikeLock mSenseRingSelector;
     private CircularSelector mCircularSelector;
     
+    // Other Views
     private TextView mDate;
     private TextView mTime;
     private TextView mAmPm;
@@ -1216,21 +1217,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseCircularLockscreen)
+            } else if (mUseCircularLockscreen) {
                 resetAllUnlockWidgets();
                 mCircularSelector.setVisibility(View.VISIBLE);
 
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseUnlockRingLockscreen)
+            } else if (mUseUnlockRingLockscreen) {
                 resetAllUnlockWidgets();
                 mUnlockRingSelector.setVisibility(View.VISIBLE);
 
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseSenseLikeLockscreen)
+            } else if (mUseSenseLikeLockscreen) {
                 resetAllUnlockWidgets();
                 mSenseRingSelector.setVisibility(View.VISIBLE);
 
@@ -1530,6 +1531,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_NOW_PLAYING, 1) == 1))
             mNowPlayingToggle = true;
+
         if (visibility == View.VISIBLE
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
