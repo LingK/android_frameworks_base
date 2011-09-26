@@ -102,8 +102,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private LockPatternUtils mLockPatternUtils;
     private KeyguardUpdateMonitor mUpdateMonitor;
     private KeyguardScreenCallback mCallback;
+    private GestureOverlayView mGestureOverlay;
     
     // Unlock Selectors
+    private TextView mCarrier;   
     private SlidingTab mSelector2;
     private SlidingTab mTabSelector;
     private RingSelector mRingSelector;
@@ -620,12 +622,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (!mGestureActive)
             mGestureTrail = false;
 
-        GestureOverlayView gestures = (GestureOverlayView) findViewById(R.id.gestures);
-        gestures.setGestureVisible(mGestureTrail);
-        gestures.setGestureColor(mGestureColor);
+        mGestureOverlay = (GestureOverlayView) findViewById(R.id.gestures);
+        mGestureOverlay.setGestureVisible(mGestureTrail);
+        mGestureOverlay.setGestureColor(mGestureColor);
         boolean GestureCanUnlock = false;
 
-        if (gestures != null) {
+        if (mGestureOverlay != null) {
             if (mGestureActive) {
                 File mStoreFile = new File(Environment.getDataDirectory(), "/misc/lockscreen_gestures");
                 mGestureSensitivity = Settings.System.getInt(context.getContentResolver(),
@@ -633,7 +635,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mLibrary = GestureLibraries.fromFile(mStoreFile);
 
                 if (mLibrary.load()) {
-                    gestures.addOnGesturePerformedListener(this);
+                    mGestureOverlay.addOnGesturePerformedListener(this);
                     for (String name : mLibrary.getGestureEntries()) {
                         if ("UNLOCK___UNLOCK".equals(name)) {
                             GestureCanUnlock = true;
@@ -836,7 +838,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                     : R.string.lockscreen_sound_off_label);
         }
 
-        if (grabbedState != SlidingTab.OnTriggerListener.NO_HANDLE || mUseRingLockscreen) {
+        if (grabbedState != SlidingTab.OnTriggerListener.NO_HANDLE) {
+            mGestureOverlay.cancelGesture();
+            mCallback.pokeWakelock();
+        }
+
+        if (mUseRingLockscreen) {
             mCallback.pokeWakelock();
         }
     }
@@ -918,7 +925,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mShowingBatteryInfo = showBatteryInfo;
         mPluggedIn = pluggedIn;
         mBatteryLevel = batteryLevel;
-
         refreshBatteryStringAndIcon();
         updateStatusLines();
     }
