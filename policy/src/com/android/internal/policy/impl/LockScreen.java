@@ -222,15 +222,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mUseRotaryLockscreen = (mLockscreenStyle == 2);
     private boolean mUseRotaryRevLockscreen = (mLockscreenStyle == 3);
     private boolean mUseLenseSquareLockscreen = (mLockscreenStyle == 4);
-    private boolean mUseCircularLockscreen = (mLockscreenStyle == 5);
-    private boolean mUseUnlockRingLockscreen = (mLockscreenStyle == 6);
-    private boolean mUseSenseLikeLockscreen = (mLockscreenStyle == 7);
-
-    // Current Selector
-    private boolean mUseSliderLockscreen = (mLockscreenStyle == 1);
-    private boolean mUseRotaryLockscreen = (mLockscreenStyle == 2);
-    private boolean mUseRotaryRevLockscreen = (mLockscreenStyle == 3);
-    private boolean mUseLenseSquareLockscreen = (mLockscreenStyle == 4);
     private boolean mUseRingLockscreen = (mLockscreenStyle == 5);
     private boolean mUseCircularLockscreen = (mLockscreenStyle == 6);
     private boolean mUseUnlockRingLockscreen = (mLockscreenStyle == 7);
