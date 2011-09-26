@@ -1370,21 +1370,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseCircularLockscreen)
+            } else if (mUseCircularLockscreen) {
                 resetAllUnlockWidgets();
                 mCircularSelector.setVisibility(View.VISIBLE);
 
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseUnlockRingLockscreen)
+            } else if (mUseUnlockRingLockscreen) {
                 resetAllUnlockWidgets();
                 mUnlockRingSelector.setVisibility(View.VISIBLE);
 
                 if (mSelector2 != null) {
                     mSelector2.setVisibility(View.GONE);
                 }
-            } else if (mUseSenseLikeLockscreen)
+            } else if (mUseSenseLikeLockscreen) {
                 resetAllUnlockWidgets();
                 mSenseRingSelector.setVisibility(View.VISIBLE);
 
