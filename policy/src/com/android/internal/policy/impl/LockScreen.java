@@ -113,6 +113,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private SenseLikeLock mSenseRingSelector;
     private CircularSelector mCircularSelector;
 
+    // Other Views
     private TextView mDate;
     private TextView mTime;
     private TextView mAmPm;
@@ -1343,7 +1344,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         mEmergencyCallButton.setVisibility(View.GONE);
     }
 
-    private void resetAllUnlockWidgets {
+    private void resetAllUnlockWidgets() {
         mTabSelector.setVisibility(View.GONE);
         mRingSelector.setVisibility(View.GONE);
         mRotarySelector.setVisibility(View.GONE);
