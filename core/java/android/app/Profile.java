@@ -35,15 +35,22 @@ import java.util.UUID;
 
 public class Profile implements Parcelable {
 
-    private UUID mUuid;
     private String mName;
     private int mNameResId;
-    private boolean mDirty;
-    private ProfileGroup mDefaultGroup;
-    private boolean mStatusBarIndicator = false;
-    private static final String TAG = "Profile";
+
+    private UUID mUuid;
+
     private Map<UUID, ProfileGroup> profileGroups = new HashMap<UUID, ProfileGroup>();
+
+    private ProfileGroup mDefaultGroup;
+
+    private boolean mStatusBarIndicator = false;
+    private boolean mDirty;
+
+    private static final String TAG = "Profile";
+
     private Map<Integer, StreamSettings> streams = new HashMap<Integer, StreamSettings>();
+
     private Map<Integer, ConnectionSettings> connections = new HashMap<Integer, ConnectionSettings>();
 
     /** @hide */
@@ -293,6 +300,7 @@ public class Profile implements Parcelable {
 
         /* we just loaded from XML, so nothing needs saving */
         profile.mDirty = false;
+
         return profile;
     }
 
