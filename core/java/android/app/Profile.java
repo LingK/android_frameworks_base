@@ -17,7 +17,6 @@
 package android.app;
 
 import android.content.Context;
-import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
 import android.os.Parcel;
 import android.os.ParcelUuid;
@@ -36,12 +35,14 @@ import java.util.UUID;
 
 public class Profile implements Parcelable {
 
-    private String mName;
     private UUID mUuid;
-    private Map<String, ProfileGroup> profileGroups = new HashMap<String, ProfileGroup>();
+    private String mName;
+    private int mNameResId;
+    private boolean mDirty;
     private ProfileGroup mDefaultGroup;
     private boolean mStatusBarIndicator = false;
     private static final String TAG = "Profile";
+    private Map<UUID, ProfileGroup> profileGroups = new HashMap<UUID, ProfileGroup>();
     private Map<Integer, StreamSettings> streams = new HashMap<Integer, StreamSettings>();
     private Map<Integer, ConnectionSettings> connections = new HashMap<Integer, ConnectionSettings>();
 
@@ -59,14 +60,14 @@ public class Profile implements Parcelable {
 
     /** @hide */
     public Profile(String name) {
-        this.mName = name;
-        // Generate a new UUID, since one was not specified.
-        this.mUuid = UUID.randomUUID();
+        this(name, -1, UUID.randomUUID());
     }
 
-    public Profile(String name, UUID uuid) {
-        this.mName = name;
-        this.mUuid = uuid;
+    private Profile(String name, int nameResId, UUID uuid) {
+        mName = name;
+        mNameResId = nameResId;
+        mUuid = uuid;
+        mDirty = false;
     }
 
     private Profile(Parcel in) {
@@ -74,32 +75,20 @@ public class Profile implements Parcelable {
     }
 
     /** @hide */
-    public void ensureProfileGroup(String groupName) {
-        ensureProfileGroup(groupName, false);
-    }
-
-    /** @hide */
-    public void ensureProfileGroup(String groupName, boolean defaultGroup) {
-        if (!profileGroups.containsKey(groupName)) {
-            ProfileGroup value = new ProfileGroup(groupName, defaultGroup);
-            addProfileGroup(value);
-        }
-    }
-
-    /** @hide */
-    private void addProfileGroup(ProfileGroup value) {
-        profileGroups.put(value.getName(), value);
+    public void addProfileGroup(ProfileGroup value) {
+        profileGroups.put(value.getUuid(), value);
         if (value.isDefaultGroup()) {
             mDefaultGroup = value;
         }
+        mDirty = true;
     }
 
     /** @hide */
-    public void removeProfileGroup(String name) {
-        if (!profileGroups.get(name).isDefaultGroup()) {
-            profileGroups.remove(name);
+    public void removeProfileGroup(UUID uuid) {
+        if (!profileGroups.get(uuid).isDefaultGroup()) {
+            profileGroups.remove(uuid);
         } else {
-            Log.e(TAG, "Cannot remove default group: " + name);
+            Log.e(TAG, "Cannot remove default group: " + uuid);
         }
     }
 
@@ -107,8 +96,8 @@ public class Profile implements Parcelable {
         return profileGroups.values().toArray(new ProfileGroup[profileGroups.size()]);
     }
 
-    public ProfileGroup getProfileGroup(String name) {
-        return profileGroups.get(name);
+    public ProfileGroup getProfileGroup(UUID uuid) {
+        return profileGroups.get(uuid);
     }
 
     public ProfileGroup getDefaultGroup() {
@@ -125,8 +114,10 @@ public class Profile implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mName);
+        dest.writeInt(mNameResId);
         new ParcelUuid(mUuid).writeToParcel(dest, 0);
         dest.writeInt(mStatusBarIndicator ? 1 : 0);
+        dest.writeInt(mDirty ? 1 : 0);
         dest.writeParcelableArray(
                 profileGroups.values().toArray(new Parcelable[profileGroups.size()]), flags);
         dest.writeParcelableArray(
@@ -138,22 +129,24 @@ public class Profile implements Parcelable {
     /** @hide */
     public void readFromParcel(Parcel in) {
         mName = in.readString();
+        mNameResId = in.readInt();
         mUuid = ParcelUuid.CREATOR.createFromParcel(in).getUuid();
         mStatusBarIndicator = (in.readInt() == 1);
+        mDirty = (in.readInt() == 1);
         for (Parcelable group : in.readParcelableArray(null)) {
             ProfileGroup grp = (ProfileGroup) group;
-            profileGroups.put(grp.getName(), grp);
+            profileGroups.put(grp.getUuid(), grp);
             if (grp.isDefaultGroup()) {
                 mDefaultGroup = grp;
             }
         }
         for (Parcelable parcel : in.readParcelableArray(null)) {
             StreamSettings stream = (StreamSettings) parcel;
-            streams.put(stream.streamId, stream);
+            streams.put(stream.getStreamId(), stream);
         }
         for (Parcelable parcel : in.readParcelableArray(null)) {
             ConnectionSettings connection = (ConnectionSettings) parcel;
-            connections.put(connection.connectionId, connection);
+            connections.put(connection.getConnectionId(), connection);
         }
     }
 
@@ -163,7 +156,9 @@ public class Profile implements Parcelable {
 
     /** @hide */
     public void setName(String name) {
-        this.mName = name;
+        mName = name;
+        mNameResId = -1;
+        mDirty = true;
     }
 
     public UUID getUuid() {
@@ -177,27 +172,43 @@ public class Profile implements Parcelable {
 
     public void setStatusBarIndicator(boolean newStatusBarIndicator) {
         mStatusBarIndicator = newStatusBarIndicator;
+        mDirty = true;
     }
 
     /** @hide */
-    public Notification processNotification(String groupName, Notification notification) {
-        ProfileGroup profileGroupSettings = groupName == null ? mDefaultGroup : profileGroups
-                .get(groupName);
-        notification = profileGroupSettings.processNotification(notification);
-        return notification;
+    public boolean isDirty() {
+        if (mDirty) {
+            return true;
+        }
+        for (ProfileGroup group : profileGroups.values()) {
+            if (group.isDirty()) {
+                return true;
+            }
+        }
+        for (StreamSettings stream : streams.values()) {
+            if (stream.isDirty()) {
+                return true;
+            }
+        }
+        for (ConnectionSettings conn : connections.values()) {
+            if (conn.isDirty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** @hide */
-    public String getXmlString() {
-        StringBuilder builder = new StringBuilder();
-        getXmlString(builder);
-        return builder.toString();
-    }
-
-    /** @hide */
-    public void getXmlString(StringBuilder builder) {
-        builder.append("<profile name=\"");
-        builder.append(TextUtils.htmlEncode(getName()));
+    public void getXmlString(StringBuilder builder, Context context) {
+        builder.append("<profile ");
+        if (mNameResId > 0) {
+            builder.append("nameres=\"");
+            builder.append(context.getResources().getResourceEntryName(mNameResId));
+        } else {
+            builder.append("name=\"");
+            builder.append(TextUtils.htmlEncode(getName()));
+        }
         builder.append("\" uuid=\"");
         builder.append(TextUtils.htmlEncode(getUuid().toString()));
         builder.append("\">\n");
@@ -207,44 +218,36 @@ public class Profile implements Parcelable {
         builder.append("</statusbar>\n");
 
         for (ProfileGroup pGroup : profileGroups.values()) {
-            pGroup.getXmlString(builder);
+            pGroup.getXmlString(builder, context);
         }
         for (StreamSettings sd : streams.values()) {
-            sd.getXmlString(builder);
+            sd.getXmlString(builder, context);
         }
         for (ConnectionSettings cs : connections.values()) {
-            cs.getXmlString(builder);
+            cs.getXmlString(builder, context);
         }
         builder.append("</profile>\n");
-    }
-
-    /** @hide */
-    public static String getAttrResString(XmlPullParser xpp, Context context) {
-        return Profile.getAttrResString(xpp, context, "name");
-    }
-
-    /** @hide */
-    public static String getAttrResString(XmlPullParser xpp, Context context, String attrib) {
-        String response = null;
-        if (attrib == null) attrib = "name";
-        if (xpp instanceof XmlResourceParser && context != null) {
-            XmlResourceParser xrp = (XmlResourceParser) xpp;
-            int resId = xrp.getAttributeResourceValue(null, attrib, 0);
-            if (resId != 0) {
-                response = context.getResources().getString(resId);
-            } else {
-                response = xrp.getAttributeValue(null, attrib);
-            }
-        } else {
-            response = xpp.getAttributeValue(null, attrib);
-        }
-        return response;
+        mDirty = false;
     }
 
     /** @hide */
     public static Profile fromXml(XmlPullParser xpp, Context context)
             throws XmlPullParserException, IOException {
-        String profileName = getAttrResString(xpp, context, "name");
+        String value = xpp.getAttributeValue(null, "nameres");
+        int profileNameResId = -1;
+        String profileName = null;
+
+        if (value != null) {
+            profileNameResId = context.getResources().getIdentifier(value, "string", "android");
+            if (profileNameResId > 0) {
+                profileName = context.getResources().getString(profileNameResId);
+            }
+        }
+
+        if (profileName == null) {
+            profileName = xpp.getAttributeValue(null, "name");
+        }
+
         UUID profileUuid = UUID.randomUUID();
         try {
             profileUuid = UUID.fromString(xpp.getAttributeValue(null, "uuid"));
@@ -263,7 +266,8 @@ public class Profile implements Parcelable {
                     + profileUuid.toString()
                     );
         }
-        Profile profile = new Profile(profileName, profileUuid);
+
+        Profile profile = new Profile(profileName, profileNameResId, profileUuid);
         int event = xpp.next();
         while (event != XmlPullParser.END_TAG) {
             if (event == XmlPullParser.START_TAG) {
@@ -277,15 +281,18 @@ public class Profile implements Parcelable {
                 }
                 if (name.equals("streamDescriptor")) {
                     StreamSettings sd = StreamSettings.fromXml(xpp, context);
-                    profile.streams.put(sd.streamId, sd);
+                    profile.setStreamSettings(sd);
                 }
                 if (name.equals("connectionDescriptor")) {
                     ConnectionSettings cs = ConnectionSettings.fromXml(xpp, context);
-                    profile.connections.put(cs.connectionId, cs);
+                    profile.connections.put(cs.getConnectionId(), cs);
                 }
             }
             event = xpp.next();
         }
+
+        /* we just loaded from XML, so nothing needs saving */
+        profile.mDirty = false;
         return profile;
     }
 
@@ -313,7 +320,8 @@ public class Profile implements Parcelable {
 
     /** @hide */
     public void setStreamSettings(StreamSettings descriptor){
-        streams.put(descriptor.streamId, descriptor);
+        streams.put(descriptor.getStreamId(), descriptor);
+        mDirty = true;
     }
 
     /** @hide */
@@ -328,7 +336,7 @@ public class Profile implements Parcelable {
 
     /** @hide */
     public void setConnectionSettings(ConnectionSettings descriptor){
-        connections.put(descriptor.connectionId, descriptor);
+        connections.put(descriptor.getConnectionId(), descriptor);
     }
 
     /** @hide */
