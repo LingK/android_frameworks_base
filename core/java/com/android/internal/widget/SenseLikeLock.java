@@ -560,13 +560,6 @@ public class SenseLikeLock extends View {
            mUseShortcutFour = false;
     }
     
-    public Intent[] setDefaultIntents(){
-    	Intent intent = new Intent(Intent.ACTION_DIAL); 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	Intent[] i = {new Intent(Intent.ACTION_DIAL).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),new Intent(),new Intent(),new Intent()};
-    	return i;
-    }
-    
     public void setToTwoShortcuts(boolean UseOnlyTwoShortcuts){
     	if(UseOnlyTwoShortcuts == true)Log.d(TAG, "Using only two shortcuts");
     	mUseShortcutTwo = UseOnlyTwoShortcuts;

@@ -2285,6 +2285,12 @@ public final class Settings {
         public static final String STATUS_BAR_BATTERY = "status_bar_battery";
 
         /**
+         * What color for the status bar battery style
+         * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_COLOR = "status_bar_battery_color";
+
+        /**
          * Whether to show the clock in status bar
          * of the stock battery icon
          * 0: don't show the clock
@@ -2762,60 +2768,6 @@ public final class Settings {
          * @hide
          */
         public static final String USE_CUSTOM_DOUBLE_TAP_ACTIVITY = "use_custom_double_tap_home_app_activity";
-
-        /**
-         * Contains activity of the app you want in quadrant 1
-         * @hide
-         */
-		public static String LOCKSCREEN_CUSTOM_APP_HONEY_1 = "lockscreen_quadrant_1_uri";
-
-        /**
-         * Contains activity of the app you want in quadrant 2
-         * @hide
-         */
-		public static String LOCKSCREEN_CUSTOM_APP_HONEY_2 = "lockscreen_quadrant_2_uri";
-
-        /**
-         * Contains activity of the app you want in quadrant 3
-         * @hide
-         */
-		public static String LOCKSCREEN_CUSTOM_APP_HONEY_3 = "lockscreen_quadrant_3_uri";
-
-        /**
-         * Contains activity of the app you want in quadrant 4
-         * @hide
-         */
-		public static String LOCKSCREEN_CUSTOM_APP_HONEY_4 = "lockscreen_quadrant_4_uri";
-        
-        /**
-         * Whether or not to use predefined colors while charging
-         * @hide
-         */
-        public static final String COLOR_AUTO_CHARGING = "color_auto_charging";
-        
-        /**
-         * Whether or not to use predefined colors when not charging
-         * @hide
-         */
-		public static final String COLOR_AUTO_COLOR = "color_auto_color";
-		
-        /**
-         * The color choosen by user when battery level is below 40 percent
-         * @hide
-         */
-		public static final String COLOR_AUTO_MEDIUM = "color_auto_medium";
-		
-        /**
-         * The color choosen by user when battery level is below 15 percent
-         * @hide
-         */
-		public static final String COLOR_AUTO_LOW = "color_auto_low";
-		
-        /**
-         * Whether or not the color is determined by the percentage level
-         * @hide
-         */
-		public static final String COLOR_STATIC_VALUE = "color_static_value";
 
 		/** 
 		 * Liquid Settings (Finish)
