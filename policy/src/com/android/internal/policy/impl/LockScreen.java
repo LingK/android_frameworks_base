@@ -1190,7 +1190,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
-    private void resetAllUnlockWidgets {
+    private void resetAllUnlockWidgets() {
         mTabSelector.setVisibility(View.GONE);
         mRingSelector.setVisibility(View.GONE);
         mRotarySelector.setVisibility(View.GONE);
