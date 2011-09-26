@@ -32,9 +32,10 @@ import java.io.IOException;
 /** @hide */
 public class ConnectionSettings implements Parcelable {
 
-    int connectionId;
-    int value;
-    boolean override;
+    private int mConnectionId;
+    private int mValue;
+    private boolean mOverride;
+    private boolean mDirty;
 
     public static final int PROFILE_CONNECTION_WIFI = 1;
     public static final int PROFILE_CONNECTION_WIFIAP = 2;
@@ -63,88 +64,98 @@ public class ConnectionSettings implements Parcelable {
     }
 
     public ConnectionSettings(int connectionId, int value, boolean override) {
-        this.connectionId = connectionId;
-        this.value = value;
-        this.override = override;
+        mConnectionId = connectionId;
+        mValue = value;
+        mOverride = override;
+        mDirty = false;
     }
 
     public int getConnectionId() {
-        return connectionId;
+        return mConnectionId;
     }
 
     public int getValue() {
-        return value;
+        return mValue;
     }
 
     public void setValue(int value) {
-        this.value = value;
+        mValue = value;
+        mDirty = true;
     }
 
     public void setOverride(boolean override) {
-        this.override = override;
+        mOverride = override;
+        mDirty = true;
     }
 
     public boolean isOverride() {
-        return override;
+        return mOverride;
+    }
+
+    /** @hide */
+    public boolean isDirty() {
+        return mDirty;
     }
 
     public void processOverride(Context context) {
         BluetoothAdapter bta = BluetoothAdapter.getDefaultAdapter();
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        Boolean state;
+
         switch (getConnectionId()) {
             case PROFILE_CONNECTION_BLUETOOTH:
-                Boolean state_BT = bta.isEnabled();
+                state = bta.isEnabled();
                 if (getValue() == 1) {
-                    if (!state_BT) {
+                    if (!state) {
                         bta.enable();
                     }
                 } else {
-                    if (state_BT){
+                    if (state) {
                         bta.disable();
                     }
                 }
                 break;
             case PROFILE_CONNECTION_GPS:
-                Boolean state_GPS = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                state = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 if (getValue() == 1) {
-                    if (!state_GPS) {
+                    if (!state) {
                         Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, true);
                     }
                 } else {
-                    if (state_GPS) {
+                    if (state) {
                         Settings.Secure.setLocationProviderEnabled(context.getContentResolver(), LocationManager.GPS_PROVIDER, false);
                     }
                 }
                 break;
             case PROFILE_CONNECTION_WIFI:
-                Boolean state_WIFI = wm.isWifiEnabled();
                 int wifiApState = wm.getWifiApState();
+                state = wm.isWifiEnabled();
                 if (getValue() == 1) {
                     if ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) || (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED)) {
                         wm.setWifiApEnabled(null, false);
                     }
-                    if (!state_WIFI) {
+                    if (!state) {
                         wm.setWifiEnabled(true);
                     }
                 } else {
-                    if (state_WIFI) {
+                    if (state) {
                         wm.setWifiEnabled(false);
                     }
                 }
                 break;
             case PROFILE_CONNECTION_WIFIAP:
-                Boolean state_WIFI_AP = wm.isWifiApEnabled();
                 int wifiState = wm.getWifiState();
+                state = wm.isWifiApEnabled();
                 if (getValue() == 1) {
                     if ((wifiState == WifiManager.WIFI_STATE_ENABLING) || (wifiState == WifiManager.WIFI_STATE_ENABLED)) {
                         wm.setWifiEnabled(false);
                     }
-                    if (!state_WIFI_AP) {
+                    if (!state) {
                         wm.setWifiApEnabled(null, true);
                     }
                 } else {
-                    if (!state_WIFI_AP) {
+                    if (state) {
                         wm.setWifiApEnabled(null, false);
                     }
                 }
@@ -162,11 +173,11 @@ public class ConnectionSettings implements Parcelable {
             if (event == XmlPullParser.START_TAG) {
                 String name = xpp.getName();
                 if (name.equals("connectionId")) {
-                    connectionDescriptor.connectionId = Integer.parseInt(xpp.nextText());
+                    connectionDescriptor.mConnectionId = Integer.parseInt(xpp.nextText());
                 } else if (name.equals("value")) {
-                    connectionDescriptor.value = Integer.parseInt(xpp.nextText());
+                    connectionDescriptor.mValue = Integer.parseInt(xpp.nextText());
                 } else if (name.equals("override")) {
-                    connectionDescriptor.override = Boolean.parseBoolean(xpp.nextText());
+                    connectionDescriptor.mOverride = Boolean.parseBoolean(xpp.nextText());
                 }
             }
             event = xpp.next();
@@ -175,13 +186,13 @@ public class ConnectionSettings implements Parcelable {
     }
 
     /** @hide */
-    public void getXmlString(StringBuilder builder) {
+    public void getXmlString(StringBuilder builder, Context context) {
         builder.append("<connectionDescriptor>\n<connectionId>");
-        builder.append(connectionId);
+        builder.append(mConnectionId);
         builder.append("</connectionId>\n<value>");
-        builder.append(value);
+        builder.append(mValue);
         builder.append("</value>\n<override>");
-        builder.append(override);
+        builder.append(mOverride);
         builder.append("</override>\n</connectionDescriptor>\n");
     }
 
@@ -193,15 +204,17 @@ public class ConnectionSettings implements Parcelable {
     /** @hide */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(connectionId);
-        dest.writeInt(override ? 1 : 0);
-        dest.writeInt(value);
+        dest.writeInt(mConnectionId);
+        dest.writeInt(mOverride ? 1 : 0);
+        dest.writeInt(mValue);
+        dest.writeInt(mDirty ? 1 : 0);
     }
 
     /** @hide */
     public void readFromParcel(Parcel in) {
-        connectionId = in.readInt();
-        override = in.readInt() != 0;
-        value = in.readInt();
+        mConnectionId = in.readInt();
+        mOverride = in.readInt() != 0;
+        mValue = in.readInt();
+        mDirty = in.readInt() != 0;
     }
 }
