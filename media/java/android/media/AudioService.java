@@ -402,7 +402,6 @@ public class AudioService extends IAudioService.Stub {
 
         mDefaultVolumeMedia = System.getInt(cr,
                 Settings.System.DEFAULT_VOLUME_CONTROL_MEDIA, 0);
-
         // Each stream will read its own persisted settings
 
         // Broadcast the sticky intent
@@ -438,6 +437,8 @@ public class AudioService extends IAudioService.Stub {
         // Don't play sound on other streams
         if (streamType != AudioSystem.STREAM_RING && (flags & AudioManager.FLAG_PLAY_SOUND) != 0) {
             flags &= ~AudioManager.FLAG_PLAY_SOUND;
+        } else if (mDefaultVolumeMedia == 1 && streamType == AudioSystem.STREAM_MUSIC && !AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC)) {
+            flags |= AudioManager.FLAG_PLAY_SOUND;
         }
 
         adjustStreamVolume(streamType, direction, flags);
@@ -1267,7 +1268,7 @@ public class AudioService extends IAudioService.Stub {
             return AudioSystem.STREAM_MUSIC;
         } else if (suggestedStreamType == AudioManager.USE_DEFAULT_STREAM_TYPE) {
             // Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING...");
-            return ((mDefaultVolumeMedia == 0) ? AudioSystem.STREAM_RING : AudioSystem.STREAM_MUSIC);
+            return (mDefaultVolumeMedia == 0) ? AudioSystem.STREAM_RING : AudioSystem.STREAM_MUSIC;
         } else {
             // Log.v(TAG, "getActiveStreamType: Returning suggested type " + suggestedStreamType);
             return suggestedStreamType;
@@ -2493,6 +2494,4 @@ public class AudioService extends IAudioService.Stub {
         dumpFocusStack(pw);
         dumpRCStack(pw);
     }
-
-
 }

@@ -1655,8 +1655,10 @@ public final class Settings {
 
         /**
          * Default volume control to media instead of ring (for tablets)
+         *
+         * @hide
          */
-        public static final String DEFAULT_VOLUME_CONTROL_MEDIA = "default_volume_control_media";
+         public static final String DEFAULT_VOLUME_CONTROL_MEDIA = "default_volume_control_media";
 
         /**
          * Whether silent mode should allow vibration feedback. This is used
