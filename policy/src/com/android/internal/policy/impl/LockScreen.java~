@@ -106,6 +106,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private GestureOverlayView mGestureOverlay;
     
     // Unlock Selectors
+    private TextView mCarrier;
     private SlidingTab mSelector2;
     private SlidingTab mTabSelector;
     private RingSelector mRingSelector;
