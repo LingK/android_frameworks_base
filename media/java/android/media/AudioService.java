@@ -437,11 +437,13 @@ public class AudioService extends IAudioService.Stub {
 
         int streamType = getActiveStreamType(suggestedStreamType);
 
-        // Don't play sound on other streams
-        if (streamType != AudioSystem.STREAM_RING && (flags & AudioManager.FLAG_PLAY_SOUND) != 0) {
-            flags &= ~AudioManager.FLAG_PLAY_SOUND;
-        } else if (mDefaultVolumeMedia == 1 && streamType == AudioSystem.STREAM_MUSIC && !AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC)) {
-            flags |= AudioManager.FLAG_PLAY_SOUND;
+        if ((flags & AudioManager.FLAG_PLAY_SOUND) != 0) {
+            if (!(mDefaultVolumeMedia == 1
+                    && streamType == AudioSystem.STREAM_MUSIC
+                    && !AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC))
+                    && streamType != AudioSystem.STREAM_RING) {
+                flags &= ~AudioManager.FLAG_PLAY_SOUND;
+            }
         }
 
         adjustStreamVolume(streamType, direction, flags);
