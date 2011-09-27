@@ -88,6 +88,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     private static final boolean DBG = false;
     private static final String TAG = "LockScreen";
+    private static final String ENABLE_MENU_KEY_FILE = "/data/local/enable_menu_key";
     private static final Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
     private static final int CARRIER_TYPE_DEFAULT = 0;
     private static final int CARRIER_TYPE_SPN = 1;
@@ -355,7 +356,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         final Resources res = getResources();
         final boolean configDisabled = res.getBoolean(R.bool.config_disableMenuKeyInLockScreen);
         final boolean isMonkey = SystemProperties.getBoolean("ro.monkey", false);
-        return !configDisabled || isMonkey;
+        final boolean fileOverride = (new File(ENABLE_MENU_KEY_FILE)).exists();
+        return !configDisabled || isMonkey || fileOverride;
     }
 
     /**
