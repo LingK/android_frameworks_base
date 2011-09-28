@@ -19,7 +19,6 @@ package com.android.internal.policy.impl;
 import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.DigitalClock;
-import com.android.internal.view.FastBitmapDrawable;
 import com.android.internal.widget.CircularSelector;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.RotarySelector;
