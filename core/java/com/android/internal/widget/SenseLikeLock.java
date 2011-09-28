@@ -43,7 +43,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 import com.android.internal.R;
-import com.android.internal.view.FastBitmapDrawable;
 
 public class SenseLikeLock extends View {
 
