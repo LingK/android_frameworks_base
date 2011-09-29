@@ -217,6 +217,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Settings.System.CARRIER_LABEL_TYPE, CARRIER_TYPE_CUSTOM));
     private String mCarrierLabelCustom = (Settings.System.getString(mContext.getContentResolver(),
             Settings.System.CARRIER_LABEL_CUSTOM_STRING));
+    private boolean mRingUnlockMiddle = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_RING_UNLOCK_MIDDLE, 0) == 1);
 
     // Current Selector
     private boolean mUseSliderLockscreen = (mLockscreenStyle == 1);
@@ -609,22 +611,35 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             setLenseWidgetsVisibility(View.INVISIBLE);
 
         mRingSelector.enableMiddleRing(mCustomAppToggle);
+        mRingSelector.enableMiddlePrimary(mRingUnlockMiddle);
+
+        if (mRingUnlockMiddle && mCustomAppToggle){
+            mRingSelector.setLeftRingResources(
+                R.drawable.ic_jog_dial_custom,
+                R.drawable.jog_tab_target_green,
+                R.drawable.jog_ring_ring_green);
+
+            mRingSelector.setMiddleRingResources(
+                R.drawable.ic_jog_dial_unlock,
+                R.drawable.jog_tab_target_green,
+                R.drawable.jog_ring_ring_green);
+        } else {
+            mRingSelector.setLeftRingResources(
+                R.drawable.ic_jog_dial_unlock,
+                R.drawable.jog_tab_target_green,
+                R.drawable.jog_ring_ring_green);
+
+            mRingSelector.setMiddleRingResources(
+                R.drawable.ic_jog_dial_custom,
+                R.drawable.jog_tab_target_green,
+                R.drawable.jog_ring_ring_green);
+        }
 
         mTabSelector.setLeftTabResources(
                 R.drawable.ic_jog_dial_unlock,
                 R.drawable.jog_tab_target_green,
                 R.drawable.jog_tab_bar_left_unlock,
                 R.drawable.jog_tab_left_unlock);
-
-        mRingSelector.setLeftRingResources(
-                R.drawable.ic_jog_dial_unlock,
-                R.drawable.jog_tab_target_green,
-                R.drawable.jog_ring_ring_green);
-
-        mRingSelector.setMiddleRingResources(
-                R.drawable.ic_jog_dial_custom,
-                R.drawable.jog_tab_target_green,
-                R.drawable.jog_ring_ring_green);
 
         updateRightTabResources();
         mTabSelector.setOnTriggerListener(this);
@@ -857,16 +872,32 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     /** {@inheritDoc} */
     public void onRingTrigger(View v, int whichRing, int whichApp) {
+        boolean mUnlockTrigger=false;
+        boolean mCustomAppTrigger=false;
+
         if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
+            if(mRingUnlockMiddle)
+                mCustomAppTrigger=true;
+            else
+                mUnlockTrigger=true;
+        }
+        if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
+            if(mRingUnlockMiddle)
+                mUnlockTrigger=true;
+            else
+                mCustomAppTrigger=true;
+        }
+
+        if (mUnlockTrigger) {
             mCallback.goToUnlockScreen();
-        } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
-            toggleSilentMode();
-            updateRightTabResources();
-            mCallback.pokeWakelock();
-        } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
+        }else if (mCustomAppTrigger) {
             if (mCustomRingAppActivities[whichApp] != null) {
                 runActivity(mCustomRingAppActivities[whichApp]);
             }
+        }else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+            toggleSilentMode();
+            updateRightTabResources();
+            mCallback.pokeWakelock();
         }
     }
 
