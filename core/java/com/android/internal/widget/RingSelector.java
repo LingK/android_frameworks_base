@@ -87,11 +87,8 @@ public class RingSelector extends ViewGroup {
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     private int mOrientation;
-<<<<<<< HEAD
     private int mRingHover = -1; //Keeps track of last hovered custom app
-=======
     private int mSelectedRingId;
->>>>>>> 67c5713... RingLockscreen : Fix animation delay
     private Ring mLeftRing;
     private Ring mRightRing;
     private Ring mMiddleRing;
