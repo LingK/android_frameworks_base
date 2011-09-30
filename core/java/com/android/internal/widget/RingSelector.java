@@ -1049,7 +1049,6 @@ public class RingSelector extends ViewGroup {
         }
     }
 
-
     /**
      * Sets the left ring icon to a given resource.
      *
@@ -1146,7 +1145,6 @@ public class RingSelector extends ViewGroup {
 
     public void hideSecRing(int ringNum) {
         mSecRings[ringNum].setHiddenState(true);
-
         boolean allHidden = true;
         for (SecRing ring : mSecRings) {
             if (!ring.isHidden()) {

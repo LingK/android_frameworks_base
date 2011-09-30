@@ -47,6 +47,7 @@ public class BatteryIcon extends ImageView {
     private int mAnimDuration = 500;
     private int mBatteryLevel = 0;
     private boolean mBatteryCharging = false;
+
     private int mWidthPx;
     private int mMarginRightPx;
     private boolean mShowBattery = false;
@@ -159,6 +160,7 @@ public class BatteryIcon extends ImageView {
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 mBatteryLevel = intent.getIntExtra("level", 0);
                 boolean oldChargingState = mBatteryCharging;
+
                 mBatteryCharging = intent.getIntExtra("status", 0)
                  == BatteryManager.BATTERY_STATUS_CHARGING;
 

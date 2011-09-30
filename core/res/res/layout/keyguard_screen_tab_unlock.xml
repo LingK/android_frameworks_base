@@ -184,34 +184,9 @@
             android:layout_marginBottom="60dip"
             />
 
-        <com.android.internal.widget.CircularSelector
-            android:id="@+id/circular_selector"
-	        android:orientation="vertical"
-	        android:layout_alignParentBottom="true"
-            android:layout_marginBottom="0dip"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-            />
-
         <com.android.internal.widget.RotarySelector
             android:id="@+id/rotary_selector"
             android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            />
-
-        <com.android.internal.widget.UnlockRing
-            android:id="@+id/unlock_ring"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            />
-
-        <com.android.internal.widget.SenseLikeLock
-            android:id="@+id/sense_selector"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -222,6 +197,31 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            />
+
+        <com.android.internal.widget.CircularSelector
+            android:id="@+id/circular_selector"
+	        android:orientation="vertical"
+	        android:layout_alignParentBottom="true"
+            android:layout_marginBottom="0dip"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+            />
+
+        <com.android.internal.widget.UnlockRing
+            android:id="@+id/unlock_ring"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            />
+
+        <com.android.internal.widget.SenseLikeLock
+            android:id="@+id/sense_selector"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             />
 

@@ -455,8 +455,7 @@ public class StatusBarPolicy {
               R.drawable.stat_sys_data_fully_inandout_4g }
     };
 
-    // Assume it's all good unless we hear otherwise.  We don't always seem
-    // to get broadcasts that it *is* there.
+    // Assume it's all good unless we hear otherwise.
     IccCard.State mSimState = IccCard.State.READY;
     int mPhoneState = TelephonyManager.CALL_STATE_IDLE;
     int mDataState = TelephonyManager.DATA_DISCONNECTED;
@@ -598,6 +597,8 @@ public class StatusBarPolicy {
     private boolean mPhoneSignalStatus;
     private boolean mShowHeadset;
 
+    private boolean mShowHeadset;
+
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -615,8 +616,8 @@ public class StatusBarPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
 
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUS_BAR_HEADSET), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_HEADSET), false, this);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -1019,9 +1020,9 @@ public class StatusBarPolicy {
             updateSignalStrength(); // apply any change in mInetCondition
             break;
         case ConnectivityManager.TYPE_WIMAX:
-             mInetCondition = inetCondition;
-             updateWiMAX(intent);
-             break;
+            mInetCondition = inetCondition;
+            updateWiMAX(intent);
+            break;
         }
     }
 

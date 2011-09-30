@@ -96,8 +96,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private static final int CARRIER_TYPE_CUSTOM = 3;
     private CharSequence DEFAULT_PLMN = mContext.getResources().getText(
             R.string.lockscreen_carrier_default);
-
-    // Lockpattern Monitors
+    
+   // Lockpattern Monitors
     private Status mStatus = Status.Normal;
     private LockPatternUtils mLockPatternUtils;
     private KeyguardUpdateMonitor mUpdateMonitor;
@@ -815,6 +815,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
+    /** {@inheritDoc} */
+    public void onRingTrigger(View v, int whichRing, int whichApp) {
+        if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
+            mCallback.goToUnlockScreen();
+        } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+            toggleSilentMode();
+            updateRightTabResources();
+            mCallback.pokeWakelock();
+        } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
+            if (mCustomRingAppActivities[whichApp] != null) {
+                runActivity(mCustomRingAppActivities[whichApp]);
+            }
+        }
+    }
+
 	public void onCircularSelectorTrigger(View v, int Trigger) {		
 		mCallback.goToUnlockScreen();
 	}
@@ -1420,7 +1435,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     @Override
     public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
         ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
-
         if (predictions.size() > 0 && predictions.get(0).score > mGestureSensitivity) {
             String[] payload = predictions.get(0).name.split("___", 3);
             String uri = payload[1];

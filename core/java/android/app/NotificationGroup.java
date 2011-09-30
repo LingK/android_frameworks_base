@@ -106,6 +106,10 @@ public class NotificationGroup implements Parcelable {
         return mDirty;
     }
 
+    public boolean isDirty() {
+        return mDirty;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -186,7 +190,9 @@ public class NotificationGroup implements Parcelable {
             event = xpp.next();
         }
 
+        /* we just loaded from XML, no need to save */
         notificationGroup.mDirty = false;
+
         return notificationGroup;
     }
 }
