@@ -1010,9 +1010,9 @@ public class StatusBarPolicy {
             updateSignalStrength(); // apply any change in mInetCondition
             break;
         case ConnectivityManager.TYPE_WIMAX:
-             mInetCondition = inetCondition;
-             updateWiMAX(intent);
-             break;
+            mInetCondition = inetCondition;
+            updateWiMAX(intent);
+            break;
         }
     }
 

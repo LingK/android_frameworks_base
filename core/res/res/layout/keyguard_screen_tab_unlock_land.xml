@@ -96,7 +96,6 @@
                 android:shadowDy="0"
                 android:shadowRadius="3.0"
                 />
-
         </com.android.internal.widget.DigitalClock>
 
         <TextView
@@ -257,41 +256,42 @@
             android:layout_alignParentRight="true"
             />
 
+        <com.android.internal.widget.RingSelector
+            android:id="@+id/ring_selector"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            />
+
         <com.android.internal.widget.CircularSelector
         	android:id="@+id/circular_selector"
-	        android:orientation="horizontal"
-	        android:layout_alignParentRight="true"
+	        android:orientation="vertical"
 	        android:layout_alignParentBottom="true"
             android:layout_marginBottom="0dip"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
             />
 
-        <com.android.internal.widget.RotarySelector
-            android:id="@+id/rotary_selector"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            />
-
 	    <com.android.internal.widget.UnlockRing
 		    android:id="@+id/unlock_ring"
 		    android:orientation="horizontal"
 		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:layout_alignParentBottom="true"
 		    />
 
         <com.android.internal.widget.SenseLikeLock
             android:id="@+id/sense_selector"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             />
 
-        <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
+        <!-- emergency call button shown when sim is PUKd and tab_selector is
+             hidden -->
         <Button
             android:id="@+id/emergencyCallButton"
             android:layout_width="wrap_content"
@@ -304,13 +304,5 @@
             android:visibility="gone"
             />
 
-        <com.android.internal.widget.RingSelector
-            android:id="@+id/ring_selector"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            />
     </RelativeLayout>
 </android.gesture.GestureOverlayView>

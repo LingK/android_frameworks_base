@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Android Open Source Project
+ * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class RingSelector extends ViewGroup {
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     private int mOrientation;
-    private int mLastHoveredSecRing;
+    private int mRingHover = -1; //Keeps track of last hovered custom app
     private int mSelectedRingId;
     private Ring mLeftRing;
     private Ring mRightRing;
@@ -1024,9 +1024,8 @@ public class RingSelector extends ViewGroup {
     }
 
     private void setHoverBackLight(float x, float y) {
-        if (!mUseMiddleRing) {
+        if (!mUseMiddleRing)
             return;
-        }
         boolean ringsTouched = false;
         int q;
         for (q = 0; q < 4; q++) {
@@ -1036,17 +1035,17 @@ public class RingSelector extends ViewGroup {
             }
         }
         if (ringsTouched) {
-            if (mLastHoveredSecRing == -1) {
-                mLastHoveredSecRing = q;
+            if (mRingHover == -1) {
+                mRingHover = q;
                 mSecRings[q].setRingBackgroundResource(R.drawable.jog_ring_ring_pressed_green);
-            } else if (mLastHoveredSecRing != q) {
-                mSecRings[mLastHoveredSecRing].setRingBackgroundResource(R.drawable.jog_ring_secback_normal);
-                mLastHoveredSecRing = q;
+            } else if (mRingHover != q) {
+                mSecRings[mRingHover].setRingBackgroundResource(R.drawable.jog_ring_ring_normal);
+                mRingHover = q;
                 mSecRings[q].setRingBackgroundResource(R.drawable.jog_ring_ring_pressed_green);
             }
-        } else if (mLastHoveredSecRing != -1 && !mSecRings[mLastHoveredSecRing].isHidden()) {
-            mSecRings[mLastHoveredSecRing].setRingBackgroundResource(R.drawable.jog_ring_secback_normal);
-            mLastHoveredSecRing = -1;
+        } else if (mRingHover != -1 && !mSecRings[mRingHover].isHidden()) {
+            mSecRings[mRingHover].setRingBackgroundResource(R.drawable.jog_ring_ring_normal);
+            mRingHover = -1;
         }
     }
 
@@ -1146,7 +1145,6 @@ public class RingSelector extends ViewGroup {
 
     public void hideSecRing(int ringNum) {
         mSecRings[ringNum].setHiddenState(true);
-
         boolean allHidden = true;
         for (SecRing ring : mSecRings) {
             if (!ring.isHidden()) {

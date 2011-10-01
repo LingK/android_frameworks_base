@@ -235,7 +235,6 @@ public class ProfileManager {
             ProfileGroup defaultGroup = getActiveProfile().getDefaultGroup();
             return defaultGroup;
         }
-
         return getActiveProfile().getProfileGroup(notificationGroup.getUuid());
     }
 }

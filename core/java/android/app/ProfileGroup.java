@@ -80,7 +80,7 @@ public class ProfileGroup implements Parcelable {
     }
 
     /** @hide */
-    public boolean matches(NotificationGroup group, boolean defaultGroup) {
+    public boolean matches(NotificationGroup group) {
         if (mUuid.equals(group.getUuid())) {
             return true;
         }

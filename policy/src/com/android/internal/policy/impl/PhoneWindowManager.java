@@ -2137,7 +2137,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // make sure keyevent get's handled as power key on volume-wake
             if(mVolumeWakeScreen && isWakeKey && ((keyCode == KeyEvent.KEYCODE_VOLUME_UP)
                     || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)))
-                keyCode = KeyEvent.KEYCODE_POWER;
+             keyCode=KeyEvent.KEYCODE_POWER;
 
             if (down && isWakeKey) {
                 if (keyguardActive) {
