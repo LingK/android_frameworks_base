@@ -597,8 +597,6 @@ public class StatusBarPolicy {
     private boolean mPhoneSignalStatus;
     private boolean mShowHeadset;
 
-    private boolean mShowHeadset;
-
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
