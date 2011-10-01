@@ -608,8 +608,8 @@ public class StatusBarPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);                 
 
-            resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUS_BAR_HEADSET), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_HEADSET), false, this);
         }
 
         @Override public void onChange(boolean selfChange) {

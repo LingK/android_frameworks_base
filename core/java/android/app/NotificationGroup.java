@@ -106,10 +106,6 @@ public class NotificationGroup implements Parcelable {
         return mDirty;
     }
 
-    public boolean isDirty() {
-        return mDirty;
-    }
-
     @Override
     public int describeContents() {
         return 0;
