@@ -800,20 +800,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
-    /** {@inheritDoc} */
-    public void onRingTrigger(View v, int whichRing, int whichApp) {
-        if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
-            mCallback.goToUnlockScreen();
-        } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
-            toggleSilentMode();
-            updateRightTabResources();
-            mCallback.pokeWakelock();
-        } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
-            if (mCustomRingAppActivities[whichApp] != null) {
-                runActivity(mCustomRingAppActivities[whichApp]);
-            }
-        }
-    }
 
     /** {@inheritDoc} */
     public void onRingTrigger(View v, int whichRing, int whichApp) {
