@@ -289,6 +289,7 @@ public class RingSelector extends ViewGroup {
                 trans.setDuration(ANIM_DURATION);
                 trans.setFillAfter(true);
                 ring.startAnimation(trans);
+                ring.setVisibility(View.INVISIBLE);
                 target.setVisibility(View.INVISIBLE);
             }
         }
