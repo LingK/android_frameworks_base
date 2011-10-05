@@ -2293,6 +2293,14 @@ public final class Settings {
         public static final String STATUS_BAR_BATTERY_COLOR = "status_bar_battery_color";
 
         /**
+         * Whether to show low battery colors for the status bar battery style
+         * 0: don't show
+         * 1: show
+         * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_LOW_BATT = "status_bar_battery_low_batt";
+
+        /**
          * Whether to show the clock in status bar
          * of the stock battery icon
          * 0: don't show the clock

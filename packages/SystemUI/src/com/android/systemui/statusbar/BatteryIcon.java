@@ -231,12 +231,13 @@ public class BatteryIcon extends ImageView {
         mShowBattery = (Settings.System
                 .getInt(resolver, Settings.System.STATUS_BAR_BATTERY, 0) == 1);
 
-        refreshDrawableState();
+        updateIconCache();
 
-        if (mShowBattery)
+        if (mShowBattery) {
             setVisibility(View.VISIBLE);
-        else
+        } else {
             setVisibility(View.GONE);
+        }
     }
 
     public void updateIconCache() {
