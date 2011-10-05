@@ -33,6 +33,7 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
         <com.android.systemui.statusbar.CenterClock
             android:id="@+id/clockcenter"
             android:textAppearance="@*android:style/TextAppearance.StatusBar.Icon"
@@ -105,6 +106,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="match_parent"
 	        android:orientation="horizontal">
+
 	        <ImageButton android:id="@+id/status_edge_left"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
@@ -181,6 +183,7 @@
         android:paddingLeft="6dip"
         android:animationCache="false"
         android:orientation="horizontal" >
+
         <ImageSwitcher android:id="@+id/tickerIcon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -195,6 +198,7 @@
                 android:layout_height="25dip"
                 />
         </ImageSwitcher>
+
         <com.android.systemui.statusbar.TickerView android:id="@+id/tickerText"
             android:layout_width="0dip"
             android:layout_weight="1"
