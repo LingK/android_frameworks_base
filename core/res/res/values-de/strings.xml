@@ -966,4 +966,20 @@
         <item quantity="one">%d Sekunde übrig</item>
         <item quantity="other">%d Sekunden übrig</item>
     </plurals>
+
+    <string name="permlab_receiveEmergencyBroadcast">Notfall-Broadcasts empfangen</string>
+    <string name="permdesc_receiveEmergencyBroadcast">Erlaubt es einer Anwendung, Notfall-Broadcasts zu empfangen und zu verarbeiten. Diese Berechtigung steht nur Systemanwendungen zur Verfügung.</string>
+
+    <string name="permlab_revokePermissions">Lesen und Ändern entzogener Berechtigungen</string>
+    <string name="permdesc_revokePermissions">Erlaubt das Lesen und Schreiben entzogener Berechtigungen. Nicht zum Gebrauch mit normalen Anwendungen.</string>
+
+    <string name="permlab_preventpower">Ausschaltknopf abfangen</string>
+    <string name="permdesc_preventpower">Erlaubt einer Anwendung, die Funktion des Ein-/Ausschaltknopfes zu überschreiben.</string>
+
+    <string name="lockscreen_phone_label">Telefon</string>
+    <string name="aerr_revoked_application">Die Anwendung <xliff:g id="application">%1$s</xliff:g> (Prozess <xliff:g id="process">%2$s</xliff:g>) wurde unerwartet beendet.\nACHTUNG!\nDer Anwendung wurden eine oder mehrere Berechtigungen entzogen, was zu Anwendungsfehlern führen kann. Bitte erteilen Sie ihr wieder Berechtigungen und versuchen es erneut.</string>
+    <string name="aerr_revoked_process">Der Prozess <xliff:g id="process">%1$s</xliff:g> wurde unerwartet beendet.\nACHTUNG!\nDer Anwendung wurden eine oder mehrere Berechtigungen entzogen, was zu Anwendungsfehlern führen kann. Bitte erteilen Sie ihr wieder Berechtigungen und versuchen es erneut.</string>
+    <string name="reset_perms">Berechtigungen zurücksetzen</string>
+    <string name="edit_perms">Berechtigungen ändern</string>
+    <string name="openvpn_vpn_description">OpenVPN</string>
 </resources>
