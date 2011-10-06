@@ -1995,6 +1995,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mStatusBarContainer.addView(mStatusBarView);
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         mPowerWidget.setupWidget();
+        mPowerWidgetBottom.updateWidget();
     }
 
     /**
