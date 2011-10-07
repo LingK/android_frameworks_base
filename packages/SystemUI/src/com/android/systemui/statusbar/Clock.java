@@ -247,6 +247,5 @@ public class Clock extends TextView {
 				.getInt(resolver, Settings.System.COLOR_CLOCK, mClockColor);
 
 		setTextColor(mClockColor);
-        refreshDrawableState();
     }
 }

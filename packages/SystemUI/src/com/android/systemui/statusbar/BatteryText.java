@@ -130,6 +130,5 @@ public class BatteryText extends TextView {
 				.getInt(resolver, Settings.System.COLOR_BATTERY_PERCENT, mPercentColor);
 
        	setTextColor(mPercentColor);
-        refreshDrawableState();
     }
 }

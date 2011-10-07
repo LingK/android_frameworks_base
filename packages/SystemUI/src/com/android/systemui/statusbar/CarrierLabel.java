@@ -205,6 +205,5 @@ public class CarrierLabel extends TextView {
 				.getInt(resolver, Settings.System.COLOR_LABEL_PLMN, mPlmnColor);
 
 		setTextColor(mPlmnColor);
-        refreshDrawableState();
     } 
 }
