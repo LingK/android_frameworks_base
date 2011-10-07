@@ -157,6 +157,5 @@ public class SignalText extends TextView {
 				.getInt(resolver, Settings.System.COLOR_SIGNALTEXT_VALUE, mValueColor);
 
        	setTextColor(mValueColor);
-        refreshDrawableState();
     }
 }
