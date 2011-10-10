@@ -1002,7 +1002,9 @@ public class RingSelector extends ViewGroup {
         dispatchTriggerEvent(isLeft ?
                 OnRingTriggerListener.LEFT_RING : (isRight ? OnRingTriggerListener.RIGHT_RING :
                     OnRingTriggerListener.MIDDLE_RING), mSelectedRingId);
-        resetView();
+        if (isRight) {
+            resetView();
+        }
         mAnimating = false;
     }
 
