@@ -1288,6 +1288,9 @@ public class AudioService extends IAudioService.Stub {
         } else if (AudioSystem.isStreamActive(AudioSystem.STREAM_MUSIC)) {
             // Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC...");
             return AudioSystem.STREAM_MUSIC;
+        } else if (AudioSystem.isStreamActive(AudioSystem.STREAM_NOTIFICATION) && mNotificationsUseRingVolume == 0) {
+            // Log.v(TAG, "getActiveStreamType: Forcing STREAM_NOTIFICATION...");
+            return AudioSystem.STREAM_NOTIFICATION;
         } else if (suggestedStreamType == AudioManager.USE_DEFAULT_STREAM_TYPE) {
             // Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING...");
             return (mDefaultVolumeMedia == 0) ? AudioSystem.STREAM_RING : AudioSystem.STREAM_MUSIC;
