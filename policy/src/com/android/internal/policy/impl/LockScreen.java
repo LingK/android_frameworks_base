@@ -1384,6 +1384,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     /** {@inheritDoc} */
     public void onPause() {
+        if (mUseRingLockscreen) {
+            mRingSelector.setVisibility(View.VISIBLE);
+        }
     }
 
     /** {@inheritDoc} */
@@ -1569,7 +1572,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_NOW_PLAYING, 1) == 1))
             mNowPlayingToggle = true;
-
         if (visibility == View.VISIBLE
                 && (Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.LOCKSCREEN_ALBUM_ART, 1) == 1))
