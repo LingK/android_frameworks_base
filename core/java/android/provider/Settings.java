@@ -2658,27 +2658,6 @@ public final class Settings {
         public static final String LOCKSCREEN_DISABLE_ON_SECURITY = "lockscreen_disable_on_security";
         
         /**
-         * How many ms to delay before enabling the security screen lock when
-         * the screen goes off due to timeout
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SECURITY_TIMEOUT_DELAY = "screen_lock_security_timeout_delay";
-
-        /**
-         * How many ms to delay before enabling the security screen lock when
-         * the screen is turned off by the user
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SECURITY_SCREENOFF_DELAY = "screen_lock_security_screenoff_delay";
-
-        /**
-         * Whether to use a separate delay for "slide to unlock" and security
-         * lock
-         * @hide
-         */
-        public static final String SCREEN_LOCK_SLIDE_DELAY_TOGGLE = "screen_lock_slide_delay_toggle";
-
-        /**
          * How many ms to delay before enabling the "slide to unlock" screen
          * lock when the screen goes off due to timeout
          * @hide
