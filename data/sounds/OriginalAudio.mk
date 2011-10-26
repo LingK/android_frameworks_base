@@ -18,12 +18,12 @@ LOCAL_PATH:= frameworks/base/data/sounds
 
 # Alarms
 PRODUCT_COPY_FILES += \
-	$(LOCAL_PATH)/alarms/Alarm_Beep_01.ogg:system/media/audio/alarms/Alarm_Beep_01.ogg \
-	$(LOCAL_PATH)/alarms/Alarm_Beep_02.ogg:system/media/audio/alarms/Alarm_Beep_02.ogg \
-    $(LOCAL_PATH)/alarms/Alarm_Buzzer.ogg:system/media/audio/alarms/Alarm_Buzzer.ogg \
-	$(LOCAL_PATH)/alarms/Alarm_Classic.ogg:system/media/audio/alarms/Alarm_Classic.ogg \
-	$(LOCAL_PATH)/alarms/Alarm_Beep_03.ogg:system/media/audio/alarms/Alarm_Beep_03.ogg \
-    $(LOCAL_PATH)/alarms/Alarm_Rooster_02.ogg:system/media/audio/alarms/Alarm_Rooster_02.ogg
+	$(LOCAL_PATH)/alarms/Cesium.ogg:system/media/audio/alarms/Cesium.ogg \
+	$(LOCAL_PATH)/alarms/Fermium.ogg:system/media/audio/alarms/Fermium.ogg \
+	$(LOCAL_PATH)/alarms/Hassium.ogg:system/media/audio/alarms/Hassium.ogg \
+	$(LOCAL_PATH)/alarms/Neptunium.ogg:system/media/audio/alarms/Neptunium.ogg \
+	$(LOCAL_PATH)/alarms/Nobelium.ogg:system/media/audio/alarms/Nobelium.ogg \
+	$(LOCAL_PATH)/alarms/Plutonium.ogg:system/media/audio/alarms/Plutonium.ogg
 
 # Effects
 PRODUCT_COPY_FILES += \
@@ -62,15 +62,17 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/notifications/DontPanic.ogg:system/media/audio/notifications/DontPanic.ogg \
 	$(LOCAL_PATH)/notifications/Drip.ogg:system/media/audio/notifications/Drip.ogg \
 	$(LOCAL_PATH)/notifications/droid.ogg:system/media/audio/notifications/droid.ogg \
-	$(LOCAL_PATH)/notifications/Droid_X2_Alert.ogg:system/media/audio/notifications/Droid_X2_Alert.ogg \
 	$(LOCAL_PATH)/notifications/Electra.ogg:system/media/audio/notifications/Electra.ogg \
 	$(LOCAL_PATH)/notifications/Fomalhaut.ogg:system/media/audio/notifications/Fomalhaut.ogg \
 	$(LOCAL_PATH)/notifications/Fragmented_alert.ogg:system/media/audio/notifications/Fragmented_alert.ogg \
 	$(LOCAL_PATH)/notifications/Heaven.ogg:system/media/audio/notifications/Heaven.ogg \
+    $(LOCAL_PATH)/notifications/Hojus.ogg:system/media/audio/notifications/Hojus.ogg \
 	$(LOCAL_PATH)/notifications/Highwire.ogg:system/media/audio/notifications/Highwire.ogg \
 	$(LOCAL_PATH)/notifications/KzurbSonar.ogg:system/media/audio/notifications/KzurbSonar.ogg \
+    $(LOCAL_PATH)/notifications/Lalande.ogg:system/media/audio/notifications/Lalande.ogg \
 	$(LOCAL_PATH)/notifications/Merope.ogg:system/media/audio/notifications/Merope.ogg \
 	$(LOCAL_PATH)/notifications/Microcosmosis_alert.ogg:system/media/audio/notifications/Microcosmosis_alert.ogg \
+    $(LOCAL_PATH)/notifications/Mira.ogg:system/media/audio/notifications/Mira.ogg \
 	$(LOCAL_PATH)/notifications/moonbeam.ogg:system/media/audio/notifications/moonbeam.ogg \
 	$(LOCAL_PATH)/notifications/Nanobots_alert.ogg:system/media/audio/notifications/Nanobots_alert.ogg \
 	$(LOCAL_PATH)/notifications/Nanotubes_alert.ogg:system/media/audio/notifications/Nanotubes_alert.ogg \
@@ -81,6 +83,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/notifications/Polaris.ogg:system/media/audio/notifications/Polaris.ogg \
 	$(LOCAL_PATH)/notifications/Pollux.ogg:system/media/audio/notifications/Pollux.ogg \
 	$(LOCAL_PATH)/notifications/Procyon.ogg:system/media/audio/notifications/Procyon.ogg \
+    $(LOCAL_PATH)/notifications/Proxima.ogg:system/media/audio/notifications/Proxima.ogg \
 	$(LOCAL_PATH)/notifications/Reaction_alert.ogg:system/media/audio/notifications/Reaction_alert.ogg \
 	$(LOCAL_PATH)/notifications/regulus.ogg:system/media/audio/notifications/regulus.ogg \
 	$(LOCAL_PATH)/notifications/Research_alert.ogg:system/media/audio/notifications/Research_alert.ogg \
@@ -89,6 +92,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/notifications/SpaceSeed.ogg:system/media/audio/notifications/SpaceSeed.ogg \
 	$(LOCAL_PATH)/notifications/Tech_alert.ogg:system/media/audio/notifications/Tech_alert.ogg \
 	$(LOCAL_PATH)/notifications/tweeters.ogg:system/media/audio/notifications/tweeters.ogg \
+    $(LOCAL_PATH)/notifications/Upsilon.ogg:system/media/audio/notifications/Upsilon.ogg \
 	$(LOCAL_PATH)/notifications/vega.ogg:system/media/audio/notifications/vega.ogg \
     $(LOCAL_PATH)/notifications/Vision_alert.ogg:system/media/audio/notifications/Vision_alert.ogg \
     $(LOCAL_PATH)/notifications/Voila.ogg:system/media/audio/notifications/Voila.ogg
@@ -99,7 +103,7 @@ PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/ringtones/Alert_Bright.ogg:system/media/audio/ringtones/Alert_Bright.ogg \
 	$(LOCAL_PATH)/ringtones/Alert_Natural.ogg:system/media/audio/ringtones/Alert_Natural.ogg \
 	$(LOCAL_PATH)/ringtones/Alert_Synthetic.ogg:system/media/audio/ringtones/Alert_Synthetic.ogg \
-	$(LOCAL_PATH)/ringtones/AndroMeda.ogg:system/media/audio/ringtones/AndroMeda.ogg \
+	$(LOCAL_PATH)/ringtones/Andromeda.ogg:system/media/audio/ringtones/Andromeda.ogg \
 	$(LOCAL_PATH)/ringtones/Aquila.ogg:system/media/audio/ringtones/Aquila.ogg \
 	$(LOCAL_PATH)/ringtones/ArgoNavis.ogg:system/media/audio/ringtones/ArgoNavis.ogg \
 	$(LOCAL_PATH)/ringtones/BeatPlucker.ogg:system/media/audio/ringtones/BeatPlucker.ogg \
@@ -115,7 +119,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ringtones/CanisMajor.ogg:system/media/audio/ringtones/CanisMajor.ogg \
     $(LOCAL_PATH)/ringtones/CaribbeanIce.ogg:system/media/audio/ringtones/CaribbeanIce.ogg \
     $(LOCAL_PATH)/ringtones/Carina.ogg:system/media/audio/ringtones/Carina.ogg \
-    $(LOCAL_PATH)/ringtones/CassioPeia.ogg:system/media/audio/ringtones/CassioPeia.ogg \
+    $(LOCAL_PATH)/ringtones/Cassiopeia.ogg:system/media/audio/ringtones/Cassiopeia.ogg \
     $(LOCAL_PATH)/ringtones/Centaurus.ogg:system/media/audio/ringtones/Centaurus.ogg \
     $(LOCAL_PATH)/ringtones/Chimes_Synthetic.ogg:system/media/audio/ringtones/Chimes_Synthetic.ogg \
     $(LOCAL_PATH)/ringtones/Chrome_Ring.ogg:system/media/audio/ringtones/Chrome_Ring.ogg \
@@ -127,7 +131,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ringtones/DonMessWivIt.ogg:system/media/audio/ringtones/DonMessWivIt.ogg \
     $(LOCAL_PATH)/ringtones/Doorbell_Synthetic.ogg:system/media/audio/ringtones/Doorbell_Synthetic.ogg \
     $(LOCAL_PATH)/ringtones/Draco.ogg:system/media/audio/ringtones/Draco.ogg \
-    $(LOCAL_PATH)/ringtones/Droid_X2.ogg:system/media/audio/ringtones/Droid_X2.ogg \
     $(LOCAL_PATH)/ringtones/Eastern_Sky.ogg:system/media/audio/ringtones/Eastern_Sky.ogg \
     $(LOCAL_PATH)/ringtones/Eridani.ogg:system/media/audio/ringtones/Eridani.ogg \
     $(LOCAL_PATH)/ringtones/EtherShake.ogg:system/media/audio/ringtones/EtherShake.ogg \
@@ -159,13 +162,10 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ringtones/Playa.ogg:system/media/audio/ringtones/Playa.ogg \
     $(LOCAL_PATH)/ringtones/Provincial_Synthetic.ogg:system/media/audio/ringtones/Provincial_Synthetic.ogg \
     $(LOCAL_PATH)/ringtones/Pyxis.ogg:system/media/audio/ringtones/Pyxis.ogg \
+    $(LOCAL_PATH)/ringtones/Radiation.ogg:system/media/audio/ringtones/Radiation.ogg \
     $(LOCAL_PATH)/ringtones/RadiationOrchestration.ogg:system/media/audio/ringtones/RadiationOrchestration.ogg \
     $(LOCAL_PATH)/ringtones/Revelation.ogg:system/media/audio/ringtones/Revelation.ogg \
     $(LOCAL_PATH)/ringtones/Rigel.ogg:system/media/audio/ringtones/Rigel.ogg \
-    $(LOCAL_PATH)/ringtones/Ring_Classic_02.ogg:system/media/audio/ringtones/Ring_Classic_02.ogg \
-    $(LOCAL_PATH)/ringtones/Ring_Digital_02.ogg:system/media/audio/ringtones/Ring_Digital_02.ogg \
-    $(LOCAL_PATH)/ringtones/Ring_Synth_02.ogg:system/media/audio/ringtones/Ring_Synth_02.ogg \
-    $(LOCAL_PATH)/ringtones/Road_Trip.ogg:system/media/audio/ringtones/Road_Trip.ogg \
     $(LOCAL_PATH)/ringtones/RobotsforEveryone.ogg:system/media/audio/ringtones/RobotsforEveryone.ogg \
 	$(LOCAL_PATH)/ringtones/RomancingTheTone.ogg:system/media/audio/ringtones/RomancingTheTone.ogg \
     $(LOCAL_PATH)/ringtones/Savannah.ogg:system/media/audio/ringtones/Savannah.ogg \
@@ -176,9 +176,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ringtones/SilkyWay.ogg:system/media/audio/ringtones/SilkyWay.ogg \
 	$(LOCAL_PATH)/ringtones/SitarVsSitar.ogg:system/media/audio/ringtones/SitarVsSitar.ogg \
     $(LOCAL_PATH)/ringtones/Solarium.ogg:system/media/audio/ringtones/Solarium.ogg \
-    $(LOCAL_PATH)/ringtones/Standard.ogg:system/media/audio/ringtones/Standard.ogg \
 	$(LOCAL_PATH)/ringtones/Steppin_Out.ogg:system/media/audio/ringtones/Steppin_Out.ogg \
-	$(LOCAL_PATH)/ringtones/Terminated.ogg:system/media/audio/ringtones/Terminated.ogg \
 	$(LOCAL_PATH)/ringtones/Testudo.ogg:system/media/audio/ringtones/Testudo.ogg \
     $(LOCAL_PATH)/ringtones/Third_Eye.ogg:system/media/audio/ringtones/Third_Eye.ogg \
     $(LOCAL_PATH)/ringtones/Thunderfoot.ogg:system/media/audio/ringtones/Thunderfoot.ogg \
