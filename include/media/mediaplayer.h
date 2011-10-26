@@ -175,9 +175,6 @@ public:
             int             getAudioSessionId();
             status_t        setAuxEffectSendLevel(float level);
             status_t        attachAuxEffect(int effectId);
-#ifdef OMAP_ENHANCEMENT
-            status_t        requestVideoCloneMode(bool enable);
-#endif
 private:
             void            clear_l();
             status_t        seekTo_l(int msec);

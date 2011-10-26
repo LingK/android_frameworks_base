@@ -45,7 +45,6 @@ import android.text.TextUtils;
 import android.util.Config;
 import android.util.Log;
 import android.util.Xml;
-import android.os.SystemProperties;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -736,9 +735,7 @@ public class MediaScanner
                 values.put(Audio.Media.IS_ALARM, alarms);
                 values.put(Audio.Media.IS_MUSIC, music);
                 values.put(Audio.Media.IS_PODCAST, podcasts);
-            } else if ((mFileType == MediaFile.FILE_TYPE_JPEG) ||
-                       ((SystemProperties.OMAP_ENHANCEMENT) && (mFileType == MediaFile.FILE_TYPE_JPS)) ||
-                       ((SystemProperties.OMAP_ENHANCEMENT) && (mFileType == MediaFile.FILE_TYPE_MPO))) {
+            } else if (mFileType == MediaFile.FILE_TYPE_JPEG) {
                 ExifInterface exif = null;
                 try {
                     exif = new ExifInterface(entry.mPath);

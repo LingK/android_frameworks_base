@@ -327,11 +327,7 @@ void NuCachedSource2::onRead(const sp<AMessage> &msg) {
 }
 
 void NuCachedSource2::restartPrefetcherIfNecessary_l(bool force) {
-#ifndef OMAP_ENHANCEMENT
     static const size_t kGrayArea = 256 * 1024;
-#else
-    static const size_t kGrayArea = 256 * 1024 * 12;
-#endif
 
     if (mFetching || mFinalStatus != OK) {
         return;
@@ -439,12 +435,8 @@ ssize_t NuCachedSource2::readInternal(off_t offset, void *data, size_t size) {
 
     if (offset < mCacheOffset
             || offset >= (off_t)(mCacheOffset + mCache->totalSize())) {
-#ifndef OMAP_ENHANCEMENT
         static const off_t kPadding = 32768;
-#else
-        // make this value larger for high profile playback
-        static const off_t kPadding = 768 * 1024;
-#endif
+
         // In the presence of multiple decoded streams, once of them will
         // trigger this seek request, the other one will request data "nearby"
         // soon, adjust the seek position so that that subsequent request
@@ -455,13 +447,6 @@ ssize_t NuCachedSource2::readInternal(off_t offset, void *data, size_t size) {
     }
 
     size_t delta = offset - mCacheOffset;
-#ifdef OMAP_ENHANCEMENT
-    if (offset + size <= mCacheOffset + mCache->totalSize()) {
-        mCache->copy(delta, data, size);
-
-        return size;
-    }
-#endif
 
     if (mFinalStatus != OK) {
         if (delta >= mCache->totalSize()) {
@@ -474,13 +459,11 @@ ssize_t NuCachedSource2::readInternal(off_t offset, void *data, size_t size) {
         return avail;
     }
 
-#ifndef OMAP_ENHANCEMENT
     if (offset + size <= mCacheOffset + mCache->totalSize()) {
         mCache->copy(delta, data, size);
 
         return size;
     }
-#endif
 
     LOGV("deferring read");
 
