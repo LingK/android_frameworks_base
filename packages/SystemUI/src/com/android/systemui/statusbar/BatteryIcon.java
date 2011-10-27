@@ -44,13 +44,14 @@ public class BatteryIcon extends ImageView {
 
     static final int BATTERY_ICON_WIDTH_DIP = 4;
     static final int BATTERY_ICON_MARGIN_RIGHT_DIP = 6;
+    private static final int BATTERY_STYLE_PERCENT = 1;
     private int mAnimDuration = 500;
     private int mBatteryLevel = 0;
+    private int mStatusBarBattery;
     private boolean mBatteryCharging = false;
 
     private int mWidthPx;
     private int mMarginRightPx;
-    private boolean mShowBattery = false;
     private int mCurrentFrame = 0;
     private boolean mAttached;
     private Matrix mMatrix = new Matrix();
@@ -187,7 +188,7 @@ public class BatteryIcon extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (!mAttached || !mShowBattery)
+        if (!mAttached || mStatusBarBattery != BATTERY_STYLE_PERCENT)
             return;
 
         canvas.drawBitmap(mIconCache[mCurrentFrame], mMatrix, mPaint);
@@ -228,12 +229,11 @@ public class BatteryIcon extends ImageView {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mShowBattery = (Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_BATTERY, 0) == 1);
+        int statusBarBattery = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 1));
+        mStatusBarBattery = Integer.valueOf(statusBarBattery);
 
-        updateIconCache();
-
-        if (mShowBattery) {
+        if (mStatusBarBattery == BATTERY_STYLE_PERCENT)
             setVisibility(View.VISIBLE);
         } else {
             setVisibility(View.GONE);

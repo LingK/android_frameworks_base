@@ -71,10 +71,15 @@ public class StatusBarPolicy {
 
     private static final String TAG = "StatusBarPolicy";
     private static final int EVENT_BATTERY_CLOSE = 4;
-    private static final int AM_PM_STYLE_NORMAL  = 0;
-    private static final int AM_PM_STYLE_SMALL   = 1;
-    private static final int AM_PM_STYLE_GONE    = 2;
+    private static final int AM_PM_STYLE_NORMAL = 0;
+    private static final int AM_PM_STYLE_SMALL = 1;
+    private static final int AM_PM_STYLE_GONE = 2;
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
+
+    private static final int BATTERY_STYLE_NORMAL = 0;
+    private static final int BATTERY_STYLE_PERCENT = 1;
+    private static final int BATTERY_STYLE_BAR = 2;
+    private static final int BATTERY_STYLE_GONE = 3;
     private static final int INET_CONDITION_THRESHOLD = 50;
 
     private final Context mContext;
@@ -589,13 +594,12 @@ public class StatusBarPolicy {
         }
     };
 
+    private int mStatusBarBattery;
     private boolean mShowSignal;
-    private boolean mShowBattery;
-    private boolean mSignalStatus;  
-    private boolean mBatteryStatus;
+    private boolean mShowHeadset;
+    private boolean mSignalStatus;
     private boolean mShowPhoneSignal;
     private boolean mPhoneSignalStatus;
-    private boolean mShowHeadset;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -799,10 +803,15 @@ public class StatusBarPolicy {
         final int id = intent.getIntExtra("icon-small", 0);
         int level = intent.getIntExtra("level", 0);
         
-        if (!mShowBattery || mBatteryStatus != mShowBattery) {
-            mService.setIcon("battery", id, level);
-            mService.setIconVisibility("battery", !mShowBattery);
-            mBatteryStatus = mShowBattery;
+        mService.setIcon("battery", id, level);
+        if(mStatusBarBattery == BATTERY_STYLE_NORMAL) {
+                mService.setIconVisibility("battery", true);
+        } else if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
+                mService.setIconVisibility("battery", false);
+        } else if (mStatusBarBattery == BATTERY_STYLE_BAR) {
+                mService.setIconVisibility("battery", false);
+        } else if (mStatusBarBattery == BATTERY_STYLE_GONE) {
+                mService.setIconVisibility("battery", false);
         }
 
         boolean plugged = intent.getIntExtra("plugged", 0) != 0;
@@ -1649,10 +1658,15 @@ public class StatusBarPolicy {
     private void updateSettings(){
         ContentResolver resolver = mContext.getContentResolver();
 
-        mShowBattery = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 0) > 0);
-        mBatteryStatus = !mShowBattery;
-        mService.setIconVisibility("battery", !mShowBattery);
+        int statusBarBattery = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 0);
+        mStatusBarBattery = Integer.valueOf(statusBarBattery);
+
+        if (mStatusBarBattery == BATTERY_STYLE_NORMAL) {
+            mService.setIconVisibility("battery", true);
+        } else {
+            mService.setIconVisibility("battery", false);
+        }
 
 		mShowPhoneSignal = (Settings.System.getInt(resolver,
 				Settings.System.STATUS_BAR_PHONE_SIGNAL, 0) == 1);
