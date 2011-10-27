@@ -37,12 +37,13 @@ import android.widget.ProgressBar;
 public class BatteryBar extends ProgressBar {
 
     private static final String TAG = "BatteryBar";
+    private static final int BATTERY_STYLE_BAR = 2;
     private Integer mColor = null;
     private boolean mAttached = false;
     private boolean mShowLowBattery = true;
-    private boolean mShowBatteryBar = false;
     private boolean mBatteryCharging = false;
 
+    private int mStatusBarBattery;
     private int mBatteryLevel = 0;
     private int mChargingLevel = -1;
     private int mAnimDuration = 500;
@@ -233,10 +234,12 @@ public class BatteryBar extends ProgressBar {
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-        mShowBatteryBar = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 0) == 2);
 
-        if (mShowBatteryBar) {
+        int statusBarBattery = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 2));
+        mStatusBarBattery = Integer.valueOf(statusBarBattery);
+
+        if (mStatusBarBattery == BATTERY_STYLE_BAR) {
             setVisibility(VISIBLE);
         } else {
             setVisibility(GONE);

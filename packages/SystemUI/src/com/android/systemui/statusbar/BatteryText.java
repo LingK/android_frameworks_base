@@ -31,10 +31,11 @@ import android.widget.TextView;
 
 public class BatteryText extends TextView {
 
-    Handler mHandler;
-    private boolean mAttached;
-    private boolean mShowBattery;
+    private static final int BATTERY_STYLE_PERCENT = 1;
     private int mPercentColor = 0xffffffff;
+    private int mStatusBarBattery;
+    private boolean mAttached;
+    Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -112,12 +113,13 @@ public class BatteryText extends TextView {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mShowBattery = (Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_BATTERY, 0) == 1);
-                
+        int statusBarBattery = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 1));
+        mStatusBarBattery = Integer.valueOf(statusBarBattery);
+
         updateColor();
         
-        if (mShowBattery)
+        if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
             setVisibility(View.VISIBLE);
         else
             setVisibility(View.GONE);

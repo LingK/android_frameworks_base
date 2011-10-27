@@ -2307,7 +2307,8 @@ public final class Settings {
          * battery bar instead of the stock battery icon
          * 0: don't show / show stock icon instead
          * 1: show mini battery / don't show stock icon
-         * 2: show battery bar / don't show cm battery or stock icon
+         * 2: show battery bar / don't show battery or stock icon
+         * 3: hide battery / don't show battery or stock icon
          * default: 0
          * @hide
          */
