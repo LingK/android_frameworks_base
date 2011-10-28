@@ -121,8 +121,9 @@ public class BatteryText extends TextView {
         
         if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
             setVisibility(View.VISIBLE);
-        else
+        } else {
             setVisibility(View.GONE);
+        }
     }
 
     private void updateColor() {

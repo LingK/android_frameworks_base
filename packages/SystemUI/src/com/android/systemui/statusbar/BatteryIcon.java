@@ -233,7 +233,7 @@ public class BatteryIcon extends ImageView {
                 Settings.System.STATUS_BAR_BATTERY, 1));
         mStatusBarBattery = Integer.valueOf(statusBarBattery);
 
-        if (mStatusBarBattery == BATTERY_STYLE_PERCENT)
+        if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
             setVisibility(View.VISIBLE);
         } else {
             setVisibility(View.GONE);
