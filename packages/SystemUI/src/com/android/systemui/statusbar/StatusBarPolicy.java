@@ -604,15 +604,13 @@ public class StatusBarPolicy {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
+
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY), false, this);
-
 			resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_PHONE_SIGNAL), false, this);
-
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);                 
-
+                    Settings.System.STATUS_BAR_SIGNAL_TEXT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_HEADSET), false, this);
         }
@@ -790,16 +788,14 @@ public class StatusBarPolicy {
         boolean isActive = intent.getBooleanExtra("active", false);
         boolean isFailing = intent.getBooleanExtra("failing", false);
         mService.setIconVisibility("sync_active", isActive);
-        // Don't display sync failing icon: BUG 1297963 Set sync error timeout to "never"
-        //mService.setIconVisibility("sync_failing", isFailing && !isActive);
     }
 
     private final void updateBattery(Intent intent) {
         final int id = intent.getIntExtra("icon-small", 0);
         int level = intent.getIntExtra("level", 0);
-        
         mService.setIcon("battery", id, level);
-        if(mStatusBarBattery == BATTERY_STYLE_NORMAL) {
+
+        if (mStatusBarBattery == BATTERY_STYLE_NORMAL) {
                 mService.setIconVisibility("battery", true);
         } else if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
                 mService.setIconVisibility("battery", false);
@@ -1832,15 +1828,18 @@ public class StatusBarPolicy {
 
     private void updateSettings(){
         ContentResolver resolver = mContext.getContentResolver();
-
         int statusBarBattery = Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 0);
+                Settings.System.STATUS_BAR_BATTERY, 1);
         mStatusBarBattery = Integer.valueOf(statusBarBattery);
 
         if (mStatusBarBattery == BATTERY_STYLE_NORMAL) {
-            mService.setIconVisibility("battery", true);
-        } else {
-            mService.setIconVisibility("battery", false);
+                mService.setIconVisibility("battery", true);
+        } else if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
+                mService.setIconVisibility("battery", false);
+        } else if (mStatusBarBattery == BATTERY_STYLE_BAR) {
+                mService.setIconVisibility("battery", false);
+        } else if (mStatusBarBattery == BATTERY_STYLE_GONE) {
+                mService.setIconVisibility("battery", false);
         }
 
 		mShowPhoneSignal = (Settings.System.getInt(resolver,
