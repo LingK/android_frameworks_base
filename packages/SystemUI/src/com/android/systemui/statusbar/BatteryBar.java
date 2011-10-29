@@ -236,7 +236,7 @@ public class BatteryBar extends ProgressBar {
         ContentResolver resolver = mContext.getContentResolver();
 
         int statusBarBattery = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 2));
+                Settings.System.STATUS_BAR_BATTERY, 1));
         mStatusBarBattery = Integer.valueOf(statusBarBattery);
 
         if (mStatusBarBattery == BATTERY_STYLE_BAR) {
