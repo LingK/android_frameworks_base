@@ -39,6 +39,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.systemui.R;
+
 public class SignalText extends TextView {
 
     int dBm = 0;
@@ -48,7 +50,9 @@ public class SignalText extends TextView {
     private SignalStrength signal;
     private int mValueColor = 0xffffffff;
 
+    private int mPhoneState;
     private static int style;
+    private boolean mPhoneSignalHidden;
     private static final int STYLE_HIDE = 0;
     private static final int STYLE_SHOW = 1;
     private static final int STYLE_SHOW_DBM = 2;
@@ -59,10 +63,23 @@ public class SignalText extends TextView {
 
     public SignalText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
+
+        try {
+            mPhoneSignalHidden = context.getResources().getBoolean(
+                R.bool.config_statusbar_hide_phone_signal);
+        } catch (Exception e) {
+            mPhoneSignalHidden = false;
+        }
+
+        if (mPhoneSignalHidden) {
+            this.setVisibility(GONE);
+        } else {
+            this.setVisibility(VISIBLE);
+        }
+
         updateSettings();
     }
 
@@ -94,6 +111,8 @@ public class SignalText extends TextView {
 
             if (action.equals(Intent.ACTION_SIGNAL_DBM_CHANGED)) {
                 dBm = intent.getIntExtra("dbm", 0);
+                mPhoneState = intent.getIntExtra("signal_status", 
+                        StatusBarPolicy.PHONE_SIGNAL_IS_NORMAL);
             }
 
             updateSettings();
@@ -121,32 +140,39 @@ public class SignalText extends TextView {
         }
     }
 
+    private String getSignalLevelString(int dBm) {
+        if (mPhoneState == StatusBarPolicy.PHONE_SIGNAL_IS_NULL || dBm == 0) {
+            return "-\u221e";
+        }
+
+        return Integer.toString(dBm);
+    }
+
     private void updateSettings() {
         updateSignalText();
     }
 
     final void updateSignalText() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        style = Settings.System
-                .getInt(resolver, Settings.System.STATUS_BAR_SIGNAL_TEXT, STYLE_HIDE);
+        style = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, STYLE_HIDE);
 
         updateColor();
 
-        if (style == STYLE_SHOW) {
-            this.setVisibility(View.VISIBLE);
-            String result = Integer.toString(dBm);
-            setText(result + " ");
+        if (mPhoneState == StatusBarPolicy.PHONE_SIGNAL_IS_AIRPLANE_MODE) {
+            setVisibility(View.GONE);
+        } else if (style == STYLE_SHOW) {
+            setVisibility(View.VISIBLE);
+            setText(getSignalLevelString(dBm) + " ");
         } else if (style == STYLE_SHOW_DBM) {
-            this.setVisibility(View.VISIBLE);
-            String result = Integer.toString(dBm) + " dBm ";
+            String result = getSignalLevelString(dBm) + " dBm";
             SpannableStringBuilder formatted = new SpannableStringBuilder(result);
             int start = result.indexOf("d");
             CharacterStyle style = new RelativeSizeSpan(0.7f);
             formatted.setSpan(style, start, start + 3, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+            setVisibility(View.VISIBLE);
             setText(formatted);
         } else {
-            this.setVisibility(View.GONE);
+            setVisibility(View.GONE);
         }
     }
 
@@ -158,4 +184,21 @@ public class SignalText extends TextView {
 
        	setTextColor(mValueColor);
     }
+
+    private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+        @Override
+        public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+            if (signalStrength != null) {
+                ASU = signalStrength.getGsmSignalStrength();
+                dBm = -113 + (2 * ASU);
+            } else {
+                ASU = 0;
+                dBm = 0;
+            }
+
+            if (mAttached) {
+                updateSignalText();
+            }
+        }
+    };
 }
