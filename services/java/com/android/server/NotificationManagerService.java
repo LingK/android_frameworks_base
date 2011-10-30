@@ -136,7 +136,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     private boolean mLedPulseAllColors;
     private boolean mLedBlendColors;
 
-    public static final String LED_CATEGORY_PACKAGE_PREFIX = "com.cyanogenmod.led.categories_settings.";
+    public static final String LED_CATEGORY_PACKAGE_PREFIX = "com.liquid.led.categories_settings.";
 
     enum LedForceMode {
         FORCED_ON,
