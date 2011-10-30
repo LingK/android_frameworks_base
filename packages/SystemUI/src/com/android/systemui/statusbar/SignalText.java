@@ -154,7 +154,7 @@ public class SignalText extends TextView {
 
     final void updateSignalText() {
         style = Settings.System.getInt(getContext().getContentResolver(),
-                Settings.System.STATUS_BAR_CM_SIGNAL_TEXT, STYLE_HIDE);
+                Settings.System.STATUS_BAR_SIGNAL_TEXT, STYLE_HIDE);
 
         updateColor();
 
