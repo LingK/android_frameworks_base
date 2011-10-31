@@ -231,8 +231,7 @@
             android:layout_alignParentBottom="true"
             />
 
-        <!-- emergency call button shown when sim is PUKd and tab_selector is
-             hidden -->
+        <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
         <Button
             android:id="@+id/emergencyCallButton"
             android:layout_width="wrap_content"

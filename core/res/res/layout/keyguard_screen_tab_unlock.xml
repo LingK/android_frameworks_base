@@ -116,27 +116,6 @@
             android:id="@+id/status_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:layout_below="@id/date"
-            android:layout_marginTop="4dip"
-            android:layout_marginLeft="24dip"
-            android:layout_marginRight="24dip"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:drawablePadding="4dip"
-            />
-
-        <TextView
-            android:id="@+id/status2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/status1"
-            android:layout_marginTop="4dip"
-            android:layout_marginLeft="24dip"
-            android:layout_marginRight="24dip"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:drawablePadding="4dip"
-            />
-=======
             android:orientation="vertical"
             android:layout_below="@id/date">
 
@@ -173,7 +152,6 @@
                 />
 
         </LinearLayout>
->>>>>>> 810afcc... Refactor lockscreen status views
 
         <TextView
             android:id="@+id/customMsg"
@@ -269,8 +247,7 @@
             android:layout_alignParentBottom="true"
             />
 
-        <!-- emergency call button shown when sim is PUKd and tab_selector is
-             hidden -->
+        <!-- emergency call button shown when sim is PUKd and tab_selector is hidden -->
         <Button
             android:id="@+id/emergencyCallButton"
             android:layout_width="wrap_content"
