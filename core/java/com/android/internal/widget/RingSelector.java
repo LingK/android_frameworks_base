@@ -97,7 +97,7 @@ public class RingSelector extends ViewGroup {
     private Ring mOtherRing2;
     private boolean mTracking;
     private boolean mAnimating;
-
+    private boolean mPrevTriggered;
     private SecRing[] mSecRings;
 
     /**
@@ -1043,7 +1043,7 @@ public class RingSelector extends ViewGroup {
                 if (mPrevTriggered) {
                     mCurrentRing.setRingBackgroundResource(R.drawable.jog_ring_ring_green);
                 }
-                mSecRings[mSelectedRingId].deactivate();
+                mSecRings[mSelectedRingId].deactivate(true);
             }
         }
         mAnimating = false;
