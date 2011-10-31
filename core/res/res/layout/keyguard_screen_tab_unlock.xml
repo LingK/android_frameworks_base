@@ -116,44 +116,6 @@
             android:id="@+id/status1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:orientation="vertical"
-            android:layout_below="@id/date">
-
-            <TextView
-                android:id="@+id/status_charging"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dip"
-                android:layout_marginLeft="24dip"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:drawablePadding="4dip"
-                />
-
-            <TextView
-                android:id="@+id/status_alarm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dip"
-                android:layout_marginLeft="24dip"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:drawablePadding="4dip"
-                android:drawableLeft="@drawable/ic_lock_idle_alarm"
-                />
-
-            <TextView
-                android:id="@+id/status_calendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dip"
-                android:layout_marginLeft="24dip"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:drawablePadding="4dip"
-                android:drawableLeft="@drawable/ic_lock_idle_calendar"
-                />
-
-        </LinearLayout>
-=======
             android:layout_below="@id/date"
             android:layout_marginTop="4dip"
             android:layout_marginLeft="24dip"
@@ -173,7 +135,6 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:drawablePadding="4dip"
             />
->>>>>>> parent of 4b09cb6... Refactor lockscreen status views
 
         <TextView
             android:id="@+id/customMsg"
