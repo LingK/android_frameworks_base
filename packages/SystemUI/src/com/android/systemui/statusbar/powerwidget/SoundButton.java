@@ -175,14 +175,13 @@ public class SoundButton extends PowerButton {
             };
         }
 
+        updateState();
         for (int i = 0; i < mRingerValues.length; i++) {
             if (mRingersIndex == mRingerValues[i]) {
                 mRingerValuesIndex = i;
                 break;
             }
         }
-
-        updateState();
     }
 
     private void findCurrentState() {
