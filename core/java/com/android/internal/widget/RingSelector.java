@@ -97,7 +97,7 @@ public class RingSelector extends ViewGroup {
     private Ring mOtherRing2;
     private boolean mTracking;
     private boolean mAnimating;
-
+    private boolean mPrevTriggered;
     private SecRing[] mSecRings;
 
     /**
@@ -900,8 +900,8 @@ public class RingSelector extends ViewGroup {
                     if (!mMiddlePrimary && mUseMiddleRing && mCurrentRing == mMiddleRing) {
                         int selectedRingId = mSelectedRingId;
                         mSelectedRingId = -1;
-
                         int selectedRingDistance = -1;
+
                         for (int q = 0; q < 4; q++) {
                             if (!mSecRings[q].isHidden()) {
                                 int ringDistance = mSecRings[q].ringIntersectDistance(mMiddleRing,
@@ -1043,7 +1043,7 @@ public class RingSelector extends ViewGroup {
                 if (mPrevTriggered) {
                     mCurrentRing.setRingBackgroundResource(R.drawable.jog_ring_ring_green);
                 }
-                mSecRings[mSelectedRingId].deactivate();
+                mSecRings[mSelectedRingId].deactivate(true);
             }
         }
         mAnimating = false;
