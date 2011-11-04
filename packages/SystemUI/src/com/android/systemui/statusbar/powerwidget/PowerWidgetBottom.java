@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.net.wimax.WimaxHelper;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
@@ -43,10 +44,8 @@ import com.android.systemui.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.util.Slog;
-
 public class PowerWidgetBottom extends FrameLayout {
-    protected static final String TAG = "PowerWidget";
+    protected static final String TAG = "PowerWidgetBottom";
 
     public static final String BUTTON_DELIMITER = "|";
 
@@ -72,6 +71,7 @@ public class PowerWidgetBottom extends FrameLayout {
     protected LayoutInflater mInflater;
     protected WidgetBroadcastReceiver mBroadcastReceiver = null;
     protected WidgetSettingsObserver mObserver = null;
+    private HorizontalScrollView mScrollView;
 
     public PowerWidgetBottom(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -81,6 +81,8 @@ public class PowerWidgetBottom extends FrameLayout {
 
         // get an initial width
         updateButtonLayoutWidth();
+        setupWidget();
+        updateVisibility();
     }
 
     public void setupWidget() {
@@ -106,6 +108,10 @@ public class PowerWidgetBottom extends FrameLayout {
         if(buttons == null) {
             Log.i(TAG, "Default buttons being loaded");
             buttons = BUTTONS_DEFAULT;
+            // Add the WiMAX button if it's supported
+            if (WimaxHelper.isWimaxSupported(mContext)) {
+                buttons += BUTTON_DELIMITER + PowerButton.BUTTON_WIMAX;
+            }
         }
         Log.i(TAG, "Button list: " + buttons);
 
@@ -140,6 +146,7 @@ public class PowerWidgetBottom extends FrameLayout {
             // set the padding on the linear layout to the size of our scrollbar, so we don't have them overlap
             ll.setPadding(ll.getPaddingLeft(), ll.getPaddingTop(), ll.getPaddingRight(), hsv.getVerticalScrollbarWidth());
             hsv.addView(ll, WIDGET_LAYOUT_PARAMS);
+            updateScrollbar();
             addView(hsv, WIDGET_LAYOUT_PARAMS);
         } else {
             // not needed, just add the linear layout
@@ -151,8 +158,6 @@ public class PowerWidgetBottom extends FrameLayout {
         IntentFilter filter = PowerButtonBottom.getAllBroadcastIntentFilters();
         // we add this so we can update views and such if the settings for our widget change
         filter.addAction(Settings.SETTINGS_CHANGED);
-        // we need to re-setup our widget on boot complete to make sure it is visible if need be
-        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
         // we need to detect orientation changes and update the static button width value appropriately
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         // register the receiver
@@ -193,28 +198,27 @@ public class PowerWidgetBottom extends FrameLayout {
     }
 
     public void updateVisibility() {
-        Slog.d(TAG, "Updating Widget Visibility");
         // now check if we need to display the widget still
         boolean displayPowerWidget = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.EXPANDED_VIEW_WIDGET, 1) == 2;
         if (!displayPowerWidget) {
             setVisibility(View.GONE);
-            // StatusBarService.mTogglesNotVisibleButton.setVisibility(View.VISIBLE);
-            // StatusBarService.mTogglesVisibleButton.setVisibility(View.GONE);
         } else {
             setVisibility(View.VISIBLE);
-            // StatusBarService.mTogglesNotVisibleButton.setVisibility(View.GONE);
-            // StatusBarService.mTogglesVisibleButton.setVisibility(View.VISIBLE);
         }
     }
 
+    private void updateScrollbar() {
+        if (mScrollView == null) return;
+        boolean hideScrollBar = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.EXPANDED_HIDE_SCROLLBAR, 0) == 1;
+        mScrollView.setHorizontalScrollBarEnabled(!hideScrollBar);
+    }
+
     // our own broadcast receiver :D
-    protected class WidgetBroadcastReceiver extends BroadcastReceiver {
+    private class WidgetBroadcastReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-                setupWidget();
-                updateVisibility();
-            } else if(intent.getAction().equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+            if(intent.getAction().equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 updateButtonLayoutWidth();
                 setupWidget();
             } else {
@@ -241,6 +245,16 @@ public class PowerWidgetBottom extends FrameLayout {
                     Settings.System.getUriFor(Settings.System.EXPANDED_VIEW_WIDGET),
                             false, this);
 
+            // watch for scrollbar hiding
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.EXPANDED_HIDE_SCROLLBAR),
+                            false, this);
+
+            // watch for haptic feedback
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.EXPANDED_HAPTIC_FEEDBACK),
+                            false, this);
+
             // watch for changes in buttons
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.WIDGET_BUTTONS),
@@ -252,7 +266,7 @@ public class PowerWidgetBottom extends FrameLayout {
                             false, this);
 
             // watch for power-button specifc stuff that has been loaded
-            for(Uri uri : PowerButtonBottom.getAllObservedUris()) {
+            for(Uri uri : PowerButton.getAllObservedUris()) {
                 resolver.registerContentObserver(uri, false, this);
             }
         }
@@ -274,6 +288,9 @@ public class PowerWidgetBottom extends FrameLayout {
             // now check if we change visibility
             } else if(uri.equals(Settings.System.getUriFor(Settings.System.EXPANDED_VIEW_WIDGET))) {
                 updateVisibility();
+            // now check for scrollbar hiding
+            } else if(uri.equals(Settings.System.getUriFor(Settings.System.EXPANDED_HIDE_SCROLLBAR))) {
+                updateScrollbar();
             }
 
             // do whatever the individual buttons must
