@@ -83,7 +83,6 @@ import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
 import com.android.internal.statusbar.StatusBarNotification;
 import com.android.systemui.R;
-import com.android.systemui.statusbar.powerwidget.PowerWidget;	
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -287,7 +286,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
             mDeadZone = (Settings.System.getInt(resolver,
                     Settings.System.STATUS_BAR_DEAD_ZONE, defValue) == 1);
             mCompactCarrier = (Settings.System.getInt(resolver,
-                    Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1);
+                    Settings.System.STATUS_BAR_COMPACT_CARRIER, 1) == 1);
 
             updateColors();
             updateLayout();
@@ -425,7 +424,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
         //Check for compact carrier layout and apply if enabled
         mCompactCarrier = Settings.System.getInt(getContentResolver(),
-                                                Settings.System.STATUS_BAR_COMPACT_CARRIER, 0) == 1;
+                                                Settings.System.STATUS_BAR_COMPACT_CARRIER, 1) == 1;
         ExpandedView expanded = (ExpandedView)View.inflate(context,
                                                 R.layout.status_bar_expanded, null);
 
@@ -532,7 +531,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
     
     private void updateSettings() {
         int changedVal = Settings.System.getInt(getContentResolver(),
-                Settings.System.EXPANDED_VIEW_WIDGET, 0);
+                Settings.System.EXPANDED_VIEW_WIDGET, 1);
 
         // check that it's not 0 to not reset the variable
         // this should be the only place mLastPowerToggle is set
