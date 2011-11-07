@@ -475,6 +475,13 @@ status_t AudioFlinger::setMode(int mode)
         return BAD_VALUE;
     }
 
+#ifdef HAS_LGE_STAR_FM_RADIO
+    if (mode == AudioSystem::MODE_FM) {
+        mFmOn = true;
+    } else if (mFmOn) {
+        mFmOn = false;
+    }
+#endif
     { // scope for the lock
         AutoMutex lock(mHardwareLock);
         mHardwareStatus = AUDIO_HW_SET_MODE;
@@ -673,7 +680,7 @@ status_t AudioFlinger::setParameters(int ioHandle, const String8& keyValuePairs)
         }
     }
 #endif
-#ifdef HAVE_FM_RADIO
+#if defined(HAVE_FM_RADIO) && !defined(HAS_LGE_STAR_FM_RADIO)
     AudioParameter param = AudioParameter(keyValuePairs);
     String8 key = String8(AudioParameter::keyRouting);
     int device;
