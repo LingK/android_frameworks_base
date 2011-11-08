@@ -17,9 +17,9 @@
  */
 -->
 <resources>
-    <drawable name="shade_bgcolor">#ff282828</drawable>
-    <drawable name="notification_header_text_color">#ff969696</drawable>
+    <drawable name="shade_bgcolor">#ff000000</drawable>
+    <drawable name="notification_header_text_color">#ff33b5e5</drawable>
     <drawable name="notification_number_text_color">#ffffffff</drawable>
-    <color name="carrier_label_text_color">#ffdfdfdf</color>
-    <color name="clear_button_text_color">#ff000000</color>
+    <color name="carrier_label_text_color">#ff33b5e5</color>
+    <color name="clear_button_text_color">#ff33b5e5</color>
 </resources>
