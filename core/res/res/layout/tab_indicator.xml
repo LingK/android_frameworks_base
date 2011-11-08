@@ -32,9 +32,9 @@
     <TextView android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         style="?android:attr/tabWidgetStyle"
-    />
+        android:layout_below="@+id/icon"
+        android:layout_marginTop="6px"/>
 
 </RelativeLayout>

@@ -26,7 +26,7 @@
         <item name="android:textColor">@color/carrier_label_text_color</item>
     </style>
 
-    <style name="StatusBar.ClearButton" parent="@android:style/Widget.Button">
+    <style name="StatusBar.ClearButton" parent="@android:style/TextAppearance.Medium">
         <item name="android:textColor">@color/clear_button_text_color</item>
         <item name="android:textSize">14sp</item>
         <item name="android:background">@android:drawable/btn_default_small</item>
