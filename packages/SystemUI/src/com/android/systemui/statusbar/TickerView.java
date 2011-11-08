@@ -24,7 +24,7 @@ import android.widget.TextView;
 public class TickerView extends TextSwitcher {
 
     Ticker mTicker;
-	private int mTextColor = 0xffffffff;
+	private int mTextColor = 0xFF00B3DB;
 
     public TickerView(Context context, AttributeSet attrs) {
         super(context, attrs);

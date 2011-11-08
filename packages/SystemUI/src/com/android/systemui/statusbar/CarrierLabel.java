@@ -49,8 +49,7 @@ public class CarrierLabel extends TextView {
     private boolean mShowPlmn;
     private int mCarrierLabelType;
     private String mCarrierLabelCustom;
-    private int mPlmnColor = 0xffffffff;
-
+    private int mPlmnColor = 0xFF00B3DB;
     private static final int TYPE_DEFAULT = 0;
     private static final int TYPE_SPN = 1;
     private static final int TYPE_PLMN = 2;

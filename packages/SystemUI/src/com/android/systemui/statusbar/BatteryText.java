@@ -32,7 +32,7 @@ import android.widget.TextView;
 public class BatteryText extends TextView {
 
     private static final int BATTERY_STYLE_PERCENT = 1;
-    private int mPercentColor = 0xffffffff;
+    private int mPercentColor = 0xFF00B3DB;
     private int mStatusBarBattery;
     private boolean mAttached;
     Handler mHandler;
