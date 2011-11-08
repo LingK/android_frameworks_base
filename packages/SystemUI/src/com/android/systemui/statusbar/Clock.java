@@ -48,9 +48,8 @@ public class Clock extends TextView {
     private boolean mShowClock;
     private Calendar mCalendar;
     private String mClockFormatString;
-	private int mClockColor = 0xffffffff;
+	private int mClockColor = 0xFF00B3DB;
     private SimpleDateFormat mClockFormat;
-
     private static final int AM_PM_STYLE_NORMAL  = 0;
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
@@ -147,7 +146,7 @@ public class Clock extends TextView {
         boolean b24 = DateFormat.is24HourFormat(context);
         int res;
 
-        if (b24 && AM_PM_STYLE == AM_PM_STYLE_GONE) {
+        if (b24) {
             res = R.string.twenty_four_hour_time_format;
         } else {
             res = R.string.twelve_hour_time_format;

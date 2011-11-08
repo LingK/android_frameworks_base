@@ -211,12 +211,12 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
 
     // notification color default variables
     int mBlackColor = 0xff000000;
-    int mWhiteColor = 0xffffffff;
+    int mWhiteColor = 0xFF00B3DB;
 
     // notfication color temp variables
-    int mItemText = mBlackColor;
-    int mItemTime = mBlackColor;
-    int mItemTitle = mBlackColor;
+    int mItemText = mWhiteColor;
+    int mItemTime = mWhiteColor;
+    int mItemTitle = mWhiteColor;
     int mDateColor = mWhiteColor;
     int mButtonText = mBlackColor;
     int mNotifyNone = mWhiteColor;

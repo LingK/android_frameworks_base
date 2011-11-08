@@ -48,8 +48,7 @@ public class SignalText extends TextView {
     Handler mHandler;
     private boolean mAttached;
     private SignalStrength signal;
-    private int mValueColor = 0xffffffff;
-
+    private int mValueColor = 0xFF00B3DB;
     private int mPhoneState;
     private static int style;
     private boolean mPhoneSignalHidden;
@@ -73,7 +72,6 @@ public class SignalText extends TextView {
         } catch (Exception e) {
             mPhoneSignalHidden = false;
         }
-
         if (mPhoneSignalHidden) {
             this.setVisibility(GONE);
         } else {
