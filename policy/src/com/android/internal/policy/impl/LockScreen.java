@@ -218,6 +218,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Settings.System.CARRIER_LABEL_CUSTOM_STRING));
     private boolean mRingUnlockMiddle = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_RING_UNLOCK_MIDDLE, 0) == 1);
+    private boolean mRingMinimal = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_RING_MINIMAL, 0) == 1);
 
     // Current Selector
     private boolean mUseSliderLockscreen = (mLockscreenStyle == 1);
@@ -554,29 +556,45 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (mLensePortrait || mWidgetLayout == 1 )
             setLenseWidgetsVisibility(View.INVISIBLE);
 
-        mRingSelector.enableMiddleRing(mCustomAppToggle);
-        mRingSelector.enableMiddlePrimary(mRingUnlockMiddle);
-
-        if (mRingUnlockMiddle && mCustomAppToggle){
-            mRingSelector.setLeftRingResources(
-                R.drawable.ic_jog_dial_custom,
-                R.drawable.jog_tab_target_green,
-                R.drawable.jog_ring_ring_green);
-
+        //Ring setup
+        if (mRingMinimal) {
+            mRingSelector.enableRingMinimal(mRingMinimal);
+            //unlock with middle - left and right are hidden
             mRingSelector.setMiddleRingResources(
                 R.drawable.ic_jog_dial_unlock,
                 R.drawable.jog_tab_target_green,
                 R.drawable.jog_ring_ring_green);
-        } else {
+        }else if(mCustomAppToggle) {
+            mRingSelector.enableMiddleRing(mCustomAppToggle);
+            if(mRingUnlockMiddle) {
+                mRingSelector.enableMiddlePrimary(mRingUnlockMiddle);
+                mRingSelector.setLeftRingResources(
+                    R.drawable.ic_jog_dial_custom,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+                //unlock with middle
+                mRingSelector.setMiddleRingResources(
+                    R.drawable.ic_jog_dial_unlock,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+                }else{
+                //unlock on left
+                mRingSelector.setLeftRingResources(
+                    R.drawable.ic_jog_dial_unlock,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+                mRingSelector.setMiddleRingResources(
+                    R.drawable.ic_jog_dial_custom,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+                }
+        }else{
+            //no middle ring
             mRingSelector.setLeftRingResources(
                 R.drawable.ic_jog_dial_unlock,
                 R.drawable.jog_tab_target_green,
                 R.drawable.jog_ring_ring_green);
-
-            mRingSelector.setMiddleRingResources(
-                R.drawable.ic_jog_dial_custom,
-                R.drawable.jog_tab_target_green,
-                R.drawable.jog_ring_ring_green);
+            mRingSelector.enableRingMinimal(false);
         }
 
         mTabSelector.setLeftTabResources(
@@ -838,7 +856,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     }
 
-
     /** {@inheritDoc} */
     public void onRingTrigger(View v, int whichRing, int whichApp) {
         boolean mUnlockTrigger=false;
@@ -851,7 +868,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mUnlockTrigger=true;
         }
         if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
-            if(mRingUnlockMiddle)
+            if(mRingUnlockMiddle || mRingMinimal)
                 mUnlockTrigger=true;
             else
                 mCustomAppTrigger=true;
@@ -1149,12 +1166,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
      */
     private void updateLayout(Status status) {
         if (DBG) Log.d(TAG, "updateLayout: status=" + status);
-
         mCustomAppToggle = (Settings.System.getInt(mContext.getContentResolver(),
                                 Settings.System.LOCKSCREEN_CUSTOM_APP_TOGGLE, 0) == 1);
+        mRingMinimal = (Settings.System.getInt(mContext.getContentResolver(),
+                                Settings.System.LOCKSCREEN_RING_MINIMAL, 0) == 1);
 
-        mRotarySelector.enableCustomAppDimple(mCustomAppToggle);
-        mRingSelector.enableMiddleRing(mCustomAppToggle);
+        if (mCustomAppToggle) {
+            mRingSelector.enableMiddleRing(mCustomAppToggle);
+            mRotarySelector.enableCustomAppDimple(mCustomAppToggle);
+        }
+        if (mRingMinimal) {
+            mRingSelector.enableRingMinimal(mRingMinimal);
+        }
+
         mEmergencyCallButton.setVisibility(View.GONE);
 
         switch (status) {

@@ -805,6 +805,7 @@ public class RingSelector extends ViewGroup {
 
         boolean leftHit = mLeftRing.contains((int) x, (int) y);
         boolean rightHit = mRightRing.contains((int) x, (int) y);
+        //DREW
         boolean middleHit = mUseMiddleRing ? mMiddleRing.contains((int) x, (int) y) : false;
 
         if (!mTracking && !(leftHit || rightHit || middleHit)) {
@@ -898,10 +899,14 @@ public class RingSelector extends ViewGroup {
                 case MotionEvent.ACTION_MOVE:
                     moveRing(x, y);
                     if (!mMiddlePrimary && mUseMiddleRing && mCurrentRing == mMiddleRing) {
-                        int selectedRingId = mSelectedRingId;
-                        mSelectedRingId = -1;
-                        int selectedRingDistance = -1;
-
+                        for (int q = 0; q < 4; q++) {
+                            if (!mSecRings[q].isHidden() && mSecRings[q].contains((int) x, (int) y)) {
+                                mSecRings[q].activate();
+                            } else {
+                                mSecRings[q].deactivate();
+                            }
+                        }
+                    } else if (mMiddlePrimary && mUseMiddleRing && mCurrentRing == mLeftRing) {
                         for (int q = 0; q < 4; q++) {
                             if (!mSecRings[q].isHidden()) {
                                 int ringDistance = mSecRings[q].ringIntersectDistance(mMiddleRing,
@@ -1083,8 +1088,10 @@ public class RingSelector extends ViewGroup {
         invalidate();
     }
 
-    private void setHoverBackLight() {
-        if (mCurrentRing != mMiddleRing) {
+    private void setHoverBackLight(float x, float y) {
+        if (mMiddlePrimary && mCurrentRing != mLeftRing) {
+            return;
+        } else if (!mMiddlePrimary && mCurrentRing != mMiddleRing) {
             return;
         }
         if (mSelectedRingId != -1) {
@@ -1218,7 +1225,15 @@ public class RingSelector extends ViewGroup {
 
     public void enableMiddlePrimary(boolean enable) {
         mMiddlePrimary = enable;
+        enableMiddleRing(enable);
     }
+
+    public void enableRingMinimal(boolean enable) {
+        enableMiddlePrimary(enable);
+        mRightRing.setHiddenState(enable);
+        mLeftRing.setHiddenState(enable);
+    }
+
     /**
      * Triggers haptic feedback.
      */
