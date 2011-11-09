@@ -1103,7 +1103,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Uri uri = getArtworkUri(getContext(), KeyguardViewMediator.SongId(),
                     KeyguardViewMediator.AlbumId());
 
-            if (uri != null && mAlbumArtToggle && !(mUseRingLockscreen && mCustomAppToggle)) {
+            if (uri != null && mAlbumArtToggle && !(mUseRingLockscreen && mCustomAppToggle && !mHideUnlockTab)) {
                 mAlbumArt.setImageURI(uri);
                 mAlbumArt.setVisibility(View.VISIBLE);
             }
