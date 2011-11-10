@@ -35,7 +35,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-public class BatteryBar extends ProgressBar {
+public class BatteryBar extends ProgressBar implements Animatable, Runnable {
 
     private static final String TAG = BatteryBar.class.getSimpleName();
     private static final int ANIM_DURATION = 5000;
@@ -193,7 +193,7 @@ public class BatteryBar extends ProgressBar {
 
         if (!TextUtils.isEmpty(barColor)) {
             try {
-                mColor = Color.parseColor(color);
+                mColor = Color.parseColor(barColor);
             } catch (IllegalArgumentException e) {
                 mColor = null;
             }

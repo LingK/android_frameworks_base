@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.drawable.Animatable;
 import android.graphics.Color;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,7 +37,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-public class BatteryIcon extends ImageView {
+import com.android.internal.R;
+
+public class BatteryIcon extends ImageView implements Animatable, Runnable {
 
     private static final String TAG = BatteryIcon.class.getSimpleName();
     private static final int iconWidthDp = 4;
