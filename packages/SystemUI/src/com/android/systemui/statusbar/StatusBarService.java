@@ -476,7 +476,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mPowerWidget.setGlobalButtonOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         if(Settings.System.getInt(getContentResolver(),
-                                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1) {
+                                Settings.System.EXPANDED_HIDE_ONCHANGE, 1) == 1) {
                             animateCollapse();
                         }
                     }
@@ -510,7 +510,7 @@ public class StatusBarService extends Service implements CommandQueue.Callbacks 
         mPowerWidgetBottom.setGlobalButtonOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         if(Settings.System.getInt(getContentResolver(),
-                                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1) {
+                                Settings.System.EXPANDED_HIDE_ONCHANGE, 1) == 1) {
                             animateCollapse();
                         }
                     }

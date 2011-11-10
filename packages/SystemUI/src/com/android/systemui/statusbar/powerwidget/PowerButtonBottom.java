@@ -101,7 +101,12 @@ public abstract class PowerButtonBottom {
                     int buttonLayer = R.id.power_widget_button;
                     int buttonIcon = R.id.power_widget_button_image;
                     int buttonState = R.id.power_widget_button_indic;
-
+                    ImageView indic = (ImageView)mView.findViewById(R.id.power_widget_button_indic);
+                    if ((Settings.System.getInt(context.getContentResolver(),Settings.System.EXPANDED_HIDE_INDICATOR, 1)) == 1){
+                        indic.setVisibility(8);
+                    }else{
+                        indic.setVisibility(0);
+                    }
                     updateImageView(buttonIcon, mIcon);
 
                     int sColorMaskBase = Settings.System.getInt(context.getContentResolver(),
