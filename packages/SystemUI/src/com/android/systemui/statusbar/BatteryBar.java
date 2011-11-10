@@ -39,7 +39,7 @@ public class BatteryBar extends ProgressBar {
 
     private static final String TAG = BatteryBar.class.getSimpleName();
     private static final int ANIM_DURATION = 5000;
-    private static final int FRAME_DURATION = ANIM_DURATION / 100
+    private static final int FRAME_DURATION = ANIM_DURATION / 100;
 
     private Integer mColor = null;
     private boolean mAttached = false;

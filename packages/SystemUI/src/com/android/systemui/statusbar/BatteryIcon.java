@@ -42,7 +42,7 @@ public class BatteryIcon extends ImageView {
     private static final int iconWidthDp = 4;
     private static final int iconRightDp = 6;
     private static final int ANIM_DURATION = 5000;
-    private static final int FRAME_DURATION = ANIM_DURATION / 100
+    private static final int FRAME_DURATION = ANIM_DURATION / 100;
 
     private int mWidthPx;
     private boolean mAttached;
