@@ -85,47 +85,15 @@ public class BatteryBar extends ProgressBar implements Animatable, Runnable {
 
     public BatteryBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Drawable d = getProgressDrawable();
-
-        if (d instanceof LayerDrawable) {
-            Drawable background = ((LayerDrawable) d)
-                    .findDrawableByLayerId(com.android.internal.R.id.background);
-            if (background != null) {
-                background.mutate();
-                background.setColorFilter(Color.TRANSPARENT, PorterDuff.Mode.SRC);
-            }
-        }
 
         mLowBatteryWarningLevel = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_lowBatteryWarningLevel);
         mLowBatteryCloseWarningLevel = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_lowBatteryCloseWarningLevel);
+
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observer();
         updateSettings();
-    }
-
-    @Override
-    public synchronized void setProgress(int progress) {
-        super.setProgress(progress);
-        Drawable d = getProgressDrawable();
-
-        if (d instanceof LayerDrawable) {
-            Drawable progressBar = ((LayerDrawable) d)
-                    .findDrawableByLayerId(com.android.internal.R.id.progress);
-            if (progressBar != null) {
-                progressBar.mutate();
-                if (mShowLowBattery && progress <= mLowBatteryWarningLevel) {
-                    progressBar.setColorFilter(Color.RED, PorterDuff.Mode.SRC);
-                } else if (mShowLowBattery && progress <= mLowBatteryCloseWarningLevel) {
-                    progressBar.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC);
-                } else if (mColor != null) {
-                    progressBar.setColorFilter(mColor, PorterDuff.Mode.SRC);
-                } else {
-                    progressBar.clearColorFilter();
-                }
-            }
-        }
     }
 
     @Override
@@ -174,6 +142,28 @@ public class BatteryBar extends ProgressBar implements Animatable, Runnable {
             }
         }
     };
+
+    @Override
+    public synchronized void setProgress(int progress) {
+        super.setProgress(progress);
+        Drawable d = getProgressDrawable();
+        if (d instanceof LayerDrawable) {
+            Drawable progressBar = ((LayerDrawable) d)
+                    .findDrawableByLayerId(com.android.internal.R.id.progress);
+            if (progressBar != null) {
+                progressBar.mutate();
+                if (mShowLowBattery && progress <= mLowBatteryWarningLevel) {
+                    progressBar.setColorFilter(Color.RED, PorterDuff.Mode.SRC);
+                } else if (mShowLowBattery && progress <= mLowBatteryCloseWarningLevel) {
+                    progressBar.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC);
+                } else if (mColor != null) {
+                    progressBar.setColorFilter(mColor, PorterDuff.Mode.SRC);
+                } else {
+                    progressBar.clearColorFilter();
+                }
+            }
+        }
+    }
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();

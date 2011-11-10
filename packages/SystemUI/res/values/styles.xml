@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2006 The Android Open Source Project
+<!-- Copyright (C) 2011 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -30,6 +30,12 @@
         <item name="android:textColor">@color/clear_button_text_color</item>
         <item name="android:textSize">14sp</item>
         <item name="android:background">@android:drawable/btn_default_small</item>
+    </style>
+
+    <style name="StatusBar.BatteryBar" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/battery_bar</item>
+        <item name="android:minHeight">1dip</item>
+        <item name="android:maxHeight">1dip</item>
     </style>
 
     <style name="TextAppearance.StatusBar.IntruderAlert"
