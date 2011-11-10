@@ -31,12 +31,12 @@ import android.widget.TextView;
 
 public class BatteryText extends TextView {
 
-    private static final int BATTERY_STYLE_PERCENT = 1;
-    private int mPercentColor = 0xFF00B3DB;
-    private int mStatusBarBattery;
+    private static final String TAG = BatteryText.class.getSimpleName();
+    private int mBatteryTextColor = 0xFF00B3DB;
+    private boolean mShowBatteryText = false;
     private boolean mAttached;
     Handler mHandler;
-
+    
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -88,9 +88,10 @@ public class BatteryText extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+
         if (mAttached) {
-            getContext().unregisterReceiver(mIntentReceiver);
             mAttached = false;
+            getContext().unregisterReceiver(mIntentReceiver);
         }
     }
 
@@ -100,38 +101,24 @@ public class BatteryText extends TextView {
             String action = intent.getAction();
 
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                updateBatteryText(intent);
+                int level = intent.getIntExtra("level", 0);
+                setText(Integer.toString(level));
             }
         }
     };
 
-    final void updateBatteryText(Intent intent) {
-        int level = intent.getIntExtra("level", 0);
-        setText(Integer.toString(level));
-    }
-
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
-        int statusBarBattery = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 1));
-        mStatusBarBattery = Integer.valueOf(statusBarBattery);
-
-        updateColor();
+        mShowBatteryText = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 0) == 1);
+        mBatteryTextColor = Settings.System.getInt(resolver,
+                Settings.System.COLOR_BATTERY_PERCENT, mBatteryTextColor);
+        setTextColor(mBatteryTextColor);
         
-        if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
+        if (mShowBatteryText) {
             setVisibility(View.VISIBLE);
         } else {
             setVisibility(View.GONE);
         }
-    }
-
-    private void updateColor() {
-		ContentResolver resolver = mContext.getContentResolver();
-
-        mPercentColor = Settings.System
-				.getInt(resolver, Settings.System.COLOR_BATTERY_PERCENT, mPercentColor);
-
-       	setTextColor(mPercentColor);
     }
 }

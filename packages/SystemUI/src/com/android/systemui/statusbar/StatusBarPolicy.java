@@ -74,11 +74,6 @@ public class StatusBarPolicy {
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
     private static int AM_PM_STYLE = AM_PM_STYLE_GONE;
-
-    private static final int BATTERY_STYLE_NORMAL = 0;
-    private static final int BATTERY_STYLE_PERCENT = 1;
-    private static final int BATTERY_STYLE_BAR = 2;
-    private static final int BATTERY_STYLE_GONE = 3;
     private static final int INET_CONDITION_THRESHOLD = 50;
 
     private final Context mContext;
@@ -593,12 +588,11 @@ public class StatusBarPolicy {
         }
     };
 
-    private int mStatusBarBattery;
     private boolean mShowSignal;
     private boolean mShowHeadset;
     private boolean mSignalStatus;
     private boolean mShowPhoneSignal;
-    private boolean mPhoneSignalStatus;
+    private boolean mStatusBarBattery;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -794,19 +788,11 @@ public class StatusBarPolicy {
         final int id = intent.getIntExtra("icon-small", 0);
         int level = intent.getIntExtra("level", 0);
         mService.setIcon("battery", id, level);
-
-        if (mStatusBarBattery == BATTERY_STYLE_NORMAL) {
-                mService.setIconVisibility("battery", true);
-        } else if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
-                mService.setIconVisibility("battery", false);
-        } else if (mStatusBarBattery == BATTERY_STYLE_BAR) {
-                mService.setIconVisibility("battery", false);
-        } else if (mStatusBarBattery == BATTERY_STYLE_GONE) {
-                mService.setIconVisibility("battery", false);
-        }
+        mService.setIconVisibility("battery", mStatusBarBattery);
 
         boolean plugged = intent.getIntExtra("plugged", 0) != 0;
         level = intent.getIntExtra("level", -1);
+
         if (false) {
             Slog.d(TAG, "updateBattery level=" + level
                     + " plugged=" + plugged
@@ -1202,10 +1188,9 @@ public class StatusBarPolicy {
             
             mPhoneSignalIconId = iconList[iconLevel];
             
-            if (!mShowPhoneSignal || mPhoneSignalStatus != mShowPhoneSignal) {
+            if (!mShowPhoneSignal) {
                 mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
                 mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
-                mPhoneSignalStatus = mShowPhoneSignal;
             }
         }
         return;
@@ -1805,10 +1790,9 @@ public class StatusBarPolicy {
 
         }
 
-        if (!mShowPhoneSignal || mPhoneSignalStatus != mShowPhoneSignal) {
+        if (!mShowPhoneSignal) {
             mService.setIcon("phone_signal", mPhoneSignalIconId, 0);
             mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
-            mPhoneSignalStatus = mShowPhoneSignal;
         }
 
         return;
@@ -1829,23 +1813,12 @@ public class StatusBarPolicy {
 
     private void updateSettings(){
         ContentResolver resolver = mContext.getContentResolver();
-        int statusBarBattery = Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_BATTERY, 1);
-        mStatusBarBattery = Integer.valueOf(statusBarBattery);
-
-        if (mStatusBarBattery == BATTERY_STYLE_NORMAL) {
-                mService.setIconVisibility("battery", true);
-        } else if (mStatusBarBattery == BATTERY_STYLE_PERCENT) {
-                mService.setIconVisibility("battery", false);
-        } else if (mStatusBarBattery == BATTERY_STYLE_BAR) {
-                mService.setIconVisibility("battery", false);
-        } else if (mStatusBarBattery == BATTERY_STYLE_GONE) {
-                mService.setIconVisibility("battery", false);
-        }
+        mStatusBarBattery = (Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_BATTERY, 0) == 0);
+        mService.setIconVisibility("battery", mStatusBarBattery);    
 
 		mShowPhoneSignal = (Settings.System.getInt(resolver,
 				Settings.System.STATUS_BAR_PHONE_SIGNAL, 0) == 1);
-	    mPhoneSignalStatus = !mShowPhoneSignal;
 		mService.setIconVisibility("phone_signal", !mShowPhoneSignal);
 
         mShowHeadset = (Settings.System.getInt(resolver,
