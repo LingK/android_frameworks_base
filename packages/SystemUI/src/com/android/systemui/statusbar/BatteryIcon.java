@@ -24,7 +24,6 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.drawable.Animatable;
-import android.graphics.Color;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -109,8 +108,6 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
             mAttached = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-            filter.addAction(Intent.ACTION_SCREEN_OFF);
-            filter.addAction(Intent.ACTION_SCREEN_ON);
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
         }
     }
@@ -138,12 +135,6 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
                 } else {
                     stop();
                 }
-            } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                stop();
-            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
-                if (mBatteryCharging && mBatteryLevel < 100) {
-                    start();
-                }
             }
         }
     };
@@ -168,7 +159,7 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
     public void updateIconCache() {
         mIconCache=new Bitmap[21];
 
-        for(int i=0; i<=20; i++){
+        for(int i=0; i<=20; i++) {
             Bitmap bmBat = getBitmapFor(getBatResourceID(i));
             mIconCache[i] = Bitmap.createBitmap(bmBat, 4, 0, 1, bmBat.getHeight());
         }
@@ -244,7 +235,7 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
 
     @Override
     public void run() {
-        mCurrentFrame++;
+        ++mCurrentFrame;
         if (mCurrentFrame > 5) {
             mCurrentFrame = mBatteryLevel / 5;
         }
@@ -254,6 +245,7 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
     @Override
     public void start() {
         if (!isRunning()) {
+            mBatteryCharging = true;
             mHandler.removeCallbacks(this);
             mCurrentFrame = mBatteryLevel / 5;
             mHandler.postDelayed(this, FRAME_DURATION);
@@ -270,6 +262,6 @@ public class BatteryIcon extends ImageView implements Animatable, Runnable {
 
     @Override
     public boolean isRunning() {
-        return mCurrentFrame != -1;
+        return mBatteryCharging;
     }
 }
