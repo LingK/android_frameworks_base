@@ -903,10 +903,14 @@ public class RingSelector extends ViewGroup {
                             if (!mSecRings[q].isHidden() && mSecRings[q].contains((int) x, (int) y)) {
                                 mSecRings[q].activate();
                             } else {
-                                mSecRings[q].deactivate();
+                                mSecRings[q].deactivate(true);
                             }
                         }
                     } else if (mMiddlePrimary && mUseMiddleRing && mCurrentRing == mLeftRing) {
+                        int selectedRingId = mSelectedRingId;
+                        mSelectedRingId = -1;
+                        int selectedRingDistance = -1;
+                        
                         for (int q = 0; q < 4; q++) {
                             if (!mSecRings[q].isHidden()) {
                                 int ringDistance = mSecRings[q].ringIntersectDistance(mMiddleRing,
@@ -1088,7 +1092,7 @@ public class RingSelector extends ViewGroup {
         invalidate();
     }
 
-    private void setHoverBackLight(float x, float y) {
+    private void setHoverBackLight() {
         if (mMiddlePrimary && mCurrentRing != mLeftRing) {
             return;
         } else if (!mMiddlePrimary && mCurrentRing != mMiddleRing) {
